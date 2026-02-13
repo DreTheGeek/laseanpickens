@@ -1,8 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 
-// Placeholder Vapi configuration: replace with your real credentials
-const VAPI_PUBLIC_KEY = "YOUR_VAPI_PUBLIC_KEY";
-const VAPI_AGENT_ID = "YOUR_VAPI_AGENT_ID";
+const VAPI_PUBLIC_KEY = "8dcd034c-8b77-41aa-b9a8-e9763fe6509a";
+const VAPI_AGENT_ID = "8ed29746-98b6-4529-bf51-13882f74acac";
 
 interface TranscriptMessage {
   role: "user" | "assistant";
@@ -22,20 +21,6 @@ export function useVapi() {
   }, []);
 
   const startConversation = useCallback(async () => {
-    if (VAPI_PUBLIC_KEY === "YOUR_VAPI_PUBLIC_KEY") {
-      // Demo mode: simulate a conversation
-      setIsLoading(true);
-      setTranscript([]);
-      setTimeout(() => {
-        setIsLoading(false);
-        setIsActive(true);
-        setIsSpeaking(true);
-        addTranscriptMessage("assistant", "What's good? I'm LaSean. Ask me about AI automation, building systems, or scaling your business. What are you working on?");
-        setTimeout(() => setIsSpeaking(false), 3000);
-      }, 1500);
-      return;
-    }
-
     try {
       setIsLoading(true);
       setTranscript([]);

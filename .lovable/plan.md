@@ -1,35 +1,54 @@
 
 
-# Replace Placeholder Avatars with LaSean's Photos
+# Hero Background Video, Em Dash Removal, and Vapi Credentials
 
-The site is fully built with all sections, voice widget, pricing, and content. The remaining task is to swap the placeholder "LP" initials with your actual photos.
+## 1. Hero Background Video
+
+Copy `LaSean_at_Conference.mp4` to `public/videos/` (public folder is best for large video files to avoid bundling overhead). Then update the Hero section in `Index.tsx` to render a `<video>` element as a full-bleed background behind the voice widget, with:
+
+- Autoplay, muted, loop, playsInline attributes
+- `object-cover` styling to fill the hero
+- A dark overlay gradient so text and the voice widget remain readable
+- The existing content (voice widget, CTAs, scroll indicator) layered on top via `z-index`
+
+This sets up a scalable pattern for adding more videos later.
+
+## 2. Remove All Em Dashes
+
+Replace every `—` across the site with appropriate punctuation. Here are the specific changes:
+
+**AuthorityBio.tsx (3 instances):**
+- "Founder and CEO of Kaldr — a portfolio..." becomes "Founder and CEO of Kaldr, a portfolio..."
+- "doesn't just talk about systems — he builds them" becomes "doesn't just talk about systems. He builds them."
+- "automation, and strategic infrastructure — so they can" becomes "automation, and strategic infrastructure, so they can"
+
+**FeaturedEvent.tsx (1 instance):**
+- "AI-powered lead gen system — built live" becomes "AI-powered lead gen system, built live"
+
+**Newsletter.tsx (1 instance):**
+- "strategies, and systems thinking — delivered to" becomes "strategies, and systems thinking, delivered to"
+
+**SocialProof.tsx (1 instance):**
+- "He doesn't just consult — he delivers." becomes "He doesn't just consult. He delivers."
+
+**useVapi.ts and HeroVoiceWidget.tsx (code comments only):**
+- Clean up em dashes in comments as well for consistency.
+
+## 3. Vapi Voice Agent Credentials
+
+Since Vapi public keys are publishable (client-side SDK), it is safe to store them directly in the codebase. I will ask you for your Vapi Public Key and Agent ID, then update `src/hooks/useVapi.ts` to replace the placeholder values. This will make the "Talk to LaSean" voice widget fully functional.
+
+## 4. Verify Smooth Scrolling
+
+The smooth scroll CSS (`scroll-behavior: smooth`) is already in `src/index.css`. I will navigate the preview and click nav links to confirm they animate properly to each section.
 
 ---
 
-## What will change
+## Technical Summary
 
-### 1. Copy photos into the project
-- Copy all 3 uploaded photos into `src/assets/` for proper bundling
-  - `Good_Headshot-2.png` — Hero voice widget avatar (circular crop)
-  - `nice_1-2.png` — Authority Bio section
-  - `S0pFG12gH0Ama-5k4MYu0_dmVTJFw6-2.png` — Kaldr Ecosystem section
-
-### 2. Hero Voice Widget (`HeroVoiceWidget.tsx`)
-- Replace the dark gradient with "LP" text with LaSean's headshot as the circular avatar
-- The photo will be displayed with `object-cover` to fill the circle cleanly
-- The speaking animation overlay and glow effects remain on top
-
-### 3. Authority Bio Section (`AuthorityBio.tsx`)
-- Replace the "LP" placeholder box with the desk/computer photo in a styled rounded container
-
-### 4. Kaldr Ecosystem Section (`KaldrShowcase.tsx`)
-- Replace the "KALDR" text placeholder with the bookshelf photo, keeping the blue glow border styling
-
----
-
-## What stays the same
-- All voice chat functionality, transcript, and Vapi integration
-- All pricing tiers, manifesto, social proof, lead capture, and footer sections
-- The Black & Electric Blue theme and all animations
-- Mobile responsiveness
-
+| Task | Files Modified |
+|------|---------------|
+| Background video | `public/videos/LaSean_at_Conference.mp4` (new), `src/pages/Index.tsx` |
+| Em dash removal | `AuthorityBio.tsx`, `FeaturedEvent.tsx`, `Newsletter.tsx`, `SocialProof.tsx`, `useVapi.ts`, `HeroVoiceWidget.tsx` |
+| Vapi credentials | `src/hooks/useVapi.ts` (after you provide keys) |
+| Scroll verification | Testing only, no file changes |

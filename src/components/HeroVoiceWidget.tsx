@@ -1,4 +1,5 @@
 import { Mic, MicOff, Phone } from "lucide-react";
+import headshotImg from "@/assets/headshot.png";
 import { motion, AnimatePresence } from "framer-motion";
 import { useVapi } from "@/hooks/useVapi";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -33,9 +34,7 @@ const HeroVoiceWidget = () => {
         whileTap={{ scale: 0.97 }}
       >
         {/* Placeholder avatar — dark gradient with initials */}
-        <div className="w-full h-full bg-gradient-to-br from-secondary to-background flex items-center justify-center">
-          <span className="text-4xl md:text-5xl font-heading font-bold text-gradient-blue">LP</span>
-        </div>
+        <img src={headshotImg} alt="LaSean Pickens" className="w-full h-full object-cover" />
 
         {/* Overlay when active */}
         <AnimatePresence>

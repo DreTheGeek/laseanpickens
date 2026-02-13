@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from "react";
 
-// Placeholder Vapi configuration — replace with your real credentials
+// Placeholder Vapi configuration: replace with your real credentials
 const VAPI_PUBLIC_KEY = "YOUR_VAPI_PUBLIC_KEY";
 const VAPI_AGENT_ID = "YOUR_VAPI_AGENT_ID";
 
@@ -23,7 +23,7 @@ export function useVapi() {
 
   const startConversation = useCallback(async () => {
     if (VAPI_PUBLIC_KEY === "YOUR_VAPI_PUBLIC_KEY") {
-      // Demo mode — simulate a conversation
+      // Demo mode: simulate a conversation
       setIsLoading(true);
       setTranscript([]);
       setTimeout(() => {

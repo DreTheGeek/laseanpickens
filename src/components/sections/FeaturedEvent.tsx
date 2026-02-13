@@ -97,7 +97,7 @@ const FeaturedEvent = () => {
                 </h3>
                 <ul className="space-y-4">
                   {[
-                    "Your own AI-powered lead gen system — built live",
+                    "Your own AI-powered lead gen system, built live",
                     "A custom automation stack tailored to your business",
                     "Direct 1-on-1 time with LaSean & the Kaldr team",
                     "A 90-day scaling roadmap you can execute immediately",

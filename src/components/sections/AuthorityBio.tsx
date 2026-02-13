@@ -25,17 +25,17 @@ const AuthorityBio = () => (
           </h2>
           <div className="space-y-4 text-foreground/80 text-lg leading-relaxed">
             <p>
-              Founder and CEO of Kaldr — a portfolio of AI-powered businesses spanning voice automation,
+              Founder and CEO of Kaldr, a portfolio of AI-powered businesses spanning voice automation,
               SaaS marketplaces, digital media, real estate, and financial infrastructure.
             </p>
             <p>
-              LaSean doesn't just talk about systems — he builds them. From deploying AI voice agents
+              LaSean doesn't just talk about systems. He builds them. From deploying AI voice agents
               that replace entire call centers to architecting SaaS platforms that generate recurring
               revenue on autopilot, his work is the proof.
             </p>
             <p>
               His mission is simple: teach ambitious founders and operators how to build leverage
-              through AI, automation, and strategic infrastructure — so they can stop trading time
+              through AI, automation, and strategic infrastructure, so they can stop trading time
               for money and start building wealth that compounds.
             </p>
           </div>

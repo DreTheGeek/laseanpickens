@@ -20,7 +20,17 @@ const Index = () => {
 
       {/* Hero */}
       <section className="min-h-screen flex flex-col items-center justify-center px-4 py-20 relative pt-24">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
+        {/* Background video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+          src="/videos/LaSean_at_Conference.mp4"
+        />
+        {/* Dark overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/70 to-background" />
         <div className="relative z-10 w-full max-w-4xl mx-auto">
           <HeroVoiceWidget />
 

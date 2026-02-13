@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Bot, Building2, TrendingUp, Zap } from "lucide-react";
+import bioPhoto from "@/assets/bio-photo.png";
 
 const stats = [
   { icon: Bot, label: "AI Systems Built", value: "50+" },
@@ -47,9 +48,7 @@ const AuthorityBio = () => (
           transition={{ duration: 0.6 }}
           className="flex justify-center"
         >
-          <div className="w-72 h-80 md:w-80 md:h-96 rounded-2xl bg-gradient-to-br from-secondary to-background border border-border glow-blue flex items-center justify-center">
-            <span className="text-6xl font-heading font-bold text-gradient-blue">LP</span>
-          </div>
+          <img src={bioPhoto} alt="LaSean Pickens" className="w-72 h-80 md:w-80 md:h-96 rounded-2xl object-cover border border-border glow-blue" />
         </motion.div>
       </div>
 

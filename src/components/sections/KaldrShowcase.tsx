@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import kaldrPhoto from "@/assets/kaldr-photo.png";
 
 const verticals = [
   "AI Voice Automation",
@@ -18,9 +19,7 @@ const KaldrShowcase = () => (
           viewport={{ once: true }}
           className="order-2 md:order-1 flex justify-center"
         >
-          <div className="w-72 h-80 md:w-80 md:h-96 rounded-2xl bg-gradient-to-br from-primary/10 to-background border border-primary/20 glow-blue flex items-center justify-center">
-            <span className="text-5xl font-heading font-bold text-gradient-blue">KALDR</span>
-          </div>
+          <img src={kaldrPhoto} alt="Kaldr Ecosystem" className="w-72 h-80 md:w-80 md:h-96 rounded-2xl object-cover border border-primary/20 glow-blue" />
         </motion.div>
 
         <motion.div

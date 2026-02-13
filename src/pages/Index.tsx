@@ -1,5 +1,6 @@
 import Navbar from "@/components/sections/Navbar";
 import HeroVoiceWidget from "@/components/HeroVoiceWidget";
+import FeaturedEvent from "@/components/sections/FeaturedEvent";
 import AuthorityBio from "@/components/sections/AuthorityBio";
 import ExpertisePillars from "@/components/sections/ExpertisePillars";
 import KaldrShowcase from "@/components/sections/KaldrShowcase";
@@ -54,6 +55,7 @@ const Index = () => {
         </motion.div>
       </section>
 
+      <FeaturedEvent />
       <AuthorityBio />
       <ExpertisePillars />
       <KaldrShowcase />

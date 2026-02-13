@@ -10,7 +10,7 @@ const testimonials = [
   {
     name: "Jennifer K.",
     title: "SaaS Founder",
-    quote: "The AI systems LaSean built for us cut our customer acquisition cost in half. He doesn't just consult — he delivers.",
+    quote: "The AI systems LaSean built for us cut our customer acquisition cost in half. He doesn't just consult. He delivers.",
   },
   {
     name: "Derrick W.",

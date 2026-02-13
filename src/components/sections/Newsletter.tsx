@@ -29,7 +29,7 @@ const Newsletter = () => {
             Get LaSean's <span className="text-gradient-blue">Strategy of the Week</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-            AI automation tactics, business leverage strategies, and systems thinking — delivered to your inbox every week.
+            AI automation tactics, business leverage strategies, and systems thinking, delivered to your inbox every week.
           </p>
         </motion.div>
 

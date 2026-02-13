@@ -33,7 +33,7 @@ const HeroVoiceWidget = () => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.97 }}
       >
-        {/* Placeholder avatar — dark gradient with initials */}
+        {/* Avatar image */}
         <img src={headshotImg} alt="LaSean Pickens" className="w-full h-full object-cover" />
 
         {/* Overlay when active */}

@@ -10,7 +10,7 @@ const verticals = [
 ];
 
 const KaldrShowcase = () => (
-  <section className="py-20 md:py-32 px-4 border-t border-border">
+  <section id="kaldr" className="py-20 md:py-32 px-4 border-t border-border">
     <div className="max-w-6xl mx-auto">
       <div className="grid md:grid-cols-2 gap-12 items-center">
         <motion.div

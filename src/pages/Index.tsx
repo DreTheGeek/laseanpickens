@@ -1,3 +1,4 @@
+import Navbar from "@/components/sections/Navbar";
 import HeroVoiceWidget from "@/components/HeroVoiceWidget";
 import AuthorityBio from "@/components/sections/AuthorityBio";
 import ExpertisePillars from "@/components/sections/ExpertisePillars";
@@ -5,6 +6,7 @@ import KaldrShowcase from "@/components/sections/KaldrShowcase";
 import PricingTiers from "@/components/sections/PricingTiers";
 import Manifesto from "@/components/sections/Manifesto";
 import SocialProof from "@/components/sections/SocialProof";
+import Newsletter from "@/components/sections/Newsletter";
 import LeadCapture from "@/components/sections/LeadCapture";
 import Footer from "@/components/sections/Footer";
 import { Calendar, ArrowDown } from "lucide-react";
@@ -13,8 +15,10 @@ import { motion } from "framer-motion";
 const Index = () => {
   return (
     <main className="min-h-screen bg-background text-foreground">
+      <Navbar />
+
       {/* Hero */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-4 py-20 relative">
+      <section className="min-h-screen flex flex-col items-center justify-center px-4 py-20 relative pt-24">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent" />
         <div className="relative z-10 w-full max-w-4xl mx-auto">
           <HeroVoiceWidget />
@@ -56,6 +60,7 @@ const Index = () => {
       <PricingTiers />
       <Manifesto />
       <SocialProof />
+      <Newsletter />
       <LeadCapture />
       <Footer />
     </main>

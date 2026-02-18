@@ -14,8 +14,8 @@ const testimonials = [
   },
   {
     name: "Derrick W.",
-    title: "Real Estate Investor",
-    quote: "His capital leverage strategies helped me fund my first 5 deals without touching my own savings. Game changer.",
+    title: "Home Services CEO",
+    quote: "LaSean's AI voice system answers every call, books appointments 24/7, and never misses a lead. This is the future.",
   },
   {
     name: "Aisha M.",

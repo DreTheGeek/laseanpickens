@@ -17,7 +17,7 @@ export default function IntroAnimation() {
     document.body.style.overflow = "hidden";
 
     const fadeStart = isMobile ? 1000 : 1800;
-    const totalDuration = isMobile ? 1500 : 2500;
+    const totalDuration = isMobile ? 2000 : 3000; // Extended to show subtitle
 
     const pointerTimer = setTimeout(() => {
       setPointerEvents("none");
@@ -40,7 +40,8 @@ export default function IntroAnimation() {
   const fadeDuration = isMobile ? 0.5 : 0.7;
   const textDelay = isMobile ? 0.2 : 0.3;
   const glowDelay = isMobile ? 0.5 : 0.8;
-  const overlayFadeDelay = isMobile ? 1.0 : 1.8;
+  const subtitleDelay = isMobile ? 0.9 : 1.3; // Subtitle appears after name
+  const overlayFadeDelay = isMobile ? 1.5 : 2.3;
 
   return (
     <motion.div
@@ -75,46 +76,72 @@ export default function IntroAnimation() {
           userSelect: "none",
         }}
       >
-        <motion.span
+        {/* Horizontal Name */}
+        <motion.div
           style={{
-            display: "block",
-            fontSize: "clamp(2rem, 8vw, 5rem)",
-            color: "#ffffff",
-            lineHeight: 1.1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: isMobile ? "0.5rem" : "1rem",
+            flexWrap: "wrap",
           }}
-          initial={{ textShadow: "0 0 0px transparent" }}
-          animate={{
-            textShadow: [
-              "0 0 0px transparent",
-              "0 0 20px hsl(217 91% 60% / 0.4), 0 0 60px hsl(217 91% 60% / 0.15)",
-              "0 0 30px hsl(217 91% 60% / 0.5), 0 0 80px hsl(217 91% 60% / 0.2)",
-            ],
-          }}
-          transition={{ duration: 0.6, delay: glowDelay, ease: "easeOut" }}
         >
-          LASEAN
-        </motion.span>
-        <motion.span
+          <motion.span
+            style={{
+              fontSize: "clamp(2rem, 8vw, 5rem)",
+              color: "#ffffff",
+              lineHeight: 1,
+            }}
+            initial={{ textShadow: "0 0 0px transparent" }}
+            animate={{
+              textShadow: [
+                "0 0 0px transparent",
+                "0 0 20px hsl(217 91% 60% / 0.4), 0 0 60px hsl(217 91% 60% / 0.15)",
+                "0 0 30px hsl(217 91% 60% / 0.5), 0 0 80px hsl(217 91% 60% / 0.2)",
+              ],
+            }}
+            transition={{ duration: 0.6, delay: glowDelay, ease: "easeOut" }}
+          >
+            LASEAN
+          </motion.span>
+          <motion.span
+            style={{
+              fontSize: "clamp(2rem, 8vw, 5rem)",
+              color: "hsl(217, 91%, 60%)",
+              lineHeight: 1,
+            }}
+            initial={{
+              textShadow: "0 0 0px transparent",
+            }}
+            animate={{
+              textShadow: [
+                "0 0 0px transparent",
+                "0 0 25px hsl(217 91% 60% / 0.7), 0 0 80px hsl(217 91% 60% / 0.35)",
+                "0 0 40px hsl(217 91% 60% / 0.9), 0 0 110px hsl(217 91% 60% / 0.5)",
+              ],
+            }}
+            transition={{ duration: 0.6, delay: glowDelay, ease: "easeOut" }}
+          >
+            PICKENS
+          </motion.span>
+        </motion.div>
+
+        {/* Subtitle - Fades in after name */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: subtitleDelay, ease: "easeOut" }}
           style={{
-            display: "block",
-            fontSize: "clamp(2rem, 8vw, 5rem)",
-            color: "hsl(217, 91%, 60%)",
-            lineHeight: 1.1,
+            marginTop: isMobile ? "1rem" : "1.5rem",
+            fontSize: "clamp(0.875rem, 2vw, 1.25rem)",
+            fontWeight: 500,
+            letterSpacing: "0.1em",
+            color: "hsl(217, 91%, 70%)",
+            opacity: 0.9,
           }}
-          initial={{
-            textShadow: "0 0 0px transparent",
-          }}
-          animate={{
-            textShadow: [
-              "0 0 0px transparent",
-              "0 0 25px hsl(217 91% 60% / 0.7), 0 0 80px hsl(217 91% 60% / 0.35)",
-              "0 0 40px hsl(217 91% 60% / 0.9), 0 0 110px hsl(217 91% 60% / 0.5)",
-            ],
-          }}
-          transition={{ duration: 0.6, delay: glowDelay, ease: "easeOut" }}
         >
-          PICKENS
-        </motion.span>
+          AI STRATEGIST & EXECUTIVE COACH
+        </motion.div>
       </motion.div>
     </motion.div>
   );

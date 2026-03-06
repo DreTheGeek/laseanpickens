@@ -5,7 +5,7 @@ import {
   FolderOpen, MessageSquare, Link2, LogOut, Sun, Send,
   Camera, Mail, Phone, MapPin, Lock, Play, Trophy,
   Star, MessageCircle, Award, FileText, CheckCircle2,
-  ShieldCheck, KeyRound, Fingerprint, ArrowRight,
+  ArrowRight,
 } from "lucide-react";
 
 /* ================================================================
@@ -706,24 +706,13 @@ const AffiliatePage = () => (
 );
 
 /* ================================================================
-   VERIFICATION FLOW
+   LOGIN FORM
    ================================================================ */
 
-const VerificationFlow = ({ onComplete }: { onComplete: () => void }) => {
-  const [step, setStep] = useState(0);
-  const [code, setCode] = useState(["", "", "", "", "", ""]);
-
-  const steps = [
-    { icon: Mail, title: "Verify Email", desc: "We sent a 6-digit code to your email address" },
-    { icon: Phone, title: "Verify Phone", desc: "Enter the code sent to your phone number" },
-    { icon: ShieldCheck, title: "Identity Confirmed", desc: "Your account is verified and secure" },
-  ];
-
-  const handleCodeChange = (i: number, val: string) => {
-    if (val.length > 1) return;
-    const next = [...code];
-    next[i] = val;
-    setCode(next);
+const LoginForm = ({ onLogin }: { onLogin: () => void }) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onLogin();
   };
 
   return (
@@ -736,83 +725,61 @@ const VerificationFlow = ({ onComplete }: { onComplete: () => void }) => {
         <Card className="p-8">
           <div className="text-center mb-8">
             <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
-              <KeyRound className="w-7 h-7 text-primary" />
+              <Lock className="w-7 h-7 text-primary" />
             </div>
-            <h1 className="text-xl font-bold mb-1">Account Verification</h1>
-            <p className="text-sm text-gray-500">Complete verification to access your portal</p>
+            <h1 className="text-xl font-bold mb-1">Client Portal</h1>
+            <p className="text-sm text-gray-500">Sign in to access your dashboard</p>
           </div>
 
-          {/* Progress steps */}
-          <div className="flex items-center justify-center gap-2 mb-8">
-            {steps.map((s, i) => (
-              <div key={s.title} className="flex items-center gap-2">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
-                  i < step ? "bg-green-500 text-white" :
-                  i === step ? "bg-primary text-white" :
-                  "bg-gray-700 text-gray-400"
-                }`}>
-                  {i < step ? <CheckCircle2 className="w-4 h-4" /> : i + 1}
-                </div>
-                {i < steps.length - 1 && (
-                  <div className={`w-8 h-0.5 ${i < step ? "bg-green-500" : "bg-gray-700"}`} />
-                )}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Email Address</label>
+              <div className="flex items-center gap-2 bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5">
+                <Mail className="w-4 h-4 text-gray-500 shrink-0" />
+                <input
+                  type="email"
+                  required
+                  placeholder="you@company.com"
+                  className="bg-transparent text-sm text-gray-200 w-full outline-none placeholder:text-gray-600"
+                />
               </div>
-            ))}
-          </div>
+            </div>
 
-          {/* Current step */}
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="text-center"
-          >
-            {step < 2 ? (
-              <>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  {step === 0 ? <Mail className="w-5 h-5 text-primary" /> : <Phone className="w-5 h-5 text-primary" />}
-                </div>
-                <h2 className="text-base font-bold mb-1">{steps[step].title}</h2>
-                <p className="text-xs text-gray-500 mb-6">{steps[step].desc}</p>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Password</label>
+              <div className="flex items-center gap-2 bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5">
+                <Lock className="w-4 h-4 text-gray-500 shrink-0" />
+                <input
+                  type="password"
+                  required
+                  placeholder="Enter your password"
+                  className="bg-transparent text-sm text-gray-200 w-full outline-none placeholder:text-gray-600"
+                />
+              </div>
+            </div>
 
-                {/* Code input */}
-                <div className="flex justify-center gap-2 mb-6">
-                  {code.map((digit, i) => (
-                    <input
-                      key={i}
-                      type="text"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleCodeChange(i, e.target.value)}
-                      className="w-10 h-12 bg-[#0b1121] border border-white/[0.1] rounded-lg text-center text-lg font-bold text-white outline-none focus:border-primary transition-colors"
-                    />
-                  ))}
-                </div>
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" className="w-3.5 h-3.5 rounded border-gray-600 bg-transparent accent-primary" />
+                <span className="text-xs text-gray-400">Remember me</span>
+              </label>
+              <button type="button" className="text-xs text-primary hover:underline">
+                Forgot password?
+              </button>
+            </div>
 
-                <button
-                  onClick={() => { setStep(step + 1); setCode(["", "", "", "", "", ""]); }}
-                  className="w-full py-3 rounded-lg bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"
-                >
-                  Verify <ArrowRight className="w-4 h-4" />
-                </button>
-                <button className="mt-3 text-xs text-primary hover:underline">Resend Code</button>
-              </>
-            ) : (
-              <>
-                <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-                  <Fingerprint className="w-8 h-8 text-green-400" />
-                </div>
-                <h2 className="text-base font-bold mb-1">Verification Complete</h2>
-                <p className="text-xs text-gray-500 mb-6">Your identity has been confirmed. Welcome to your portal.</p>
-                <button
-                  onClick={onComplete}
-                  className="w-full py-3 rounded-lg bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"
-                >
-                  Enter Portal <ArrowRight className="w-4 h-4" />
-                </button>
-              </>
-            )}
-          </motion.div>
+            <button
+              type="submit"
+              className="w-full py-3 rounded-lg bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"
+            >
+              Sign In <ArrowRight className="w-4 h-4" />
+            </button>
+          </form>
+
+          <p className="text-center text-xs text-gray-500 mt-6">
+            Don't have an account?{" "}
+            <a href="/#book" className="text-primary hover:underline">Contact us</a>
+          </p>
         </Card>
 
         <p className="text-center text-[10px] text-gray-600 mt-4">
@@ -843,7 +810,7 @@ const ClientPortal = () => {
   };
 
   if (!verified) {
-    return <VerificationFlow onComplete={() => setVerified(true)} />;
+    return <LoginForm onLogin={() => setVerified(true)} />;
   }
 
   return (

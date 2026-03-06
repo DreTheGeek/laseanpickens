@@ -12,6 +12,7 @@ import SocialProof from "@/components/sections/SocialProof";
 import FAQ from "@/components/sections/FAQ";
 import Ecosystem from "@/components/sections/Ecosystem";
 import Newsletter from "@/components/sections/Newsletter";
+import Bundles from "@/components/sections/Bundles";
 import LeadCapture from "@/components/sections/LeadCapture";
 import Footer from "@/components/sections/Footer";
 import { ArrowRight, ArrowDown, Eye } from "lucide-react";
@@ -42,12 +43,12 @@ const Index = () => {
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-10">
             <motion.a
-              href="#book"
+              href="#programs"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               className="px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue inline-flex items-center justify-center gap-2"
             >
-              <ArrowRight className="w-4 h-4" /> Apply for Consultation
+              <ArrowRight className="w-4 h-4" /> Explore Services
             </motion.a>
             <motion.a
               href="#process"
@@ -86,6 +87,7 @@ const Index = () => {
       <KaldrShowcase />
       <PricingTiers />
       <PricingTable />
+      <Bundles />
       <SocialProof />
       <FAQ />
       <Ecosystem />

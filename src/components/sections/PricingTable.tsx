@@ -1,25 +1,13 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { services, typeLabels } from "@/data/services";
 
-const rows = [
-  { service: "AI Business Audit & Strategy", tier: "AI & Automation", price: "$697", type: "One-time" },
-  { service: "AI Integration & Training", tier: "AI & Automation", price: "$1,497", type: "One-time" },
-  { service: "Complete Automation Setup", tier: "AI & Automation", price: "$2,497", type: "One-time" },
-  { service: "Custom AI System Development", tier: "AI & Automation", price: "$4,997", type: "One-time" },
-  { service: "Strategic Business Plan Creation", tier: "Transformation", price: "$997", type: "One-time", highlight: true },
-  { service: "Complete Business Rebrand", tier: "Transformation", price: "$2,997", type: "48hr delivery", highlight: true },
-  { service: "Revenue Optimization System", tier: "Transformation", price: "$4,997", type: "One-time", highlight: true },
-  { service: "Market Expansion Strategy", tier: "Transformation", price: "$9,997", type: "One-time", highlight: true },
-  { service: "Email Marketing Systems", tier: "Done-For-You", price: "$197/mo", type: "Monthly" },
-  { service: "Social Media Management", tier: "Done-For-You", price: "$297/mo", type: "Monthly" },
-  { service: "Content Creation & Management", tier: "Done-For-You", price: "$497/mo", type: "Monthly" },
-  { service: "Analytics & Reporting", tier: "Done-For-You", price: "$697/mo", type: "Monthly" },
-  { service: "Customer Service Setup", tier: "Done-For-You", price: "$2,997", type: "One-time" },
-  { service: "1-on-1 Strategy Sessions", tier: "Consulting", price: "$997", type: "Per session" },
-  { service: "Group Mastermind Access", tier: "Consulting", price: "$2,997/mo", type: "Monthly" },
-  { service: "Executive Advisory Retainer", tier: "Consulting", price: "$4,997/mo", type: "Monthly" },
-  { service: "Speaking & Workshops", tier: "Consulting", price: "$15K+", type: "Per event" },
-  { service: "Corporate Transformation", tier: "Consulting", price: "$25K+", type: "Custom" },
-];
+const tierShortNames: Record<string, string> = {
+  "ai-automation": "AI & Automation",
+  "transformation": "Transformation",
+  "done-for-you": "Done-For-You",
+  "consulting": "Consulting",
+};
 
 const PricingTable = () => (
   <section className="py-20 px-4 border-t border-border">
@@ -56,44 +44,58 @@ const PricingTable = () => (
               </tr>
             </thead>
             <tbody>
-              {rows.map((r) => (
-                <tr
-                  key={r.service}
-                  className={`border-b border-border/50 transition-colors hover:bg-primary/5 ${
-                    r.highlight ? "bg-primary/5" : ""
-                  }`}
-                >
-                  <td className="px-5 py-3.5 font-semibold text-foreground">{r.service}</td>
-                  <td className="px-5 py-3.5 text-center text-muted-foreground">{r.tier}</td>
-                  <td className="px-5 py-3.5 text-center">
-                    <span className="text-primary font-bold">{r.price}</span>
-                  </td>
-                  <td className="px-5 py-3.5 text-center">
-                    <span className="text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground">
-                      {r.type}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {services.map((s) => {
+                const isTransformation = s.tierSlug === "transformation";
+                return (
+                  <tr
+                    key={s.slug}
+                    className={`border-b border-border/50 transition-colors hover:bg-primary/5 cursor-pointer ${
+                      isTransformation ? "bg-primary/5" : ""
+                    }`}
+                  >
+                    <td className="px-5 py-3.5">
+                      <Link to={`/service/${s.slug}`} className="font-semibold text-foreground hover:text-primary transition-colors">
+                        {s.name}
+                      </Link>
+                    </td>
+                    <td className="px-5 py-3.5 text-center text-muted-foreground">{tierShortNames[s.tierSlug]}</td>
+                    <td className="px-5 py-3.5 text-center">
+                      <Link to={`/service/${s.slug}`} className="text-primary font-bold hover:underline">{s.price}</Link>
+                    </td>
+                    <td className="px-5 py-3.5 text-center">
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-muted text-muted-foreground">
+                        {typeLabels[s.type]}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
 
         {/* Mobile cards */}
         <div className="md:hidden divide-y divide-border/50">
-          {rows.map((r) => (
-            <div key={r.service} className={`p-4 ${r.highlight ? "bg-primary/5" : ""}`}>
-              <div className="flex items-center justify-between mb-1">
-                <p className="font-heading font-bold text-foreground text-sm">{r.service}</p>
-                <span className="text-primary font-bold text-sm">{r.price}</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span>{r.tier}</span>
-                <span>-</span>
-                <span>{r.type}</span>
-              </div>
-            </div>
-          ))}
+          {services.map((s) => {
+            const isTransformation = s.tierSlug === "transformation";
+            return (
+              <Link
+                key={s.slug}
+                to={`/service/${s.slug}`}
+                className={`block p-4 hover:bg-primary/5 transition-colors ${isTransformation ? "bg-primary/5" : ""}`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <p className="font-heading font-bold text-foreground text-sm">{s.name}</p>
+                  <span className="text-primary font-bold text-sm">{s.price}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                  <span>{tierShortNames[s.tierSlug]}</span>
+                  <span>-</span>
+                  <span>{typeLabels[s.type]}</span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </motion.div>
 
@@ -103,12 +105,12 @@ const PricingTable = () => (
         viewport={{ once: true }}
         className="text-center mt-10"
       >
-        <a
-          href="#book"
+        <Link
+          to="/#programs"
           className="inline-block px-8 py-3 rounded-lg bg-primary text-primary-foreground font-semibold glow-blue hover:bg-primary/90 transition-colors"
         >
-          Apply for Consultation
-        </a>
+          View All Services
+        </Link>
       </motion.div>
     </div>
   </section>

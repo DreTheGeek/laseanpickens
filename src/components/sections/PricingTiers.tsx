@@ -1,85 +1,8 @@
 import { motion } from "framer-motion";
-import { Check, Star, Zap, Bot, Cog, Headphones, Crown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Check, Star, Zap } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-
-interface Service {
-  name: string;
-  price: string;
-  note?: string;
-}
-
-interface Tier {
-  name: string;
-  icon: React.ComponentType<{ className?: string }>;
-  badge: string;
-  tagline: string;
-  delivery: string;
-  services: Service[];
-  popular?: boolean;
-  accent: string;
-}
-
-const tiers: Tier[] = [
-  {
-    name: "AI & Automation Mastery",
-    icon: Bot,
-    badge: "Technical Expertise",
-    tagline: "Your authority in AI and automation",
-    delivery: "2-4 weeks",
-    services: [
-      { name: "AI Business Audit & Strategy", price: "$697" },
-      { name: "AI Integration & Training", price: "$1,497" },
-      { name: "Complete Automation Setup", price: "$2,497" },
-      { name: "Custom AI System Development", price: "$4,997" },
-    ],
-    accent: "from-cyan-400 to-blue-500",
-  },
-  {
-    name: "Business Transformation",
-    icon: Cog,
-    badge: "Proprietary Systems",
-    tagline: "Proprietary methods that deliver fast",
-    delivery: "24-72 hours",
-    services: [
-      { name: "Strategic Business Plan Creation", price: "$997" },
-      { name: "Complete Business Rebrand", price: "$2,997", note: "48hr delivery" },
-      { name: "Revenue Optimization System", price: "$4,997" },
-      { name: "Market Expansion Strategy", price: "$9,997" },
-    ],
-    popular: true,
-    accent: "from-blue-500 to-purple-500",
-  },
-  {
-    name: "Done-For-You Services",
-    icon: Headphones,
-    badge: "Full-Service Delivery",
-    tagline: "My team handles everything 24/7",
-    delivery: "Ongoing 24/7",
-    services: [
-      { name: "Email Marketing Systems", price: "$197/mo" },
-      { name: "Social Media Management", price: "$297/mo" },
-      { name: "Content Creation & Management", price: "$497/mo" },
-      { name: "Analytics & Reporting", price: "$697/mo" },
-      { name: "Customer Service Setup", price: "$2,997", note: "one-time" },
-    ],
-    accent: "from-purple-500 to-pink-500",
-  },
-  {
-    name: "Strategic Consulting",
-    icon: Crown,
-    badge: "Executive Access",
-    tagline: "Direct access for serious operators",
-    delivery: "White-glove service",
-    services: [
-      { name: "1-on-1 Strategy Sessions", price: "$997", note: "per session" },
-      { name: "Group Mastermind Access", price: "$2,997/mo" },
-      { name: "Executive Advisory Retainer", price: "$4,997/mo" },
-      { name: "Speaking & Workshops", price: "$15K+", note: "per event" },
-      { name: "Corporate Transformation", price: "$25K+", note: "custom" },
-    ],
-    accent: "from-pink-500 to-amber-500",
-  },
-];
+import { tiers, getServicesByTier, typeLabels } from "@/data/services";
 
 const PricingTiers = () => (
   <section id="programs" className="py-20 md:py-32 px-4 border-t border-border">
@@ -101,6 +24,7 @@ const PricingTiers = () => (
       <div className="grid md:grid-cols-2 gap-5">
         {tiers.map((tier, i) => {
           const Icon = tier.icon;
+          const tierServices = getServicesByTier(tier.slug);
           return (
             <motion.div
               key={tier.name}
@@ -140,36 +64,38 @@ const PricingTiers = () => (
               </div>
 
               <div className="space-y-2.5 flex-1">
-                {tier.services.map((s) => (
-                  <div
-                    key={s.name}
-                    className="flex items-center justify-between bg-background/40 rounded-lg px-4 py-3 border border-border/30"
+                {tierServices.map((s) => (
+                  <Link
+                    key={s.slug}
+                    to={`/service/${s.slug}`}
+                    className="flex items-center justify-between bg-background/40 rounded-lg px-4 py-3 border border-border/30 hover:border-primary/40 hover:bg-primary/5 transition-all group"
                   >
                     <div className="flex items-center gap-2">
                       <Check className="w-4 h-4 text-primary shrink-0" />
-                      <span className="text-sm text-foreground/90">{s.name}</span>
+                      <span className="text-sm text-foreground/90 group-hover:text-primary transition-colors">{s.name}</span>
                     </div>
                     <div className="text-right">
                       <span className="text-sm font-bold text-primary">{s.price}</span>
                       {s.note && <span className="block text-[10px] text-muted-foreground">{s.note}</span>}
+                      {!s.note && s.type !== "one-time" && (
+                        <span className="block text-[10px] text-muted-foreground">{typeLabels[s.type]}</span>
+                      )}
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
 
-              <motion.a
-                href="#book"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className={`w-full py-3 rounded-lg font-medium text-sm transition-all text-center block mt-5 ${
+              <Link
+                to={`/service/${tierServices[0]?.slug}`}
+                className={`w-full py-3 rounded-lg font-medium text-sm transition-all text-center block mt-5 flex items-center justify-center gap-1 ${
                   tier.popular
                     ? "bg-primary text-primary-foreground glow-blue"
                     : "border border-primary/30 text-primary hover:bg-primary/10"
                 }`}
               >
-                <Zap className="w-4 h-4 inline mr-1" />
+                <Zap className="w-4 h-4" />
                 Get Started
-              </motion.a>
+              </Link>
             </motion.div>
           );
         })}

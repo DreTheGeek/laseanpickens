@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, LogIn, Shield } from "lucide-react";
 
 const links = [
   { label: "About", href: "#about" },
@@ -45,10 +45,16 @@ const Navbar = () => {
             </a>
           ))}
           <a
-            href="#book"
-            className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold glow-blue hover:bg-primary/90 transition-colors"
+            href="/portal"
+            className="px-4 py-2 rounded-lg border border-primary/30 text-primary text-sm font-semibold hover:bg-primary/10 transition-colors inline-flex items-center gap-1.5"
           >
-            Book a Call
+            <LogIn className="w-4 h-4" /> Client Login
+          </a>
+          <a
+            href="/admin"
+            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold glow-blue hover:bg-primary/90 transition-colors inline-flex items-center gap-1.5"
+          >
+            <Shield className="w-4 h-4" /> Admin
           </a>
         </div>
 
@@ -83,11 +89,18 @@ const Navbar = () => {
                 </a>
               ))}
               <a
-                href="#book"
+                href="/portal"
+                onClick={() => setMobileOpen(false)}
+                className="block text-center px-5 py-3 rounded-lg border border-primary/30 text-primary text-sm font-semibold"
+              >
+                <LogIn className="w-4 h-4 inline mr-1.5" /> Client Login
+              </a>
+              <a
+                href="/admin"
                 onClick={() => setMobileOpen(false)}
                 className="block text-center px-5 py-3 rounded-lg bg-primary text-primary-foreground text-sm font-semibold glow-blue"
               >
-                Book a Call
+                <Shield className="w-4 h-4 inline mr-1.5" /> Admin
               </a>
             </div>
           </motion.div>

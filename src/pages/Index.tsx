@@ -47,7 +47,7 @@ const Index = () => {
               whileTap={{ scale: 0.97 }}
               className="px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue inline-flex items-center justify-center gap-2"
             >
-              <Calendar className="w-4 h-4" /> Book a Consultation
+              <Calendar className="w-4 h-4" /> Start Your AI Journey for $197/month
             </motion.a>
             <motion.a
               href="#programs"
@@ -55,7 +55,7 @@ const Index = () => {
               whileTap={{ scale: 0.97 }}
               className="px-6 py-3 rounded-lg border border-primary/30 text-primary font-medium text-sm inline-flex items-center justify-center gap-2"
             >
-              View Programs
+              Scale to Enterprise-Level Automation
             </motion.a>
           </div>
         </div>

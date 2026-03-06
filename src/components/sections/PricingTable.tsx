@@ -2,59 +2,53 @@ import { motion } from "framer-motion";
 
 const rows = [
   {
-    service: "AI Business Starter",
-    sub: "One-time setup",
-    regular: "$1,497",
-    launch: "$697",
-    launchSub: null,
-    save: "$800",
-    roi: "$24,000/year",
+    service: "Startup Automation",
+    sub: "Monthly subscription",
+    price: "$197/mo",
+    target: "Small businesses",
+    features: "Lead response, booking, email automation",
+    revenueGoal: "500 clients - $98K MRR",
   },
   {
-    service: "Growth Accelerator",
-    sub: "Monthly membership",
-    regular: "$297/mo",
-    launch: "$147/mo",
-    launchSub: "$118/mo annual",
-    save: "$1,800/year",
-    roi: "$50,000+/year",
+    service: "Business Intelligence",
+    sub: "Monthly subscription",
+    price: "$997/mo",
+    target: "Growing businesses",
+    features: "Analytics, predictive scoring, optimization",
+    revenueGoal: "50 clients - $50K MRR",
   },
   {
-    service: "Business Transformation",
-    sub: "90-day intensive",
-    regular: "$4,997",
-    launch: "$2,997",
-    launchSub: null,
-    save: "$2,000",
-    roi: "$30,000+ increase",
+    service: "AI Business Systems",
+    sub: "Monthly subscription",
+    price: "$2,997/mo",
+    target: "Established businesses",
+    features: "Full automation, custom workflows, advanced AI",
+    revenueGoal: "20 clients - $60K MRR",
   },
   {
-    service: "VIP Coaching",
-    sub: "Monthly program",
-    regular: "$1,497/mo",
-    launch: "$997/mo",
-    launchSub: "$798/mo annual",
-    save: "$6,000/year",
-    roi: "$100,000+/year",
+    service: "Enterprise Solutions",
+    sub: "Monthly subscription",
+    price: "$9,997/mo",
+    target: "Large enterprises",
+    features: "Multi-location, integrations, dedicated support",
+    revenueGoal: "5 clients - $50K MRR",
   },
   {
-    service: "Empire Mastermind",
-    sub: "Annual program",
-    regular: "$25,000/yr",
-    launch: "$15,000/yr",
-    launchSub: "$1,497/mo option",
-    save: "$10,000",
-    roi: "$500K+ scale",
-  },
-  {
-    service: "Enterprise Transform",
-    sub: "6-month overhaul",
-    regular: "$100,000",
-    launch: "$75,000",
-    launchSub: null,
-    save: "$25,000",
-    roi: "$1M+ guaranteed",
+    service: "Custom Development",
+    sub: "Per project",
+    price: "$75K+",
+    target: "Bespoke needs",
+    features: "Custom AI systems, full stack, maintenance",
+    revenueGoal: "12 projects/year - $900K",
     highlight: true,
+  },
+  {
+    service: "Managed AI Services",
+    sub: "Monthly retainer",
+    price: "$5K+/mo",
+    target: "Hands-off automation",
+    features: "Fully managed ops, continuous optimization",
+    revenueGoal: "8 clients - $40K MRR",
   },
 ];
 
@@ -71,7 +65,7 @@ const PricingTable = () => (
           Complete <span className="text-gradient-blue">Pricing</span> Overview
         </h2>
         <p className="text-muted-foreground max-w-xl mx-auto">
-          From startup to empire - transparent pricing with launch discounts.
+          Six service tiers designed to meet every business at their stage of growth.
         </p>
       </motion.div>
 
@@ -87,10 +81,9 @@ const PricingTable = () => (
             <thead>
               <tr className="border-b border-border bg-primary/10">
                 <th className="text-left px-5 py-4 font-heading font-semibold text-foreground">Service</th>
-                <th className="text-center px-5 py-4 font-heading font-semibold text-foreground">Regular Price</th>
-                <th className="text-center px-5 py-4 font-heading font-semibold text-foreground">Launch Price</th>
-                <th className="text-center px-5 py-4 font-heading font-semibold text-foreground">You Save</th>
-                <th className="text-center px-5 py-4 font-heading font-semibold text-foreground">ROI Potential</th>
+                <th className="text-center px-5 py-4 font-heading font-semibold text-foreground">Price</th>
+                <th className="text-center px-5 py-4 font-heading font-semibold text-foreground">Target</th>
+                <th className="text-left px-5 py-4 font-heading font-semibold text-foreground">Key Features</th>
               </tr>
             </thead>
             <tbody>
@@ -105,19 +98,11 @@ const PricingTable = () => (
                     <p className="font-semibold text-foreground">{r.service}</p>
                     <p className="text-xs text-muted-foreground">{r.sub}</p>
                   </td>
-                  <td className="px-5 py-4 text-center text-muted-foreground line-through">{r.regular}</td>
                   <td className="px-5 py-4 text-center">
-                    <span className="text-green-400 font-bold">{r.launch}</span>
-                    {r.launchSub && (
-                      <span className="block text-xs text-primary mt-0.5">{r.launchSub}</span>
-                    )}
+                    <span className="text-primary font-bold text-base">{r.price}</span>
                   </td>
-                  <td className="px-5 py-4 text-center">
-                    <span className="inline-block bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-semibold">
-                      {r.save}
-                    </span>
-                  </td>
-                  <td className="px-5 py-4 text-center text-foreground/80">{r.roi}</td>
+                  <td className="px-5 py-4 text-center text-muted-foreground">{r.target}</td>
+                  <td className="px-5 py-4 text-foreground/80">{r.features}</td>
                 </tr>
               ))}
             </tbody>
@@ -132,28 +117,39 @@ const PricingTable = () => (
               <p className="text-xs text-muted-foreground mb-3">{r.sub}</p>
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
-                  <p className="text-xs text-muted-foreground">Regular</p>
-                  <p className="line-through text-muted-foreground">{r.regular}</p>
+                  <p className="text-xs text-muted-foreground">Price</p>
+                  <p className="text-primary font-bold">{r.price}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground">Launch</p>
-                  <p className="text-green-400 font-bold">{r.launch}</p>
-                  {r.launchSub && <p className="text-xs text-primary">{r.launchSub}</p>}
+                  <p className="text-xs text-muted-foreground">Target</p>
+                  <p className="text-foreground/80">{r.target}</p>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">You Save</p>
-                  <span className="inline-block bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full text-xs font-semibold">
-                    {r.save}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">ROI Potential</p>
-                  <p className="text-foreground/80">{r.roi}</p>
+                <div className="col-span-2">
+                  <p className="text-xs text-muted-foreground">Features</p>
+                  <p className="text-foreground/80">{r.features}</p>
                 </div>
               </div>
             </div>
           ))}
         </div>
+      </motion.div>
+
+      {/* Bottom CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-center mt-10"
+      >
+        <p className="text-muted-foreground mb-4">
+          Target: $298K MRR - $3.576M annually across all tiers
+        </p>
+        <a
+          href="#book"
+          className="inline-block px-8 py-3 rounded-lg bg-primary text-primary-foreground font-semibold glow-blue hover:bg-primary/90 transition-colors"
+        >
+          Start Your AI Journey for $197/month
+        </a>
       </motion.div>
     </div>
   </section>

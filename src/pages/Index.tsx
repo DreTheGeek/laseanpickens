@@ -1,12 +1,16 @@
+import CountdownBanner from "@/components/sections/CountdownBanner";
 import Navbar from "@/components/sections/Navbar";
 import HeroVoiceWidget from "@/components/HeroVoiceWidget";
 import FeaturedEvent from "@/components/sections/FeaturedEvent";
 import AuthorityBio from "@/components/sections/AuthorityBio";
+import AuthorityBadges from "@/components/sections/AuthorityBadges";
 import ExpertisePillars from "@/components/sections/ExpertisePillars";
 import KaldrShowcase from "@/components/sections/KaldrShowcase";
 import PricingTiers from "@/components/sections/PricingTiers";
+import PricingTable from "@/components/sections/PricingTable";
 import Manifesto from "@/components/sections/Manifesto";
 import SocialProof from "@/components/sections/SocialProof";
+import Ecosystem from "@/components/sections/Ecosystem";
 import Newsletter from "@/components/sections/Newsletter";
 import LeadCapture from "@/components/sections/LeadCapture";
 import Footer from "@/components/sections/Footer";
@@ -16,10 +20,11 @@ import { motion } from "framer-motion";
 const Index = () => {
   return (
     <main className="min-h-screen bg-background text-foreground">
+      <CountdownBanner />
       <Navbar />
 
       {/* Hero */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-4 py-20 relative pt-24">
+      <section className="min-h-screen flex flex-col items-center justify-center px-4 py-20 relative pt-16">
         {/* Background video */}
         <video
           autoPlay
@@ -67,11 +72,14 @@ const Index = () => {
 
       <FeaturedEvent />
       <AuthorityBio />
+      <AuthorityBadges />
       <ExpertisePillars />
       <KaldrShowcase />
       <PricingTiers />
+      <PricingTable />
       <Manifesto />
       <SocialProof />
+      <Ecosystem />
       <Newsletter />
       <LeadCapture />
       <Footer />

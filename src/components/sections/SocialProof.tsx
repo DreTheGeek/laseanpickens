@@ -1,26 +1,30 @@
 import { motion } from "framer-motion";
-import { Quote } from "lucide-react";
+import { Quote, TrendingUp } from "lucide-react";
 
 const testimonials = [
   {
     name: "Marcus T.",
     title: "Agency Owner",
-    quote: "LaSean helped me automate 80% of my client onboarding. My team went from overwhelmed to optimized in 3 weeks.",
+    quote: "LaSean's systems automated 80% of our client onboarding. My team went from overwhelmed to optimized in 3 weeks. Revenue up 45%.",
+    result: "+45% Revenue",
   },
   {
     name: "Jennifer K.",
     title: "SaaS Founder",
-    quote: "The AI systems LaSean built for us cut our customer acquisition cost in half. He doesn't just consult. He delivers.",
+    quote: "The proprietary methods cut our customer acquisition cost in half. He doesn't just consult - his team delivers actual working systems.",
+    result: "50% Lower CAC",
   },
   {
     name: "Derrick W.",
     title: "Home Services CEO",
-    quote: "LaSean's AI voice system answers every call, books appointments 24/7, and never misses a lead. This is the future.",
+    quote: "The AI system answers every call, books appointments 24/7, and never misses a lead. We added $180K in revenue in 90 days.",
+    result: "+$180K in 90 days",
   },
   {
     name: "Aisha M.",
     title: "E-Commerce CEO",
-    quote: "LaSean's systems thinking changed how I run my entire business. Revenue up 3x, team size stayed the same.",
+    quote: "LaSean's frameworks changed how I run my entire business. Revenue up 3x, team size stayed the same. His delivery speed is unreal.",
+    result: "3x Revenue",
   },
 ];
 
@@ -33,7 +37,7 @@ const SocialProof = () => (
         viewport={{ once: true }}
         className="text-center mb-4"
       >
-        <p className="text-primary text-sm font-semibold uppercase tracking-widest mb-3">What Industry Leaders Have to Say</p>
+        <p className="text-primary text-sm font-semibold uppercase tracking-widest mb-3">Client Transformations</p>
         <h2 className="text-3xl md:text-5xl font-heading font-bold mb-4">
           Real <span className="text-gradient-blue">Results</span>
         </h2>
@@ -50,6 +54,9 @@ const SocialProof = () => (
             className="glass-dark rounded-2xl p-8 hover:glow-blue transition-all duration-300 relative group"
           >
             <Quote className="w-8 h-8 text-primary/20 absolute top-6 right-6 group-hover:text-primary/40 transition-colors" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-4">
+              <TrendingUp className="w-3 h-3" /> {t.result}
+            </div>
             <p className="text-foreground/90 text-lg leading-relaxed mb-6 italic">
               "{t.quote}"
             </p>

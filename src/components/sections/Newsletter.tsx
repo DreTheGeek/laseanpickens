@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Mail, ArrowRight, Check } from "lucide-react";
+import { Mail, ArrowRight, Check, Gift } from "lucide-react";
 
 const Newsletter = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -12,7 +12,7 @@ const Newsletter = () => {
   };
 
   return (
-    <section className="py-20 md:py-28 px-4 relative overflow-hidden">
+    <section id="newsletter" className="py-20 md:py-28 px-4 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background" />
       <div className="max-w-3xl mx-auto relative z-10 text-center">
@@ -23,13 +23,13 @@ const Newsletter = () => {
           className="space-y-4 mb-8"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/5 text-primary text-sm font-medium mb-4">
-            <Mail className="w-4 h-4" /> Weekly Insights
+            <Gift className="w-4 h-4" /> Free Lead Magnet
           </div>
           <h2 className="text-3xl md:text-5xl font-heading font-bold">
-            Get LaSean's <span className="text-gradient-blue">Strategy of the Week</span>
+            The Business <span className="text-gradient-blue">Growth Code</span>
           </h2>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-            AI automation tactics, business leverage strategies, and systems thinking, delivered to your inbox every week.
+            Get exclusive business growth insights delivered weekly, plus a free assessment of your business growth potential.
           </p>
         </motion.div>
 
@@ -42,7 +42,7 @@ const Newsletter = () => {
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
               <Check className="w-4 h-4 text-primary" />
             </div>
-            <span className="font-medium">You're in! Check your inbox.</span>
+            <span className="font-medium">You're in! Check your inbox for your free assessment.</span>
           </motion.div>
         ) : (
           <motion.form
@@ -64,7 +64,7 @@ const Newsletter = () => {
               whileTap={{ scale: 0.97 }}
               className="h-12 px-8 rounded-lg bg-primary text-primary-foreground font-semibold text-sm glow-blue inline-flex items-center justify-center gap-2"
             >
-              Subscribe <ArrowRight className="w-4 h-4" />
+              Get Free Assessment <ArrowRight className="w-4 h-4" />
             </motion.button>
           </motion.form>
         )}

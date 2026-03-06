@@ -1,20 +1,24 @@
 import { motion } from "framer-motion";
 
 const rows = [
-  { service: "AI Business Audit", tier: "Quick Wins", price: "$497", type: "One-time" },
-  { service: "Brand Strategy Session", tier: "Quick Wins", price: "$297", type: "One-time" },
-  { service: "Business Plan Creation", tier: "Quick Wins", price: "$997", type: "One-time" },
-  { service: "AI Tool Setup", tier: "Quick Wins", price: "$697", type: "One-time" },
-  { service: "AI Business Accelerator", tier: "Transformation", price: "$197/mo", type: "Monthly" },
-  { service: "Revenue Optimization", tier: "Transformation", price: "$497/mo", type: "Monthly" },
-  { service: "Complete Business Rebrand", tier: "Transformation", price: "$2,497", type: "One-time" },
-  { service: "Custom AI System Build", tier: "Transformation", price: "$4,997", type: "One-time" },
-  { service: "1-on-1 Coaching", tier: "Executive", price: "$997/mo", type: "Monthly", highlight: true },
-  { service: "VIP Transformation", tier: "Executive", price: "$2,997/mo", type: "Monthly", highlight: true },
-  { service: "Done-For-You Systems", tier: "Executive", price: "$4,997/mo", type: "Monthly", highlight: true },
-  { service: "Corporate Training", tier: "Enterprise", price: "$10K+", type: "Custom" },
-  { service: "Enterprise Transformation", tier: "Enterprise", price: "$25K+", type: "6-month" },
-  { service: "Speaking / Consulting", tier: "Enterprise", price: "$15K+", type: "Per event" },
+  { service: "AI Business Audit & Strategy", tier: "AI & Automation", price: "$697", type: "One-time" },
+  { service: "AI Integration & Training", tier: "AI & Automation", price: "$1,497", type: "One-time" },
+  { service: "Complete Automation Setup", tier: "AI & Automation", price: "$2,497", type: "One-time" },
+  { service: "Custom AI System Development", tier: "AI & Automation", price: "$4,997", type: "One-time" },
+  { service: "Strategic Business Plan Creation", tier: "Transformation", price: "$997", type: "One-time", highlight: true },
+  { service: "Complete Business Rebrand", tier: "Transformation", price: "$2,997", type: "48hr delivery", highlight: true },
+  { service: "Revenue Optimization System", tier: "Transformation", price: "$4,997", type: "One-time", highlight: true },
+  { service: "Market Expansion Strategy", tier: "Transformation", price: "$9,997", type: "One-time", highlight: true },
+  { service: "Email Marketing Systems", tier: "Done-For-You", price: "$197/mo", type: "Monthly" },
+  { service: "Social Media Management", tier: "Done-For-You", price: "$297/mo", type: "Monthly" },
+  { service: "Content Creation & Management", tier: "Done-For-You", price: "$497/mo", type: "Monthly" },
+  { service: "Analytics & Reporting", tier: "Done-For-You", price: "$697/mo", type: "Monthly" },
+  { service: "Customer Service Setup", tier: "Done-For-You", price: "$2,997", type: "One-time" },
+  { service: "1-on-1 Strategy Sessions", tier: "Consulting", price: "$997", type: "Per session" },
+  { service: "Group Mastermind Access", tier: "Consulting", price: "$2,997/mo", type: "Monthly" },
+  { service: "Executive Advisory Retainer", tier: "Consulting", price: "$4,997/mo", type: "Monthly" },
+  { service: "Speaking & Workshops", tier: "Consulting", price: "$15K+", type: "Per event" },
+  { service: "Corporate Transformation", tier: "Consulting", price: "$25K+", type: "Custom" },
 ];
 
 const PricingTable = () => (
@@ -27,10 +31,10 @@ const PricingTable = () => (
         className="text-center mb-12"
       >
         <h2 className="text-3xl md:text-4xl font-heading font-bold mb-3">
-          Complete <span className="text-gradient-red">Service Menu</span>
+          Complete <span className="text-gradient-blue">Service Menu</span>
         </h2>
         <p className="text-muted-foreground max-w-xl mx-auto">
-          From $297 one-time audits to $25K+ enterprise transformations.
+          From $197/mo managed services to $25K+ corporate transformations.
         </p>
       </motion.div>
 
@@ -101,9 +105,9 @@ const PricingTable = () => (
       >
         <a
           href="#book"
-          className="inline-block px-8 py-3 rounded-lg bg-primary text-primary-foreground font-semibold glow-red hover:bg-primary/90 transition-colors"
+          className="inline-block px-8 py-3 rounded-lg bg-primary text-primary-foreground font-semibold glow-blue hover:bg-primary/90 transition-colors"
         >
-          Book Free Strategy Call
+          Apply for Consultation
         </a>
       </motion.div>
     </div>

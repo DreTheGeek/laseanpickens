@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, Star, Zap, Rocket, TrendingUp, Crown, Building2 } from "lucide-react";
+import { Check, Star, Zap, Bot, Cog, Headphones, Crown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface Service {
@@ -11,7 +11,9 @@ interface Service {
 interface Tier {
   name: string;
   icon: React.ComponentType<{ className?: string }>;
+  badge: string;
   tagline: string;
+  delivery: string;
   services: Service[];
   popular?: boolean;
   accent: string;
@@ -19,51 +21,63 @@ interface Tier {
 
 const tiers: Tier[] = [
   {
-    name: "Quick Wins",
-    icon: Rocket,
-    tagline: "One-time services to get you started fast",
+    name: "AI & Automation Mastery",
+    icon: Bot,
+    badge: "Technical Expertise",
+    tagline: "Your authority in AI and automation",
+    delivery: "2-4 weeks",
     services: [
-      { name: "AI Business Audit", price: "$497" },
-      { name: "Brand Strategy Session", price: "$297" },
-      { name: "Business Plan Creation", price: "$997" },
-      { name: "AI Tool Setup", price: "$697" },
+      { name: "AI Business Audit & Strategy", price: "$697" },
+      { name: "AI Integration & Training", price: "$1,497" },
+      { name: "Complete Automation Setup", price: "$2,497" },
+      { name: "Custom AI System Development", price: "$4,997" },
     ],
-    accent: "from-orange-500 to-red-500",
+    accent: "from-cyan-400 to-blue-500",
   },
   {
-    name: "Transformation Programs",
-    icon: TrendingUp,
-    tagline: "Ongoing programs to scale your business",
+    name: "Business Transformation",
+    icon: Cog,
+    badge: "Proprietary Systems",
+    tagline: "Proprietary methods that deliver fast",
+    delivery: "24-72 hours",
     services: [
-      { name: "AI Business Accelerator", price: "$197/mo" },
-      { name: "Revenue Optimization", price: "$497/mo" },
-      { name: "Complete Business Rebrand", price: "$2,497", note: "one-time" },
-      { name: "Custom AI System Build", price: "$4,997", note: "one-time" },
+      { name: "Strategic Business Plan Creation", price: "$997" },
+      { name: "Complete Business Rebrand", price: "$2,997", note: "48hr delivery" },
+      { name: "Revenue Optimization System", price: "$4,997" },
+      { name: "Market Expansion Strategy", price: "$9,997" },
     ],
     popular: true,
-    accent: "from-red-500 to-pink-500",
+    accent: "from-blue-500 to-purple-500",
   },
   {
-    name: "Executive Coaching",
+    name: "Done-For-You Services",
+    icon: Headphones,
+    badge: "Full-Service Delivery",
+    tagline: "My team handles everything 24/7",
+    delivery: "Ongoing 24/7",
+    services: [
+      { name: "Email Marketing Systems", price: "$197/mo" },
+      { name: "Social Media Management", price: "$297/mo" },
+      { name: "Content Creation & Management", price: "$497/mo" },
+      { name: "Analytics & Reporting", price: "$697/mo" },
+      { name: "Customer Service Setup", price: "$2,997", note: "one-time" },
+    ],
+    accent: "from-purple-500 to-pink-500",
+  },
+  {
+    name: "Strategic Consulting",
     icon: Crown,
-    tagline: "Direct access to LaSean for serious operators",
+    badge: "Executive Access",
+    tagline: "Direct access for serious operators",
+    delivery: "White-glove service",
     services: [
-      { name: "1-on-1 Coaching", price: "$997/mo", note: "30min weekly" },
-      { name: "VIP Transformation", price: "$2,997/mo", note: "unlimited" },
-      { name: "Done-For-You Systems", price: "$4,997/mo", note: "full service" },
+      { name: "1-on-1 Strategy Sessions", price: "$997", note: "per session" },
+      { name: "Group Mastermind Access", price: "$2,997/mo" },
+      { name: "Executive Advisory Retainer", price: "$4,997/mo" },
+      { name: "Speaking & Workshops", price: "$15K+", note: "per event" },
+      { name: "Corporate Transformation", price: "$25K+", note: "custom" },
     ],
-    accent: "from-pink-500 to-purple-500",
-  },
-  {
-    name: "Enterprise",
-    icon: Building2,
-    tagline: "Custom solutions for large organizations",
-    services: [
-      { name: "Corporate Training", price: "$10K+", note: "custom" },
-      { name: "Enterprise Transformation", price: "$25K+", note: "6-month" },
-      { name: "Speaking / Consulting", price: "$15K+", note: "per event" },
-    ],
-    accent: "from-purple-500 to-blue-500",
+    accent: "from-pink-500 to-amber-500",
   },
 ];
 
@@ -77,10 +91,10 @@ const PricingTiers = () => (
         className="text-center mb-12"
       >
         <h2 className="text-3xl md:text-5xl font-heading font-bold mb-4">
-          Services & <span className="text-gradient-red">Pricing</span>
+          Services & <span className="text-gradient-blue">Pricing</span>
         </h2>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          From $297 audits to $25K+ enterprise transformations - solutions for every stage of growth.
+          From $697 technical builds to $25K+ corporate transformations - solutions for every stage of growth.
         </p>
       </motion.div>
 
@@ -96,8 +110,8 @@ const PricingTiers = () => (
               transition={{ delay: i * 0.08 }}
               className={`relative glass-dark rounded-2xl p-6 flex flex-col transition-all duration-300 ${
                 tier.popular
-                  ? "border-primary/50 glow-red-strong"
-                  : "hover:glow-red hover:border-primary/30"
+                  ? "border-primary/50 glow-blue-strong"
+                  : "hover:glow-blue hover:border-primary/30"
               }`}
             >
               {tier.popular && (
@@ -106,7 +120,7 @@ const PricingTiers = () => (
                 </Badge>
               )}
 
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-1">
                 <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${tier.accent} flex items-center justify-center`}>
                   <Icon className="w-5 h-5 text-white" />
                 </div>
@@ -114,6 +128,15 @@ const PricingTiers = () => (
                   <h3 className="text-lg font-heading font-bold text-foreground">{tier.name}</h3>
                   <p className="text-xs text-muted-foreground">{tier.tagline}</p>
                 </div>
+              </div>
+
+              <div className="flex items-center gap-3 mb-4 mt-2">
+                <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded bg-primary/10 text-primary">
+                  {tier.badge}
+                </span>
+                <span className="text-[10px] text-muted-foreground">
+                  Delivery: {tier.delivery}
+                </span>
               </div>
 
               <div className="space-y-2.5 flex-1">
@@ -140,7 +163,7 @@ const PricingTiers = () => (
                 whileTap={{ scale: 0.97 }}
                 className={`w-full py-3 rounded-lg font-medium text-sm transition-all text-center block mt-5 ${
                   tier.popular
-                    ? "bg-primary text-primary-foreground glow-red"
+                    ? "bg-primary text-primary-foreground glow-blue"
                     : "border border-primary/30 text-primary hover:bg-primary/10"
                 }`}
               >

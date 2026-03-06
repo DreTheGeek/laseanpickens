@@ -3,8 +3,8 @@ import { motion } from "framer-motion";
 const badges = [
   { value: "$50M+", label: "Revenue Generated" },
   { value: "500+", label: "Businesses Transformed" },
-  { value: "97%", label: "Client Success Rate" },
   { value: "100+", label: "AI Systems Built" },
+  { value: "24/7", label: "Delivery Capability" },
 ];
 
 const AuthorityBadges = () => (

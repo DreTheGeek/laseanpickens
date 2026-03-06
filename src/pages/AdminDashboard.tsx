@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, Users, TrendingUp, BarChart3, Mail, Settings,
-  LogOut, Sun, Rocket, Bot, Building2, DollarSign,
+  LogOut, Sun, Bot, Cog, Headphones, Crown, DollarSign,
   UserPlus, AlertCircle, CheckCircle2, Clock,
 } from "lucide-react";
 import {
@@ -60,25 +60,25 @@ interface Pillar {
 }
 
 const pillars: Pillar[] = [
-  { name: "Quick Wins", icon: Rocket, price: "$297-$997", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "50 clients/mo", goalTarget: 50, accent: "red" },
-  { name: "Transformation Programs", icon: TrendingUp, price: "$197-$4,997/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "30 clients ($15K)", goalTarget: 30, accent: "pink" },
-  { name: "Executive Coaching", icon: Bot, price: "$997-$4,997/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "10 clients ($30K)", goalTarget: 10, accent: "purple" },
-  { name: "Enterprise", icon: Building2, price: "$10K-$25K+", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "3 clients ($45K)", goalTarget: 3, accent: "blue" },
+  { name: "AI & Automation", icon: Bot, price: "$697-$4,997", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "20 clients/mo", goalTarget: 20, accent: "cyan" },
+  { name: "Business Transformation", icon: Cog, price: "$997-$9,997", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "15 clients ($30K)", goalTarget: 15, accent: "blue" },
+  { name: "Done-For-You Services", icon: Headphones, price: "$197-$2,997/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "30 clients ($15K)", goalTarget: 30, accent: "purple" },
+  { name: "Strategic Consulting", icon: Crown, price: "$997-$25K+", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "5 clients ($25K)", goalTarget: 5, accent: "amber" },
 ];
 
 const accentMap: Record<string, { border: string; text: string; bar: string }> = {
-  red: { border: "border-l-red-500", text: "text-red-400", bar: "bg-red-500" },
-  pink: { border: "border-l-pink-500", text: "text-pink-400", bar: "bg-pink-500" },
-  purple: { border: "border-l-purple-500", text: "text-purple-400", bar: "bg-purple-500" },
+  cyan: { border: "border-l-cyan-500", text: "text-cyan-400", bar: "bg-cyan-500" },
   blue: { border: "border-l-blue-500", text: "text-blue-400", bar: "bg-blue-500" },
+  purple: { border: "border-l-purple-500", text: "text-purple-400", bar: "bg-purple-500" },
+  amber: { border: "border-l-amber-500", text: "text-amber-400", bar: "bg-amber-500" },
 };
 
 const sampleClients = [
-  { name: "Citywide HVAC", tier: "Executive Coaching", status: "active", mrr: 997, joined: "Mar 1" },
-  { name: "Apex Plumbing", tier: "Transformation", status: "active", mrr: 197, joined: "Feb 28" },
-  { name: "Metro Electric Co", tier: "Enterprise", status: "trial", mrr: 0, joined: "Mar 4" },
-  { name: "Summit Roofing", tier: "Transformation", status: "active", mrr: 497, joined: "Feb 15" },
-  { name: "GreenScape Landscaping", tier: "Quick Wins", status: "active", mrr: 497, joined: "Jan 20" },
+  { name: "Citywide HVAC", tier: "AI & Automation", status: "active", mrr: 2497, joined: "Mar 1" },
+  { name: "Apex Plumbing", tier: "Done-For-You", status: "active", mrr: 497, joined: "Feb 28" },
+  { name: "Metro Electric Co", tier: "Strategic Consulting", status: "trial", mrr: 0, joined: "Mar 4" },
+  { name: "Summit Roofing", tier: "Business Transformation", status: "active", mrr: 997, joined: "Feb 15" },
+  { name: "GreenScape Landscaping", tier: "Done-For-You", status: "active", mrr: 297, joined: "Jan 20" },
 ];
 
 const samplePipeline = [

@@ -4,17 +4,17 @@ import HeroVoiceWidget from "@/components/HeroVoiceWidget";
 import FeaturedEvent from "@/components/sections/FeaturedEvent";
 import AuthorityBio from "@/components/sections/AuthorityBio";
 import AuthorityBadges from "@/components/sections/AuthorityBadges";
-import ExpertisePillars from "@/components/sections/ExpertisePillars";
+import ProcessSteps from "@/components/sections/ProcessSteps";
 import KaldrShowcase from "@/components/sections/KaldrShowcase";
 import PricingTiers from "@/components/sections/PricingTiers";
 import PricingTable from "@/components/sections/PricingTable";
-import Manifesto from "@/components/sections/Manifesto";
 import SocialProof from "@/components/sections/SocialProof";
+import FAQ from "@/components/sections/FAQ";
 import Ecosystem from "@/components/sections/Ecosystem";
 import Newsletter from "@/components/sections/Newsletter";
 import LeadCapture from "@/components/sections/LeadCapture";
 import Footer from "@/components/sections/Footer";
-import { Calendar, ArrowDown } from "lucide-react";
+import { ArrowRight, ArrowDown, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Index = () => {
@@ -47,15 +47,15 @@ const Index = () => {
               whileTap={{ scale: 0.97 }}
               className="px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue inline-flex items-center justify-center gap-2"
             >
-              <Calendar className="w-4 h-4" /> Book Free Strategy Call
+              <ArrowRight className="w-4 h-4" /> Apply for Consultation
             </motion.a>
             <motion.a
-              href="#programs"
+              href="#process"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               className="px-6 py-3 rounded-lg border border-primary/30 text-primary font-medium text-sm inline-flex items-center justify-center gap-2"
             >
-              Get AI Business Audit
+              <Eye className="w-4 h-4" /> See My Methods
             </motion.a>
           </div>
 
@@ -65,7 +65,7 @@ const Index = () => {
             <span className="text-border">|</span>
             <span className="font-semibold text-foreground">$50M+ <span className="font-normal text-muted-foreground">Revenue Generated</span></span>
             <span className="text-border">|</span>
-            <span className="font-semibold text-foreground">97% <span className="font-normal text-muted-foreground">Success Rate</span></span>
+            <span className="font-semibold text-foreground">24/7 <span className="font-normal text-muted-foreground">Delivery Capability</span></span>
           </div>
         </div>
 
@@ -82,12 +82,12 @@ const Index = () => {
       <FeaturedEvent />
       <AuthorityBio />
       <AuthorityBadges />
-      <ExpertisePillars />
+      <ProcessSteps />
       <KaldrShowcase />
       <PricingTiers />
       <PricingTable />
-      <Manifesto />
       <SocialProof />
+      <FAQ />
       <Ecosystem />
       <Newsletter />
       <LeadCapture />

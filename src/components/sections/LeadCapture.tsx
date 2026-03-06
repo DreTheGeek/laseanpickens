@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Calendar } from "lucide-react";
+import { Send, Shield } from "lucide-react";
 
 const LeadCapture = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -22,10 +22,10 @@ const LeadCapture = () => {
           className="space-y-4 mb-12"
         >
           <h2 className="text-3xl md:text-5xl font-heading font-bold">
-            Ready to <span className="text-gradient-blue">Build</span>?
+            Apply for <span className="text-gradient-blue">Consultation</span>
           </h2>
           <p className="text-muted-foreground text-lg">
-            Drop your info and let's talk about scaling your business with AI systems.
+            Tell me about your business and goals. Limited spots available each month.
           </p>
         </motion.div>
 
@@ -38,8 +38,8 @@ const LeadCapture = () => {
             <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
               <Send className="w-7 h-7 text-primary" />
             </div>
-            <h3 className="text-xl font-heading font-bold text-foreground mb-2">Message Received</h3>
-            <p className="text-muted-foreground">LaSean's team will be in touch within 24 hours.</p>
+            <h3 className="text-xl font-heading font-bold text-foreground mb-2">Application Received</h3>
+            <p className="text-muted-foreground">My team will review your application and respond within 24 hours.</p>
           </motion.div>
         ) : (
           <motion.form
@@ -53,24 +53,19 @@ const LeadCapture = () => {
               <Input placeholder="Your name" className="bg-background/50 border-border" required />
               <Input type="email" placeholder="Email address" className="bg-background/50 border-border" required />
             </div>
-            <Textarea placeholder="Tell me about your business and goals..." rows={4} className="bg-background/50 border-border" />
-            <div className="flex flex-col sm:flex-row gap-3">
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex-1 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue inline-flex items-center justify-center gap-2"
-              >
-                <Send className="w-4 h-4" /> Send Message
-              </motion.button>
-              <motion.a
-                href="#"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="flex-1 py-3 rounded-lg border border-primary/30 text-primary font-medium text-sm text-center inline-flex items-center justify-center gap-2"
-              >
-                <Calendar className="w-4 h-4" /> Book Directly
-              </motion.a>
+            <Input placeholder="Company name" className="bg-background/50 border-border" />
+            <Textarea placeholder="Tell me about your business, current challenges, and what you'd like to achieve..." rows={4} className="bg-background/50 border-border" />
+            <motion.button
+              type="submit"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue inline-flex items-center justify-center gap-2"
+            >
+              <Send className="w-4 h-4" /> Submit Application
+            </motion.button>
+            <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+              <Shield className="w-3 h-3" />
+              <span>Your information is secure and will never be shared.</span>
             </div>
           </motion.form>
         )}

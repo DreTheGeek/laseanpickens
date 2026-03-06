@@ -5,6 +5,7 @@ import {
   FolderOpen, MessageSquare, Link2, LogOut, Sun, Send,
   Camera, Mail, Phone, MapPin, Lock, Play, Trophy,
   Star, MessageCircle, Award, FileText, CheckCircle2,
+  ShieldCheck, KeyRound, Fingerprint, ArrowRight,
 } from "lucide-react";
 
 /* ================================================================
@@ -705,10 +706,129 @@ const AffiliatePage = () => (
 );
 
 /* ================================================================
+   VERIFICATION FLOW
+   ================================================================ */
+
+const VerificationFlow = ({ onComplete }: { onComplete: () => void }) => {
+  const [step, setStep] = useState(0);
+  const [code, setCode] = useState(["", "", "", "", "", ""]);
+
+  const steps = [
+    { icon: Mail, title: "Verify Email", desc: "We sent a 6-digit code to your email address" },
+    { icon: Phone, title: "Verify Phone", desc: "Enter the code sent to your phone number" },
+    { icon: ShieldCheck, title: "Identity Confirmed", desc: "Your account is verified and secure" },
+  ];
+
+  const handleCodeChange = (i: number, val: string) => {
+    if (val.length > 1) return;
+    const next = [...code];
+    next[i] = val;
+    setCode(next);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0b1121] flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md"
+      >
+        <Card className="p-8">
+          <div className="text-center mb-8">
+            <div className="w-14 h-14 rounded-full bg-primary/20 flex items-center justify-center mx-auto mb-4">
+              <KeyRound className="w-7 h-7 text-primary" />
+            </div>
+            <h1 className="text-xl font-bold mb-1">Account Verification</h1>
+            <p className="text-sm text-gray-500">Complete verification to access your portal</p>
+          </div>
+
+          {/* Progress steps */}
+          <div className="flex items-center justify-center gap-2 mb-8">
+            {steps.map((s, i) => (
+              <div key={s.title} className="flex items-center gap-2">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                  i < step ? "bg-green-500 text-white" :
+                  i === step ? "bg-primary text-white" :
+                  "bg-gray-700 text-gray-400"
+                }`}>
+                  {i < step ? <CheckCircle2 className="w-4 h-4" /> : i + 1}
+                </div>
+                {i < steps.length - 1 && (
+                  <div className={`w-8 h-0.5 ${i < step ? "bg-green-500" : "bg-gray-700"}`} />
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Current step */}
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="text-center"
+          >
+            {step < 2 ? (
+              <>
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  {step === 0 ? <Mail className="w-5 h-5 text-primary" /> : <Phone className="w-5 h-5 text-primary" />}
+                </div>
+                <h2 className="text-base font-bold mb-1">{steps[step].title}</h2>
+                <p className="text-xs text-gray-500 mb-6">{steps[step].desc}</p>
+
+                {/* Code input */}
+                <div className="flex justify-center gap-2 mb-6">
+                  {code.map((digit, i) => (
+                    <input
+                      key={i}
+                      type="text"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e) => handleCodeChange(i, e.target.value)}
+                      className="w-10 h-12 bg-[#0b1121] border border-white/[0.1] rounded-lg text-center text-lg font-bold text-white outline-none focus:border-primary transition-colors"
+                    />
+                  ))}
+                </div>
+
+                <button
+                  onClick={() => { setStep(step + 1); setCode(["", "", "", "", "", ""]); }}
+                  className="w-full py-3 rounded-lg bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"
+                >
+                  Verify <ArrowRight className="w-4 h-4" />
+                </button>
+                <button className="mt-3 text-xs text-primary hover:underline">Resend Code</button>
+              </>
+            ) : (
+              <>
+                <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
+                  <Fingerprint className="w-8 h-8 text-green-400" />
+                </div>
+                <h2 className="text-base font-bold mb-1">Verification Complete</h2>
+                <p className="text-xs text-gray-500 mb-6">Your identity has been confirmed. Welcome to your portal.</p>
+                <button
+                  onClick={onComplete}
+                  className="w-full py-3 rounded-lg bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"
+                >
+                  Enter Portal <ArrowRight className="w-4 h-4" />
+                </button>
+              </>
+            )}
+          </motion.div>
+        </Card>
+
+        <p className="text-center text-[10px] text-gray-600 mt-4">
+          Protected by Kaldr Tech Security
+        </p>
+      </motion.div>
+    </div>
+  );
+};
+
+/* ================================================================
    MAIN COMPONENT
    ================================================================ */
 
 const ClientPortal = () => {
+  const [verified, setVerified] = useState(false);
   const [page, setPage] = useState<Page>("dashboard");
 
   const pages: Record<Page, React.ReactNode> = {
@@ -721,6 +841,10 @@ const ClientPortal = () => {
     communications: <CommunicationsPage />,
     affiliate: <AffiliatePage />,
   };
+
+  if (!verified) {
+    return <VerificationFlow onComplete={() => setVerified(true)} />;
+  }
 
   return (
     <PortalShell activePage={page} setPage={setPage}>

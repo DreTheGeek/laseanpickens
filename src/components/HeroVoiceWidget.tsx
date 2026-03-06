@@ -71,10 +71,11 @@ const HeroVoiceWidget = () => {
       {/* Status text & CTA */}
       <div className="text-center space-y-3">
         <h1 className="text-4xl md:text-6xl font-heading font-bold tracking-tight">
-          Leverage Beats <span className="text-gradient-blue">Labor</span>
+          Transform Your Business with{" "}
+          <span className="text-gradient-red">AI-Powered Systems</span>
         </h1>
-        <p className="text-muted-foreground text-lg max-w-md mx-auto">
-          I Build the Systems That Prove It.
+        <p className="text-muted-foreground text-lg max-w-lg mx-auto">
+          THE AI Business Coach - I help consultants, marketers, and business owners use AI to increase revenue while reducing overhead.
         </p>
 
         <motion.button

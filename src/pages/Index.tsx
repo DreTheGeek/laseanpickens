@@ -47,7 +47,7 @@ const Index = () => {
               whileTap={{ scale: 0.97 }}
               className="px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue inline-flex items-center justify-center gap-2"
             >
-              <Calendar className="w-4 h-4" /> Start Your AI Journey for $197/month
+              <Calendar className="w-4 h-4" /> Book Free Strategy Call
             </motion.a>
             <motion.a
               href="#programs"
@@ -55,8 +55,17 @@ const Index = () => {
               whileTap={{ scale: 0.97 }}
               className="px-6 py-3 rounded-lg border border-primary/30 text-primary font-medium text-sm inline-flex items-center justify-center gap-2"
             >
-              Scale to Enterprise-Level Automation
+              Get AI Business Audit
             </motion.a>
+          </div>
+
+          {/* Social proof */}
+          <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8 mt-8 text-xs md:text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">500+ <span className="font-normal text-muted-foreground">Businesses Transformed</span></span>
+            <span className="text-border">|</span>
+            <span className="font-semibold text-foreground">$50M+ <span className="font-normal text-muted-foreground">Revenue Generated</span></span>
+            <span className="text-border">|</span>
+            <span className="font-semibold text-foreground">97% <span className="font-normal text-muted-foreground">Success Rate</span></span>
           </div>
         </div>
 

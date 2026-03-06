@@ -1,154 +1,91 @@
 import { motion } from "framer-motion";
-import { Check, Star, Zap, Rocket, BarChart3, Bot, Building2, Code2, Settings } from "lucide-react";
+import { Check, Star, Zap, Rocket, TrendingUp, Crown, Building2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+
+interface Service {
+  name: string;
+  price: string;
+  note?: string;
+}
 
 interface Tier {
   name: string;
   icon: React.ComponentType<{ className?: string }>;
-  price: string;
-  period: string;
-  target: string;
-  desc: string;
-  features: string[];
+  tagline: string;
+  services: Service[];
   popular?: boolean;
   accent: string;
 }
 
 const tiers: Tier[] = [
   {
-    name: "Startup Automation",
+    name: "Quick Wins",
     icon: Rocket,
-    price: "$197",
-    period: "/month",
-    target: "Small businesses & startups",
-    desc: "Essential AI automation to capture every lead and streamline your operations.",
-    features: [
-      "Basic lead response automation",
-      "Appointment booking system",
-      "Email automation sequences",
-      "Simple CRM integration",
-      "Monthly performance report",
+    tagline: "One-time services to get you started fast",
+    services: [
+      { name: "AI Business Audit", price: "$497" },
+      { name: "Brand Strategy Session", price: "$297" },
+      { name: "Business Plan Creation", price: "$997" },
+      { name: "AI Tool Setup", price: "$697" },
     ],
-    accent: "purple",
+    accent: "from-orange-500 to-red-500",
   },
   {
-    name: "Business Intelligence",
-    icon: BarChart3,
-    price: "$997",
-    period: "/month",
-    target: "Growing businesses needing insights",
-    desc: "Advanced analytics and predictive tools to outpace your competition.",
-    features: [
-      "Advanced analytics dashboard",
-      "Predictive lead scoring",
-      "Performance optimization",
-      "Competitor monitoring",
-      "Weekly strategy insights",
-      "Custom reporting",
+    name: "Transformation Programs",
+    icon: TrendingUp,
+    tagline: "Ongoing programs to scale your business",
+    services: [
+      { name: "AI Business Accelerator", price: "$197/mo" },
+      { name: "Revenue Optimization", price: "$497/mo" },
+      { name: "Complete Business Rebrand", price: "$2,497", note: "one-time" },
+      { name: "Custom AI System Build", price: "$4,997", note: "one-time" },
     ],
     popular: true,
-    accent: "blue",
+    accent: "from-red-500 to-pink-500",
   },
   {
-    name: "AI Business Systems",
-    icon: Bot,
-    price: "$2,997",
-    period: "/month",
-    target: "Established businesses ready for full automation",
-    desc: "Complete AI-powered business automation with custom workflows.",
-    features: [
-      "Complete business automation",
-      "Custom AI workflows",
-      "Advanced integrations",
-      "Dedicated account manager",
-      "24/7 priority support",
-      "Quarterly strategy sessions",
+    name: "Executive Coaching",
+    icon: Crown,
+    tagline: "Direct access to LaSean for serious operators",
+    services: [
+      { name: "1-on-1 Coaching", price: "$997/mo", note: "30min weekly" },
+      { name: "VIP Transformation", price: "$2,997/mo", note: "unlimited" },
+      { name: "Done-For-You Systems", price: "$4,997/mo", note: "full service" },
     ],
-    accent: "green",
+    accent: "from-pink-500 to-purple-500",
   },
   {
-    name: "Enterprise Solutions",
+    name: "Enterprise",
     icon: Building2,
-    price: "$9,997",
-    period: "/month",
-    target: "Large enterprises & franchises",
-    desc: "Multi-location management with enterprise-grade AI infrastructure.",
-    features: [
-      "Multi-location management",
-      "Advanced API integrations",
-      "Dedicated support team",
-      "Custom AI model training",
-      "White-label options",
-      "SLA guarantees",
+    tagline: "Custom solutions for large organizations",
+    services: [
+      { name: "Corporate Training", price: "$10K+", note: "custom" },
+      { name: "Enterprise Transformation", price: "$25K+", note: "6-month" },
+      { name: "Speaking / Consulting", price: "$15K+", note: "per event" },
     ],
-    accent: "yellow",
-  },
-  {
-    name: "Custom Development",
-    icon: Code2,
-    price: "$75K+",
-    period: " per project",
-    target: "Businesses needing bespoke solutions",
-    desc: "Fully custom AI systems built from the ground up for your needs.",
-    features: [
-      "Bespoke AI system design",
-      "Full stack development",
-      "Ongoing maintenance",
-      "Source code ownership",
-      "12-month support included",
-      "Performance guarantees",
-    ],
-    accent: "red",
-  },
-  {
-    name: "Managed AI Services",
-    icon: Settings,
-    price: "$5K+",
-    period: "/month",
-    target: "Businesses wanting hands-off automation",
-    desc: "We run your entire AI operation so you can focus on growth.",
-    features: [
-      "Fully managed AI operations",
-      "Continuous optimization",
-      "White-glove onboarding",
-      "Dedicated engineering team",
-      "Real-time monitoring",
-      "Monthly ROI reporting",
-    ],
-    accent: "pink",
+    accent: "from-purple-500 to-blue-500",
   },
 ];
 
-const accentMap: Record<string, { border: string; bg: string; text: string }> = {
-  purple: { border: "border-purple-500/50", bg: "bg-purple-500/10", text: "text-purple-400" },
-  blue: { border: "border-primary/50", bg: "bg-primary/10", text: "text-primary" },
-  green: { border: "border-green-500/50", bg: "bg-green-500/10", text: "text-green-400" },
-  yellow: { border: "border-yellow-500/50", bg: "bg-yellow-500/10", text: "text-yellow-400" },
-  red: { border: "border-red-500/50", bg: "bg-red-500/10", text: "text-red-400" },
-  pink: { border: "border-pink-500/50", bg: "bg-pink-500/10", text: "text-pink-400" },
-};
-
 const PricingTiers = () => (
   <section id="programs" className="py-20 md:py-32 px-4 border-t border-border">
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-center mb-6"
+        className="text-center mb-12"
       >
         <h2 className="text-3xl md:text-5xl font-heading font-bold mb-4">
-          Scale Your Business with <span className="text-gradient-blue">AI Automation</span>
+          Services & <span className="text-gradient-red">Pricing</span>
         </h2>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-2">
-          From $197/month for startups to $75K+ custom solutions - we scale with your business.
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          From $297 audits to $25K+ enterprise transformations - solutions for every stage of growth.
         </p>
       </motion.div>
 
-      {/* Cards */}
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid md:grid-cols-2 gap-5">
         {tiers.map((tier, i) => {
-          const colors = accentMap[tier.accent];
           const Icon = tier.icon;
           return (
             <motion.div
@@ -156,11 +93,11 @@ const PricingTiers = () => (
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.06 }}
+              transition={{ delay: i * 0.08 }}
               className={`relative glass-dark rounded-2xl p-6 flex flex-col transition-all duration-300 ${
                 tier.popular
-                  ? "border-primary/50 glow-blue-strong"
-                  : "hover:glow-blue hover:border-primary/30"
+                  ? "border-primary/50 glow-red-strong"
+                  : "hover:glow-red hover:border-primary/30"
               }`}
             >
               {tier.popular && (
@@ -169,39 +106,41 @@ const PricingTiers = () => (
                 </Badge>
               )}
 
-              <div className="flex items-center gap-3 mb-3">
-                <div className={`w-10 h-10 rounded-lg ${colors.bg} flex items-center justify-center`}>
-                  <Icon className={`w-5 h-5 ${colors.text}`} />
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${tier.accent} flex items-center justify-center`}>
+                  <Icon className="w-5 h-5 text-white" />
                 </div>
                 <div>
                   <h3 className="text-lg font-heading font-bold text-foreground">{tier.name}</h3>
-                  <p className="text-xs text-muted-foreground">{tier.target}</p>
+                  <p className="text-xs text-muted-foreground">{tier.tagline}</p>
                 </div>
               </div>
 
-              <div className="mt-2 mb-4">
-                <span className="text-3xl font-heading font-bold text-foreground">{tier.price}</span>
-                <span className="text-muted-foreground text-sm">{tier.period}</span>
-              </div>
-
-              <p className="text-muted-foreground text-sm mb-5">{tier.desc}</p>
-
-              <ul className="space-y-2.5 mb-6 flex-1">
-                {tier.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-foreground/80">
-                    <Check className={`w-4 h-4 ${colors.text} mt-0.5 shrink-0`} />
-                    {f}
-                  </li>
+              <div className="space-y-2.5 flex-1">
+                {tier.services.map((s) => (
+                  <div
+                    key={s.name}
+                    className="flex items-center justify-between bg-background/40 rounded-lg px-4 py-3 border border-border/30"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-primary shrink-0" />
+                      <span className="text-sm text-foreground/90">{s.name}</span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-sm font-bold text-primary">{s.price}</span>
+                      {s.note && <span className="block text-[10px] text-muted-foreground">{s.note}</span>}
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
 
               <motion.a
                 href="#book"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.97 }}
-                className={`w-full py-3 rounded-lg font-medium text-sm transition-all text-center block ${
+                className={`w-full py-3 rounded-lg font-medium text-sm transition-all text-center block mt-5 ${
                   tier.popular
-                    ? "bg-primary text-primary-foreground glow-blue"
+                    ? "bg-primary text-primary-foreground glow-red"
                     : "border border-primary/30 text-primary hover:bg-primary/10"
                 }`}
               >

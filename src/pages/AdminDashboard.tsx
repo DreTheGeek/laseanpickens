@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   LayoutDashboard, Users, TrendingUp, BarChart3, Mail, Settings,
-  LogOut, Sun, Rocket, Bot, Building2, Code2, DollarSign,
+  LogOut, Sun, Rocket, Bot, Building2, DollarSign,
   UserPlus, AlertCircle, CheckCircle2, Clock,
 } from "lucide-react";
 import {
@@ -60,29 +60,25 @@ interface Pillar {
 }
 
 const pillars: Pillar[] = [
-  { name: "Startup Automation", icon: Rocket, price: "$197/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "500 clients ($98K)", goalTarget: 500, accent: "purple" },
-  { name: "Business Intelligence", icon: BarChart3, price: "$997/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "50 clients ($50K)", goalTarget: 50, accent: "blue" },
-  { name: "AI Business Systems", icon: Bot, price: "$2,997/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "20 clients ($60K)", goalTarget: 20, accent: "green" },
-  { name: "Enterprise Solutions", icon: Building2, price: "$9,997/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "5 clients ($50K)", goalTarget: 5, accent: "yellow" },
-  { name: "Custom Development", icon: Code2, price: "$75K+", clients: 0, clientLabel: "projects", mrr: 0, pipeline: 0, goal: "12 projects ($900K)", goalTarget: 12, accent: "red" },
-  { name: "Managed AI Services", icon: Settings, price: "$5K+/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "8 clients ($40K)", goalTarget: 8, accent: "pink" },
+  { name: "Quick Wins", icon: Rocket, price: "$297-$997", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "50 clients/mo", goalTarget: 50, accent: "red" },
+  { name: "Transformation Programs", icon: TrendingUp, price: "$197-$4,997/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "30 clients ($15K)", goalTarget: 30, accent: "pink" },
+  { name: "Executive Coaching", icon: Bot, price: "$997-$4,997/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "10 clients ($30K)", goalTarget: 10, accent: "purple" },
+  { name: "Enterprise", icon: Building2, price: "$10K-$25K+", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "3 clients ($45K)", goalTarget: 3, accent: "blue" },
 ];
 
 const accentMap: Record<string, { border: string; text: string; bar: string }> = {
-  purple: { border: "border-l-purple-500", text: "text-purple-400", bar: "bg-purple-500" },
-  blue: { border: "border-l-blue-500", text: "text-blue-400", bar: "bg-blue-500" },
-  green: { border: "border-l-green-500", text: "text-green-400", bar: "bg-green-500" },
-  yellow: { border: "border-l-yellow-500", text: "text-yellow-400", bar: "bg-yellow-500" },
   red: { border: "border-l-red-500", text: "text-red-400", bar: "bg-red-500" },
   pink: { border: "border-l-pink-500", text: "text-pink-400", bar: "bg-pink-500" },
+  purple: { border: "border-l-purple-500", text: "text-purple-400", bar: "bg-purple-500" },
+  blue: { border: "border-l-blue-500", text: "text-blue-400", bar: "bg-blue-500" },
 };
 
 const sampleClients = [
-  { name: "Citywide HVAC", tier: "Business Intelligence", status: "active", mrr: 997, joined: "Mar 1" },
-  { name: "Apex Plumbing", tier: "Startup Automation", status: "active", mrr: 197, joined: "Feb 28" },
-  { name: "Metro Electric Co", tier: "AI Business Systems", status: "trial", mrr: 0, joined: "Mar 4" },
-  { name: "Summit Roofing", tier: "Startup Automation", status: "active", mrr: 197, joined: "Feb 15" },
-  { name: "GreenScape Landscaping", tier: "Growth Accelerator", status: "active", mrr: 497, joined: "Jan 20" },
+  { name: "Citywide HVAC", tier: "Executive Coaching", status: "active", mrr: 997, joined: "Mar 1" },
+  { name: "Apex Plumbing", tier: "Transformation", status: "active", mrr: 197, joined: "Feb 28" },
+  { name: "Metro Electric Co", tier: "Enterprise", status: "trial", mrr: 0, joined: "Mar 4" },
+  { name: "Summit Roofing", tier: "Transformation", status: "active", mrr: 497, joined: "Feb 15" },
+  { name: "GreenScape Landscaping", tier: "Quick Wins", status: "active", mrr: 497, joined: "Jan 20" },
 ];
 
 const samplePipeline = [
@@ -237,8 +233,8 @@ const OverviewPage = () => {
 
       {/* Revenue Pillars */}
       <Card className="p-6">
-        <h2 className="text-base font-bold mb-5">6 Revenue Pillars</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <h2 className="text-base font-bold mb-5">4 Revenue Tiers</h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
           {pillars.map((p, i) => {
             const c = accentMap[p.accent];
             const Icon = p.icon;

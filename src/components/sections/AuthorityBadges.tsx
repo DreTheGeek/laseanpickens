@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
 
 const badges = [
-  { value: "$10M+", label: "Client Revenue Generated" },
+  { value: "$50M+", label: "Revenue Generated" },
   { value: "500+", label: "Businesses Transformed" },
   { value: "97%", label: "Client Success Rate" },
-  { value: "FOUNDER & CEO", label: "Kaldr Tech AI Platforms" },
+  { value: "100+", label: "AI Systems Built" },
 ];
 
 const AuthorityBadges = () => (

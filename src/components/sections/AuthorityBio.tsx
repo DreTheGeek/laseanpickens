@@ -3,10 +3,10 @@ import { Bot, Building2, TrendingUp, Zap } from "lucide-react";
 import bioPhoto from "@/assets/bio-photo.png";
 
 const stats = [
-  { icon: Bot, label: "AI Systems Built", value: "50+" },
-  { icon: Building2, label: "Businesses Powered", value: "200+" },
-  { icon: TrendingUp, label: "Revenue Generated", value: "$10M+" },
-  { icon: Zap, label: "Automations Deployed", value: "1,000+" },
+  { icon: Bot, label: "AI Systems Built", value: "100+" },
+  { icon: Building2, label: "Businesses Transformed", value: "500+" },
+  { icon: TrendingUp, label: "Revenue Generated", value: "$50M+" },
+  { icon: Zap, label: "Success Rate", value: "97%" },
 ];
 
 const AuthorityBio = () => (
@@ -21,22 +21,22 @@ const AuthorityBio = () => (
           className="space-y-6"
         >
           <h2 className="text-3xl md:text-5xl font-heading font-bold">
-            Meet <span className="text-gradient-blue">LaSean Pickens</span>
+            Why LaSean <span className="text-gradient-red">Gets Results</span>
           </h2>
           <div className="space-y-4 text-foreground/80 text-lg leading-relaxed">
             <p>
-              Founder and CEO of Kaldr, a portfolio of AI-powered businesses spanning voice automation,
-              SaaS marketplaces, digital media, real estate, and financial infrastructure.
+              THE AI Business Coach. LaSean has built AI systems that generate millions in revenue
+              for businesses across every industry - from startups to Fortune 500 companies.
             </p>
             <p>
-              LaSean doesn't just talk about systems. He builds them. From deploying AI voice agents
-              that replace entire call centers to architecting SaaS platforms that generate recurring
-              revenue on autopilot, his work is the proof.
+              From code to coaching empire - he doesn't just teach theory. He builds the actual
+              systems, deploys AI voice agents, architects automation platforms, and delivers
+              measurable ROI that speaks for itself.
             </p>
             <p>
-              His mission is simple: teach ambitious founders and operators how to build leverage
-              through AI, automation, and strategic infrastructure, so they can stop trading time
-              for money and start building wealth that compounds.
+              With unlimited capacity through automation and a proven track record across 500+
+              businesses, LaSean helps consultants, marketers, and business owners use AI to
+              increase revenue while reducing overhead.
             </p>
           </div>
         </motion.div>

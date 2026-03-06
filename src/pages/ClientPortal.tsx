@@ -1,578 +1,731 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
-  ArrowLeft, ArrowRight, CheckCircle2, BarChart3,
-  Clock, Zap, Mail, Phone, FileText, Settings,
+  User, LayoutDashboard, GraduationCap, Users, CalendarDays,
+  FolderOpen, MessageSquare, Link2, LogOut, Sun, Send,
+  Camera, Mail, Phone, MapPin, Lock, Play, Trophy,
+  Star, MessageCircle, Award, FileText, CheckCircle2,
 } from "lucide-react";
 
-/* ---------- types ---------- */
+/* ================================================================
+   TYPES
+   ================================================================ */
 
-interface OnboardingData {
-  companyName: string;
-  industry: string;
-  businessSize: string;
-  monthlyRevenue: string;
-  yearsInBusiness: string;
-  serviceArea: string;
-  challenges: string[];
-  biggestChallenge: string;
-  primaryGoal: string;
-  revenueGoal: string;
-  timeSavings: string;
-  timeline: string;
-  crm: string[];
-  otherSoftware: string;
-  websitePlatform: string;
-  phoneSystem: string;
-  techComfort: string;
-}
+type Page =
+  | "profile"
+  | "dashboard"
+  | "academy"
+  | "community"
+  | "schedule"
+  | "resources"
+  | "communications"
+  | "affiliate";
 
-const defaultData: OnboardingData = {
-  companyName: "",
-  industry: "",
-  businessSize: "",
-  monthlyRevenue: "",
-  yearsInBusiness: "",
-  serviceArea: "",
-  challenges: [],
-  biggestChallenge: "",
-  primaryGoal: "",
-  revenueGoal: "",
-  timeSavings: "",
-  timeline: "",
-  crm: [],
-  otherSoftware: "",
-  websitePlatform: "",
-  phoneSystem: "",
-  techComfort: "",
-};
+/* ================================================================
+   SIDEBAR NAV ITEMS
+   ================================================================ */
 
-/* ---------- constants ---------- */
-
-const challenges = [
-  { id: "leads", label: "Missing Too Many Leads", desc: "Calls go unanswered, leads slip through cracks" },
-  { id: "followup", label: "Poor Follow-up Process", desc: "Inconsistent or delayed follow-up" },
-  { id: "scheduling", label: "Scheduling Chaos", desc: "Double bookings, missed appointments" },
-  { id: "admin", label: "Too Much Admin Work", desc: "Drowning in paperwork and manual tasks" },
-  { id: "customer-service", label: "Customer Service Issues", desc: "Long response times, inconsistent service" },
-  { id: "data", label: "No Clear Business Data", desc: "Flying blind without actionable insights" },
+const navItems: { id: Page; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { id: "profile", label: "Profile", icon: User },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "academy", label: "AI Academy", icon: GraduationCap },
+  { id: "community", label: "Community", icon: Users },
+  { id: "schedule", label: "Schedule", icon: CalendarDays },
+  { id: "resources", label: "Resources", icon: FolderOpen },
+  { id: "communications", label: "Communications", icon: MessageSquare },
+  { id: "affiliate", label: "Affiliate Portal", icon: Link2 },
 ];
 
-const goals = [
-  { value: "increase-revenue", label: "Increase revenue and grow the business" },
-  { value: "save-time", label: "Save time and reduce manual work" },
-  { value: "improve-service", label: "Improve customer service quality" },
-  { value: "scale-business", label: "Scale the business without hiring more staff" },
-  { value: "better-data", label: "Get better business insights and data" },
+/* ================================================================
+   SAMPLE DATA
+   ================================================================ */
+
+const samplePrograms = [
+  { name: "AI Business Starter", since: "03/01/2026", active: true },
+  { name: "Growth Accelerator", since: "02/15/2026", active: true },
+  { name: "VIP Coaching", since: "01/20/2026", active: true },
+  { name: "Empire Mastermind", since: "03/05/2026", active: false },
 ];
 
-const crmOptions = ["ServiceTitan", "Jobber", "HubSpot", "Salesforce", "QuickBooks", "None/Excel"];
-
-const industries = [
-  "HVAC", "Plumbing", "Electrical", "Roofing", "Landscaping",
-  "Cleaning Services", "Construction", "Automotive", "Healthcare", "Real Estate", "Other",
+const sampleCourses = [
+  { title: "AI Automation 101", desc: "Learn the fundamentals of business AI automation", locked: false, progress: 65 },
+  { title: "Lead Generation Mastery", desc: "Master automated lead gen systems", locked: false, progress: 30 },
+  { title: "Sales Pipeline Automation", desc: "Build end-to-end automated sales funnels", locked: true, points: 100 },
+  { title: "Advanced AI Systems", desc: "Design custom AI workflows for your business", locked: true, points: 200 },
+  { title: "Scaling with AI", desc: "Scale operations without scaling headcount", locked: true, points: 300 },
+  { title: "Enterprise AI Strategy", desc: "AI strategy for multi-location businesses", locked: true, points: 500 },
 ];
 
-/* ---------- select helper ---------- */
+const sampleMessages = [
+  { type: "SMS", text: "Welcome to Kaldr Tech! Your AI systems are being configured...", date: "Mar 5" },
+  { type: "Email", text: "Your Growth Accelerator onboarding session is scheduled for Thursday at 2 PM ET.", date: "Mar 3" },
+  { type: "SMS", text: "Quick reminder: Weekly coaching call tomorrow at 11 AM ET. See you there!", date: "Feb 28" },
+];
 
-const SelectField = ({ label, value, onChange, options, placeholder }: {
+const sampleChat = [
+  { user: "LaSean Pickens", avatar: "LP", msg: "Welcome everyone to the Winner Circle! Let's build something great.", time: "9:00 AM", date: "March 5, 2026", isHost: true },
+  { user: "Maria Chen", avatar: "MC", msg: "Excited to be here! Just signed up for the Growth Accelerator.", time: "9:14 AM", date: "March 5, 2026" },
+  { user: "James Wilson", avatar: "JW", msg: "The AI automation setup was incredible. Already seeing results in week one.", time: "9:22 AM", date: "March 5, 2026" },
+  { user: "Sarah Mitchell", avatar: "SM", msg: "Can we get a session on Vapi integration? Would love to set that up for my team.", time: "10:05 AM", date: "March 5, 2026" },
+  { user: "LaSean Pickens", avatar: "LP", msg: "Absolutely Sarah - I'll cover that in Thursday's coaching call.", time: "10:12 AM", date: "March 5, 2026", isHost: true },
+];
+
+const sampleSchedule = [
+  { title: "Weekly Group Coaching Call", date: "Thu, Mar 6", time: "2:00 PM ET", type: "Zoom" },
+  { title: "AI Academy Live Q&A", date: "Mon, Mar 10", time: "11:00 AM ET", type: "Zoom" },
+  { title: "1-on-1 Strategy Session", date: "Wed, Mar 12", time: "3:00 PM ET", type: "Zoom" },
+  { title: "Empire Mastermind Meetup", date: "Fri, Mar 21", time: "10:00 AM ET", type: "In-Person" },
+];
+
+const sampleResources = [
+  { title: "AI Automation Playbook", type: "PDF", size: "2.4 MB" },
+  { title: "Lead Gen Templates Pack", type: "ZIP", size: "8.1 MB" },
+  { title: "Cold Email Swipe File", type: "PDF", size: "1.2 MB" },
+  { title: "CRM Setup Guide", type: "PDF", size: "3.7 MB" },
+  { title: "Vapi Voice AI Tutorial", type: "VIDEO", size: "45 min" },
+  { title: "Scaling Checklist", type: "PDF", size: "890 KB" },
+];
+
+/* ================================================================
+   LAYOUT SHELL
+   ================================================================ */
+
+const PortalShell = ({
+  activePage,
+  setPage,
+  children,
+}: {
+  activePage: Page;
+  setPage: (p: Page) => void;
+  children: React.ReactNode;
+}) => (
+  <div className="min-h-screen bg-[#0b1121] text-gray-100 flex">
+    {/* Sidebar */}
+    <aside className="w-[180px] shrink-0 bg-[#0b1121] border-r border-white/[0.06] flex flex-col fixed inset-y-0 left-0 z-40">
+      {/* User info */}
+      <div className="p-4 flex items-center gap-3">
+        <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-white shrink-0">
+          L
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm font-semibold truncate">LaSean</p>
+          <p className="text-[10px] text-gray-500 truncate">dre@kaldrbusiness.com</p>
+        </div>
+      </div>
+
+      {/* Nav */}
+      <nav className="flex-1 px-2 py-2 space-y-0.5">
+        {navItems.map((item) => {
+          const active = activePage === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setPage(item.id)}
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
+                active
+                  ? "bg-primary text-white"
+                  : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.04]"
+              }`}
+            >
+              <item.icon className="w-4 h-4 shrink-0" />
+              {item.label}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Footer */}
+      <div className="p-3 border-t border-white/[0.06]">
+        <p className="text-[10px] text-gray-600 text-center">&copy; 2026 LaSean Pickens</p>
+      </div>
+    </aside>
+
+    {/* Main area */}
+    <div className="flex-1 ml-[180px]">
+      {/* Top header */}
+      <header className="h-12 border-b border-white/[0.06] flex items-center justify-end px-6 gap-4 bg-[#0b1121] sticky top-0 z-30">
+        <span className="text-xs text-gray-500">dre@kaldrbusiness.com</span>
+        <button className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center hover:bg-white/10 transition-colors">
+          <Sun className="w-3.5 h-3.5 text-gray-400" />
+        </button>
+        <a
+          href="/"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/90 hover:bg-primary text-white text-xs font-medium transition-colors"
+        >
+          <LogOut className="w-3 h-3" /> Sign Out
+        </a>
+      </header>
+
+      {/* Content */}
+      <main className="p-6 max-w-[1100px]">
+        <motion.div
+          key={activePage}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {children}
+        </motion.div>
+      </main>
+    </div>
+  </div>
+);
+
+/* ================================================================
+   SHARED UI
+   ================================================================ */
+
+const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <div className={`bg-[#111827] border border-white/[0.06] rounded-xl ${className}`}>{children}</div>
+);
+
+const SectionTitle = ({ icon: Icon, children }: { icon: React.ComponentType<{ className?: string }>; children: React.ReactNode }) => (
+  <h2 className="flex items-center gap-2 text-lg font-bold mb-4">
+    <Icon className="w-5 h-5 text-primary" />
+    {children}
+  </h2>
+);
+
+const InputField = ({
+  label,
+  icon: Icon,
+  value,
+  placeholder,
+}: {
   label: string;
+  icon: React.ComponentType<{ className?: string }>;
   value: string;
-  onChange: (v: string) => void;
-  options: { value: string; label: string }[];
-  placeholder: string;
+  placeholder?: string;
 }) => (
   <div>
-    <label className="block text-sm font-medium mb-2">{label}</label>
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500"
-    >
-      <option value="">{placeholder}</option>
-      {options.map((o) => (
-        <option key={o.value} value={o.value}>{o.label}</option>
-      ))}
-    </select>
-  </div>
-);
-
-/* ---------- step components ---------- */
-
-const Step1 = ({ data, setData }: { data: OnboardingData; setData: (d: OnboardingData) => void }) => (
-  <div>
-    <h2 className="text-2xl md:text-3xl font-bold text-center mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-      Welcome! Let's Get Started
-    </h2>
-    <p className="text-center text-gray-300 mb-8">Tell us about your business so we can customize your AI automation experience</p>
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-medium mb-2">Company Name *</label>
-          <input
-            type="text"
-            value={data.companyName}
-            onChange={(e) => setData({ ...data, companyName: e.target.value })}
-            className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500"
-            placeholder="Your Company LLC"
-          />
-        </div>
-        <SelectField
-          label="Industry *"
-          value={data.industry}
-          onChange={(v) => setData({ ...data, industry: v })}
-          options={industries.map((i) => ({ value: i.toLowerCase().replace(/\s/g, "-"), label: i }))}
-          placeholder="Select Industry"
-        />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <SelectField
-          label="Business Size *"
-          value={data.businessSize}
-          onChange={(v) => setData({ ...data, businessSize: v })}
-          options={[
-            { value: "solo", label: "Solo (Just me)" },
-            { value: "small", label: "Small (2-10 employees)" },
-            { value: "medium", label: "Medium (11-50 employees)" },
-            { value: "large", label: "Large (51+ employees)" },
-          ]}
-          placeholder="Select Size"
-        />
-        <SelectField
-          label="Monthly Revenue *"
-          value={data.monthlyRevenue}
-          onChange={(v) => setData({ ...data, monthlyRevenue: v })}
-          options={[
-            { value: "0-10k", label: "$0 - $10K" },
-            { value: "10k-25k", label: "$10K - $25K" },
-            { value: "25k-50k", label: "$25K - $50K" },
-            { value: "50k-100k", label: "$50K - $100K" },
-            { value: "100k-250k", label: "$100K - $250K" },
-            { value: "250k+", label: "$250K+" },
-          ]}
-          placeholder="Select Range"
-        />
-        <div>
-          <label className="block text-sm font-medium mb-2">Years in Business</label>
-          <input
-            type="number"
-            value={data.yearsInBusiness}
-            onChange={(e) => setData({ ...data, yearsInBusiness: e.target.value })}
-            className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500"
-            placeholder="5"
-          />
-        </div>
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-2">Primary Service Area</label>
-        <input
-          type="text"
-          value={data.serviceArea}
-          onChange={(e) => setData({ ...data, serviceArea: e.target.value })}
-          className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500"
-          placeholder="Atlanta, GA or Nationwide"
-        />
-      </div>
-    </div>
-  </div>
-);
-
-const Step2 = ({ data, setData }: { data: OnboardingData; setData: (d: OnboardingData) => void }) => {
-  const toggleChallenge = (id: string) => {
-    const next = data.challenges.includes(id)
-      ? data.challenges.filter((c) => c !== id)
-      : [...data.challenges, id];
-    setData({ ...data, challenges: next });
-  };
-  return (
-    <div>
-      <h2 className="text-2xl md:text-3xl font-bold text-center mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-        What Are Your Biggest Challenges?
-      </h2>
-      <p className="text-center text-gray-300 mb-8">Help us understand your pain points so we can prioritize solutions</p>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {challenges.map((c) => (
-          <label
-            key={c.id}
-            className={`flex items-center gap-3 p-4 glass rounded-lg cursor-pointer hover:bg-white/5 transition-colors ${
-              data.challenges.includes(c.id) ? "border-purple-500/50 bg-purple-500/10" : ""
-            }`}
-          >
-            <input
-              type="checkbox"
-              checked={data.challenges.includes(c.id)}
-              onChange={() => toggleChallenge(c.id)}
-              className="w-5 h-5 rounded accent-purple-500"
-            />
-            <div>
-              <div className="font-semibold text-sm">{c.label}</div>
-              <div className="text-xs text-gray-400">{c.desc}</div>
-            </div>
-          </label>
-        ))}
-      </div>
-      <div>
-        <label className="block text-sm font-medium mb-2">Describe Your Biggest Challenge (Optional)</label>
-        <textarea
-          rows={4}
-          value={data.biggestChallenge}
-          onChange={(e) => setData({ ...data, biggestChallenge: e.target.value })}
-          className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 focus:outline-none focus:border-purple-500"
-          placeholder="Tell us more about what's keeping you up at night..."
-        />
-      </div>
-    </div>
-  );
-};
-
-const Step3 = ({ data, setData }: { data: OnboardingData; setData: (d: OnboardingData) => void }) => (
-  <div>
-    <h2 className="text-2xl md:text-3xl font-bold text-center mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-      What Are Your Goals?
-    </h2>
-    <p className="text-center text-gray-300 mb-8">Let's define success for your automation journey</p>
-    <div className="space-y-6">
-      <div>
-        <label className="block text-sm font-medium mb-4">What's your primary goal for automation? *</label>
-        <div className="space-y-3">
-          {goals.map((g) => (
-            <label key={g.value} className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="radio"
-                name="primaryGoal"
-                value={g.value}
-                checked={data.primaryGoal === g.value}
-                onChange={() => setData({ ...data, primaryGoal: g.value })}
-                className="w-4 h-4 accent-purple-500"
-              />
-              <span className="text-sm">{g.label}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <SelectField
-          label="Revenue Goal (Monthly)"
-          value={data.revenueGoal}
-          onChange={(v) => setData({ ...data, revenueGoal: v })}
-          options={[
-            { value: "current", label: "Maintain current level" },
-            { value: "25-percent", label: "Increase by 25%" },
-            { value: "50-percent", label: "Increase by 50%" },
-            { value: "100-percent", label: "Double revenue" },
-            { value: "custom", label: "Custom goal" },
-          ]}
-          placeholder="Select Goal"
-        />
-        <SelectField
-          label="Time Savings Goal (Weekly)"
-          value={data.timeSavings}
-          onChange={(v) => setData({ ...data, timeSavings: v })}
-          options={[
-            { value: "5-hours", label: "5-10 hours/week" },
-            { value: "10-hours", label: "10-20 hours/week" },
-            { value: "20-hours", label: "20-30 hours/week" },
-            { value: "40-hours", label: "40+ hours/week" },
-          ]}
-          placeholder="Select Goal"
-        />
-      </div>
-      <SelectField
-        label="Implementation Timeline"
-        value={data.timeline}
-        onChange={(v) => setData({ ...data, timeline: v })}
-        options={[
-          { value: "asap", label: "ASAP - I need this yesterday" },
-          { value: "1-month", label: "Within 1 month" },
-          { value: "3-months", label: "Within 3 months" },
-          { value: "6-months", label: "Within 6 months" },
-          { value: "planning", label: "Just planning for now" },
-        ]}
-        placeholder="Select Timeline"
+    <label className="block text-xs font-medium text-gray-400 mb-1.5">{label}</label>
+    <div className="flex items-center gap-2 bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5">
+      <Icon className="w-4 h-4 text-gray-500 shrink-0" />
+      <input
+        type="text"
+        defaultValue={value}
+        placeholder={placeholder}
+        className="bg-transparent text-sm text-gray-200 w-full outline-none placeholder:text-gray-600"
       />
     </div>
   </div>
 );
 
-const Step4 = ({ data, setData }: { data: OnboardingData; setData: (d: OnboardingData) => void }) => {
-  const toggleCRM = (name: string) => {
-    const next = data.crm.includes(name)
-      ? data.crm.filter((c) => c !== name)
-      : [...data.crm, name];
-    setData({ ...data, crm: next });
-  };
-  return (
-    <div>
-      <h2 className="text-2xl md:text-3xl font-bold text-center mb-2 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-        Current Tech Stack
-      </h2>
-      <p className="text-center text-gray-300 mb-8">Help us understand your current systems for seamless integration</p>
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium mb-3">Current CRM/Software</label>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {crmOptions.map((name) => (
-              <label key={name} className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={data.crm.includes(name)}
-                  onChange={() => toggleCRM(name)}
-                  className="w-4 h-4 rounded accent-purple-500"
-                />
-                <span className="text-sm">{name}</span>
-              </label>
-            ))}
+/* ================================================================
+   PAGE: PROFILE
+   ================================================================ */
+
+const ProfilePage = () => (
+  <div className="space-y-6">
+    <Card className="p-6">
+      <div className="flex items-center gap-4">
+        <div className="relative">
+          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-2xl font-bold text-white">
+            L
           </div>
-          <input
-            type="text"
-            value={data.otherSoftware}
-            onChange={(e) => setData({ ...data, otherSoftware: e.target.value })}
-            className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 mt-3 focus:outline-none focus:border-purple-500"
-            placeholder="Other software (please specify)"
-          />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <SelectField
-            label="Website Platform"
-            value={data.websitePlatform}
-            onChange={(v) => setData({ ...data, websitePlatform: v })}
-            options={[
-              { value: "wordpress", label: "WordPress" },
-              { value: "squarespace", label: "Squarespace" },
-              { value: "wix", label: "Wix" },
-              { value: "custom", label: "Custom Built" },
-              { value: "none", label: "No website" },
-              { value: "other", label: "Other" },
-            ]}
-            placeholder="Select Platform"
-          />
-          <SelectField
-            label="Current Phone System"
-            value={data.phoneSystem}
-            onChange={(v) => setData({ ...data, phoneSystem: v })}
-            options={[
-              { value: "traditional", label: "Traditional landline" },
-              { value: "voip", label: "VoIP system" },
-              { value: "cell", label: "Cell phone only" },
-              { value: "google-voice", label: "Google Voice" },
-              { value: "other", label: "Other" },
-            ]}
-            placeholder="Select System"
-          />
+          <button className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+            <Camera className="w-3 h-3 text-white" />
+          </button>
         </div>
         <div>
-          <label className="block text-sm font-medium mb-3">Tech Comfort Level</label>
-          <div className="flex items-center gap-6">
-            {["beginner", "intermediate", "advanced"].map((level) => (
-              <label key={level} className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="radio"
-                  name="techComfort"
-                  value={level}
-                  checked={data.techComfort === level}
-                  onChange={() => setData({ ...data, techComfort: level })}
-                  className="w-4 h-4 accent-purple-500"
-                />
-                <span className="text-sm capitalize">{level}</span>
-              </label>
-            ))}
-          </div>
+          <h2 className="text-lg font-bold">LaSean</h2>
+          <p className="text-sm text-gray-500">Click the camera to upload a photo</p>
         </div>
       </div>
+    </Card>
+
+    <Card className="p-6">
+      <h3 className="text-base font-bold mb-5">Contact Information</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <InputField label="Full Name" icon={User} value="LaSean" />
+        <InputField label="Email Address" icon={Mail} value="dre@kaldrbusiness.com" />
+        <InputField label="Phone Number" icon={Phone} value="" placeholder="Your phone number" />
+        <InputField label="Address" icon={MapPin} value="" placeholder="Your address" />
+      </div>
+      <div className="mt-4">
+        <label className="block text-xs font-medium text-gray-400 mb-1.5">About You</label>
+        <textarea
+          rows={3}
+          placeholder="Tell us a bit about yourself and your AI journey..."
+          className="w-full bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600 resize-none"
+        />
+      </div>
+    </Card>
+
+    <Card className="p-6">
+      <h3 className="text-base font-bold mb-5">Social Media Profiles</h3>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <InputField label="Facebook" icon={Link2} value="" placeholder="https://facebook.com/yourprofile" />
+        <InputField label="Instagram" icon={Link2} value="" placeholder="https://instagram.com/yourprofile" />
+        <InputField label="TikTok" icon={Link2} value="" placeholder="https://tiktok.com/@yourprofile" />
+        <InputField label="YouTube" icon={Link2} value="" placeholder="https://youtube.com/@yourhandle" />
+      </div>
+    </Card>
+
+    <div className="flex justify-end">
+      <button className="px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors">
+        Save Changes
+      </button>
+    </div>
+  </div>
+);
+
+/* ================================================================
+   PAGE: DASHBOARD
+   ================================================================ */
+
+const DashboardPage = () => (
+  <div className="space-y-6">
+    <Card className="p-6">
+      <SectionTitle icon={Award}>My Programs</SectionTitle>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {samplePrograms.map((p) => (
+          <div key={p.name} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
+            <div>
+              <p className="text-sm font-semibold">{p.name}</p>
+              <p className="text-xs text-gray-500">Since {p.since}</p>
+            </div>
+            <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${
+              p.active ? "bg-primary/20 text-primary" : "bg-gray-700 text-gray-400"
+            }`}>
+              {p.active ? "Active" : "Pending"}
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {[
+        { label: "Courses Completed", value: "2 / 6" },
+        { label: "Community Points", value: "45" },
+        { label: "Sessions Attended", value: "8" },
+        { label: "Referrals", value: "3" },
+      ].map((s) => (
+        <Card key={s.label} className="p-4 text-center">
+          <p className="text-2xl font-bold text-primary">{s.value}</p>
+          <p className="text-xs text-gray-500 mt-1">{s.label}</p>
+        </Card>
+      ))}
+    </div>
+
+    <Card className="p-6">
+      <SectionTitle icon={CalendarDays}>Upcoming Sessions</SectionTitle>
+      <div className="space-y-2">
+        {sampleSchedule.slice(0, 3).map((s) => (
+          <div key={s.title} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
+            <div>
+              <p className="text-sm font-semibold">{s.title}</p>
+              <p className="text-xs text-gray-500">{s.date} - {s.time}</p>
+            </div>
+            <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">{s.type}</span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>
+);
+
+/* ================================================================
+   PAGE: AI ACADEMY
+   ================================================================ */
+
+const AcademyPage = () => (
+  <div className="space-y-6">
+    <Card className="p-6 text-center">
+      <h2 className="text-xl font-bold mb-1">AI Academy</h2>
+      <p className="text-sm text-gray-500 mb-4">Training from LaSean Pickens - earn points to unlock premium courses!</p>
+      <div className="flex items-center justify-center gap-2 text-sm">
+        <Trophy className="w-4 h-4 text-primary" />
+        <span className="text-primary font-semibold">45 / 100 Points</span>
+        <div className="w-32 h-2 bg-gray-700 rounded-full ml-1">
+          <div className="w-[45%] h-2 bg-primary rounded-full" />
+        </div>
+      </div>
+    </Card>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {sampleCourses.map((c) => (
+        <Card key={c.title} className="overflow-hidden">
+          {/* Course header */}
+          <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center relative">
+            {c.locked && (
+              <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded bg-gray-700 text-gray-300 uppercase">
+                Locked
+              </span>
+            )}
+            {c.locked ? (
+              <Lock className="w-8 h-8 text-gray-500" />
+            ) : (
+              <Play className="w-8 h-8 text-primary" />
+            )}
+          </div>
+          <div className="p-4">
+            <h3 className="text-sm font-bold mb-1">{c.title}</h3>
+            <p className="text-xs text-gray-500 mb-3">{c.desc}</p>
+            {c.locked ? (
+              <button className="w-full py-2 rounded-lg bg-amber-600/20 text-amber-400 text-xs font-semibold flex items-center justify-center gap-1.5">
+                <Lock className="w-3 h-3" /> Unlock at {c.points} Points
+              </button>
+            ) : (
+              <div>
+                <div className="flex justify-between text-xs text-gray-500 mb-1">
+                  <span>Progress</span>
+                  <span>{c.progress}%</span>
+                </div>
+                <div className="w-full h-1.5 bg-gray-700 rounded-full">
+                  <div className="h-1.5 bg-primary rounded-full" style={{ width: `${c.progress}%` }} />
+                </div>
+              </div>
+            )}
+          </div>
+        </Card>
+      ))}
+    </div>
+  </div>
+);
+
+/* ================================================================
+   PAGE: COMMUNITY
+   ================================================================ */
+
+const CommunityPage = () => {
+  const [tab, setTab] = useState<"about" | "chat">("about");
+  return (
+    <div className="space-y-4">
+      {/* Tabs */}
+      <div className="flex gap-6 border-b border-white/[0.06] pb-2">
+        {(["about", "chat"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`text-sm font-medium pb-1 capitalize transition-colors ${
+              tab === t ? "text-white border-b-2 border-primary" : "text-gray-500 hover:text-gray-300"
+            }`}
+          >
+            {t === "about" ? "About" : "Chat"}
+          </button>
+        ))}
+      </div>
+
+      {tab === "about" && (
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-6">
+          <div className="space-y-6">
+            <Card className="p-6">
+              <h2 className="text-xl font-bold mb-2">Winner Circle Community</h2>
+              <p className="text-sm text-gray-400 mb-6">
+                Welcome to the Winner Circle - an exclusive community for action-takers and achievers.
+                Connect with like-minded entrepreneurs, share your wins, get feedback, and level up together.
+              </p>
+              <div className="h-48 bg-[#0b1121] rounded-lg flex items-center justify-center border border-white/[0.04]">
+                <div className="text-center">
+                  <Play className="w-10 h-10 text-primary mx-auto mb-2 opacity-60" />
+                  <p className="text-sm text-gray-500">Watch the Introduction</p>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <SectionTitle icon={Star}>What You Get</SectionTitle>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {[
+                  { icon: MessageCircle, title: "Community Feed", desc: "Share wins, ask questions, and discuss topics" },
+                  { icon: Users, title: "Member Directory", desc: "Connect and network with other members" },
+                  { icon: Trophy, title: "Leaderboard & Points", desc: "Earn points for engagement and climb the ranks" },
+                  { icon: FileText, title: "Work Submissions", desc: "Submit your projects and get feedback" },
+                ].map((item) => (
+                  <div key={item.title} className="flex items-start gap-3 bg-[#0b1121] rounded-lg p-3 border border-white/[0.04]">
+                    <item.icon className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-semibold">{item.title}</p>
+                      <p className="text-xs text-gray-500">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+
+            <Card className="p-6">
+              <SectionTitle icon={CheckCircle2}>Who This Is For</SectionTitle>
+              <div className="space-y-2">
+                {[
+                  "Entrepreneurs ready to take action",
+                  "Business owners looking to grow with AI",
+                  "People who want to be surrounded by winners",
+                  "Anyone committed to leveling up their skills",
+                ].map((text) => (
+                  <div key={text} className="flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
+                    <span className="text-sm text-gray-300">{text}</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
+
+          {/* Sidebar card */}
+          <div className="space-y-4">
+            <Card className="overflow-hidden">
+              <div className="h-16 bg-gradient-to-r from-primary to-primary/70" />
+              <div className="px-4 pb-4 -mt-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-primary mx-auto flex items-center justify-center text-lg font-bold border-2 border-[#111827]">
+                  LP
+                </div>
+                <p className="text-sm font-bold mt-2">Winner Circle</p>
+                <p className="text-[10px] text-gray-500">Community for Everyone</p>
+                <div className="grid grid-cols-2 gap-2 mt-3 text-center">
+                  <div>
+                    <p className="text-lg font-bold">12</p>
+                    <p className="text-[10px] text-gray-500 uppercase">Members</p>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-primary">45</p>
+                    <p className="text-[10px] text-gray-500 uppercase">Your Pts</p>
+                  </div>
+                </div>
+                <button className="w-full mt-3 py-2 rounded-lg bg-primary text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors">
+                  <Users className="w-3 h-3" /> Invite Members
+                </button>
+              </div>
+            </Card>
+
+            <Card className="p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Trophy className="w-4 h-4 text-primary" />
+                <span className="text-sm font-bold">Leaderboard</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Trophy className="w-3 h-3 text-amber-400" />
+                  <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-[10px] font-bold">LP</div>
+                  <span className="text-xs">LaSean Pickens</span>
+                </div>
+                <span className="text-xs text-primary font-semibold">+45</span>
+              </div>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {tab === "chat" && (
+        <Card className="p-4">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+              <Users className="w-4 h-4 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm font-bold">Winner Circle Chat</p>
+              <p className="text-xs text-gray-500">{sampleChat.length} messages</p>
+            </div>
+          </div>
+
+          <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 mb-4">
+            {/* Date separator */}
+            <div className="text-center">
+              <span className="text-[10px] bg-gray-700/50 text-gray-400 px-3 py-1 rounded-full">March 5, 2026</span>
+            </div>
+            {sampleChat.map((m, i) => (
+              <div key={i} className="flex items-start gap-2.5">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                  m.isHost ? "bg-primary text-white" : "bg-gray-700 text-gray-300"
+                }`}>
+                  {m.avatar}
+                </div>
+                <div>
+                  <div className="bg-[#0b1121] rounded-lg px-3 py-2 border border-white/[0.04] max-w-md">
+                    <p className={`text-xs font-bold mb-0.5 ${m.isHost ? "text-primary" : "text-blue-400"}`}>{m.user}</p>
+                    <p className="text-sm text-gray-200">{m.msg}</p>
+                  </div>
+                  <p className="text-[10px] text-gray-600 mt-0.5 ml-1">{m.time}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Type a message..."
+              className="flex-1 bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600"
+            />
+            <button className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors shrink-0">
+              <Send className="w-4 h-4 text-white" />
+            </button>
+          </div>
+        </Card>
+      )}
     </div>
   );
 };
 
-const Step5 = () => (
-  <div className="text-center">
-    <div className="text-6xl mb-6">
-      <CheckCircle2 className="w-16 h-16 mx-auto text-green-400" />
-    </div>
-    <h2 className="text-2xl md:text-3xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-      Setup Complete!
-    </h2>
-    <p className="text-lg text-gray-300 mb-8">Your AI automation journey begins now</p>
-    <div className="glass rounded-xl p-6 text-left max-w-lg mx-auto">
-      <h3 className="text-lg font-semibold mb-4">What Happens Next:</h3>
-      <div className="space-y-3">
-        {[
-          "Your dedicated AI systems are being configured based on your responses",
-          "You'll receive login credentials and training materials within 24 hours",
-          "Your onboarding specialist will contact you to schedule implementation",
-          "Full automation deployment will begin within 48 hours",
-        ].map((text) => (
-          <div key={text} className="flex items-start gap-3">
-            <div className="w-2 h-2 bg-purple-500 rounded-full mt-1.5 shrink-0" />
-            <span className="text-sm text-gray-300">{text}</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  </div>
-);
+/* ================================================================
+   PAGE: SCHEDULE
+   ================================================================ */
 
-/* ---------- portal dashboard ---------- */
-
-const portalWidgets = [
-  { icon: BarChart3, label: "Performance", value: "0 leads", color: "text-purple-400" },
-  { icon: Clock, label: "Time Saved", value: "0 hours", color: "text-blue-400" },
-  { icon: Zap, label: "Automations", value: "0 active", color: "text-green-400" },
-  { icon: Mail, label: "Emails Sent", value: "0 this month", color: "text-yellow-400" },
-  { icon: Phone, label: "AI Calls", value: "0 handled", color: "text-red-400" },
-  { icon: FileText, label: "Reports", value: "0 generated", color: "text-pink-400" },
-];
-
-const PortalDashboard = ({ clientName }: { clientName: string }) => (
-  <div className="min-h-screen bg-gradient-to-br from-purple-950 via-blue-950 to-indigo-950 text-white">
-    <header className="glass-dark p-6">
-      <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
-            <ArrowLeft className="w-5 h-5" />
-          </a>
-          <h1 className="text-2xl font-bold">Your AI Automation Dashboard</h1>
-        </div>
-        <div className="text-sm text-gray-300">
-          Welcome back, <span className="font-semibold text-white">{clientName || "Client"}</span>
-        </div>
-      </div>
-    </header>
-    <div className="max-w-7xl mx-auto p-6 space-y-6">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-        {portalWidgets.map((w, i) => (
-          <motion.div
-            key={w.label}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="glass rounded-xl p-4 text-center"
-          >
-            <w.icon className={`w-6 h-6 mx-auto mb-2 ${w.color}`} />
-            <div className="text-lg font-bold">{w.value}</div>
-            <div className="text-xs text-gray-400">{w.label}</div>
-          </motion.div>
-        ))}
-      </div>
-
-      <div className="glass-dark rounded-xl p-6">
-        <h2 className="text-xl font-bold mb-4">Getting Started</h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          {[
-            { icon: Settings, title: "System Configuration", desc: "Your AI systems are being set up based on your onboarding data." },
-            { icon: Mail, title: "Email Automation", desc: "Automated sequences will begin once configuration is complete." },
-            { icon: Phone, title: "AI Phone System", desc: "Your AI receptionist will be trained on your business details." },
-            { icon: BarChart3, title: "Analytics Dashboard", desc: "Real-time performance data will populate as automations go live." },
-          ].map((item) => (
-            <div key={item.title} className="glass rounded-xl p-4 flex items-start gap-3">
-              <item.icon className="w-8 h-8 text-primary shrink-0" />
+const SchedulePage = () => (
+  <div className="space-y-6">
+    <Card className="p-6">
+      <SectionTitle icon={CalendarDays}>Upcoming Sessions</SectionTitle>
+      <div className="space-y-2">
+        {sampleSchedule.map((s) => (
+          <div key={s.title} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3.5 border border-white/[0.04]">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <CalendarDays className="w-5 h-5 text-primary" />
+              </div>
               <div>
-                <h3 className="font-semibold text-sm">{item.title}</h3>
-                <p className="text-xs text-gray-400 mt-1">{item.desc}</p>
+                <p className="text-sm font-semibold">{s.title}</p>
+                <p className="text-xs text-gray-500">{s.date} - {s.time}</p>
               </div>
             </div>
-          ))}
-        </div>
+            <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${
+              s.type === "Zoom" ? "bg-primary/10 text-primary" : "bg-green-500/10 text-green-400"
+            }`}>
+              {s.type}
+            </span>
+          </div>
+        ))}
       </div>
-    </div>
+    </Card>
   </div>
 );
 
-/* ---------- main component ---------- */
+/* ================================================================
+   PAGE: RESOURCES
+   ================================================================ */
+
+const ResourcesPage = () => (
+  <div className="space-y-6">
+    <Card className="p-6">
+      <SectionTitle icon={FolderOpen}>Resources & Downloads</SectionTitle>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {sampleResources.map((r) => (
+          <div key={r.title} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                <FileText className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">{r.title}</p>
+                <p className="text-xs text-gray-500">{r.type} - {r.size}</p>
+              </div>
+            </div>
+            <button className="text-xs text-primary font-medium hover:underline">Download</button>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>
+);
+
+/* ================================================================
+   PAGE: COMMUNICATIONS
+   ================================================================ */
+
+const CommunicationsPage = () => (
+  <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+    <Card className="p-6">
+      <SectionTitle icon={MessageSquare}>Past Communications</SectionTitle>
+      <p className="text-sm text-gray-500 mb-4">Messages sent to you from our team.</p>
+      <div className="space-y-2">
+        {sampleMessages.map((m, i) => (
+          <div key={i} className="bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04] flex items-start justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <Phone className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+              <div>
+                <p className="text-sm font-semibold">{m.type} Message</p>
+                <p className="text-xs text-gray-400 mt-0.5">{m.text}</p>
+              </div>
+            </div>
+            <span className="text-[11px] text-gray-500 shrink-0 flex items-center gap-1">
+              <CalendarDays className="w-3 h-3" /> {m.date}
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+
+    <Card className="p-6">
+      <SectionTitle icon={Send}>Send a Message</SectionTitle>
+      <p className="text-sm text-gray-500 mb-4">Have a question? Send us a message and we'll get back to you.</p>
+      <div className="space-y-4">
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1.5">Subject</label>
+          <input
+            type="text"
+            placeholder="What do you need help with?"
+            className="w-full bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1.5">Message</label>
+          <textarea
+            rows={5}
+            placeholder="Describe your question or issue in detail..."
+            className="w-full bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600 resize-none"
+          />
+        </div>
+        <button className="w-full py-2.5 rounded-lg bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors">
+          <Send className="w-4 h-4" /> Send Message
+        </button>
+      </div>
+    </Card>
+  </div>
+);
+
+/* ================================================================
+   PAGE: AFFILIATE PORTAL
+   ================================================================ */
+
+const AffiliatePage = () => (
+  <div className="space-y-6">
+    <Card className="p-6">
+      <SectionTitle icon={Award}>My Programs</SectionTitle>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {samplePrograms.filter((p) => p.active).map((p) => (
+          <div key={p.name} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
+            <div>
+              <p className="text-sm font-semibold">{p.name}</p>
+              <p className="text-xs text-gray-500">Since {p.since}</p>
+            </div>
+            <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-primary/20 text-primary">Active</span>
+          </div>
+        ))}
+      </div>
+    </Card>
+
+    <Card className="p-6 text-center">
+      <SectionTitle icon={Link2}>Your Affiliate Link</SectionTitle>
+      <p className="text-sm text-gray-500 mb-4">Generate your unique affiliate link to start referring members.</p>
+      <button className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors">
+        <Link2 className="w-4 h-4" /> Generate Affiliate Link
+      </button>
+    </Card>
+  </div>
+);
+
+/* ================================================================
+   MAIN COMPONENT
+   ================================================================ */
 
 const ClientPortal = () => {
-  const [step, setStep] = useState(1);
-  const [onboarded, setOnboarded] = useState(false);
-  const [data, setData] = useState<OnboardingData>(defaultData);
+  const [page, setPage] = useState<Page>("dashboard");
 
-  const totalSteps = 5;
-
-  const nextStep = () => {
-    if (step < totalSteps) setStep(step + 1);
+  const pages: Record<Page, React.ReactNode> = {
+    profile: <ProfilePage />,
+    dashboard: <DashboardPage />,
+    academy: <AcademyPage />,
+    community: <CommunityPage />,
+    schedule: <SchedulePage />,
+    resources: <ResourcesPage />,
+    communications: <CommunicationsPage />,
+    affiliate: <AffiliatePage />,
   };
-  const prevStep = () => {
-    if (step > 1) setStep(step - 1);
-  };
-  const complete = () => setOnboarded(true);
-
-  if (onboarded) {
-    return <PortalDashboard clientName={data.companyName} />;
-  }
-
-  const steps = [Step1, Step2, Step3, Step4, Step5];
-  const CurrentStep = steps[step - 1];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-blue-950 to-indigo-950 text-white flex items-center justify-center p-4">
-      <div className="glass-dark rounded-2xl p-6 md:p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        {/* Step indicator */}
-        <div className="flex items-center justify-center mb-8">
-          <div className="flex items-center gap-2">
-            {Array.from({ length: totalSteps }, (_, i) => {
-              const num = i + 1;
-              const isActive = num === step;
-              const isComplete = num < step;
-              return (
-                <div key={num} className="flex items-center gap-2">
-                  <div
-                    className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
-                      isActive
-                        ? "bg-gradient-to-r from-purple-500 to-pink-500"
-                        : isComplete
-                        ? "bg-gradient-to-r from-blue-400 to-cyan-400"
-                        : "bg-gray-600"
-                    }`}
-                  >
-                    {isComplete ? <CheckCircle2 className="w-4 h-4" /> : num}
-                  </div>
-                  {num < totalSteps && <div className={`w-8 md:w-14 h-1 rounded ${num < step ? "bg-blue-400" : "bg-gray-600"}`} />}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.2 }}
-          >
-            <CurrentStep data={data} setData={setData} />
-          </motion.div>
-        </AnimatePresence>
-
-        {/* Nav buttons */}
-        <div className="flex justify-between mt-8">
-          {step > 1 && step < totalSteps ? (
-            <button
-              onClick={prevStep}
-              className="bg-gray-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors flex items-center gap-2"
-            >
-              <ArrowLeft className="w-4 h-4" /> Previous
-            </button>
-          ) : (
-            <div />
-          )}
-          {step < totalSteps ? (
-            <button
-              onClick={nextStep}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-3 rounded-lg font-semibold hover:from-purple-600 hover:to-pink-600 transition-all flex items-center gap-2"
-            >
-              {step === totalSteps - 1 ? "Complete Setup" : "Next Step"} <ArrowRight className="w-4 h-4" />
-            </button>
-          ) : (
-            <button
-              onClick={complete}
-              className="bg-gradient-to-r from-green-500 to-blue-500 px-8 py-3 rounded-lg font-bold hover:from-green-600 hover:to-blue-600 transition-all mx-auto"
-            >
-              Enter Your Portal
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
+    <PortalShell activePage={page} setPage={setPage}>
+      {pages[page]}
+    </PortalShell>
   );
 };
 

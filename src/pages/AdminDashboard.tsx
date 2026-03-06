@@ -1,15 +1,37 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  Rocket, BarChart3, Bot, Building2, Code2, Settings,
-  Mail, Smartphone, Phone, TrendingUp, ArrowLeft,
+  LayoutDashboard, Users, TrendingUp, BarChart3, Mail, Settings,
+  LogOut, Sun, Rocket, Bot, Building2, Code2, DollarSign,
+  UserPlus, AlertCircle, CheckCircle2, Clock,
 } from "lucide-react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend,
 } from "recharts";
 
-/* ---------- data ---------- */
+/* ================================================================
+   TYPES
+   ================================================================ */
+
+type Page = "overview" | "clients" | "pipeline" | "analytics" | "campaigns" | "settings";
+
+/* ================================================================
+   NAV
+   ================================================================ */
+
+const navItems: { id: Page; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+  { id: "overview", label: "Overview", icon: LayoutDashboard },
+  { id: "clients", label: "Clients", icon: Users },
+  { id: "pipeline", label: "Pipeline", icon: TrendingUp },
+  { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "campaigns", label: "Campaigns", icon: Mail },
+  { id: "settings", label: "Settings", icon: Settings },
+];
+
+/* ================================================================
+   DATA
+   ================================================================ */
 
 const projectionData = [
   { month: "Mar", actual: 0, projected: 0 },
@@ -28,275 +50,485 @@ interface Pillar {
   name: string;
   icon: React.ComponentType<{ className?: string }>;
   price: string;
-  priceLabel: string;
-  active: number;
-  activeLabel: string;
+  clients: number;
+  clientLabel: string;
   mrr: number;
   pipeline: number;
-  pipelineLabel: string;
   goal: string;
   goalTarget: number;
   accent: string;
 }
 
 const pillars: Pillar[] = [
-  {
-    name: "Startup Automation",
-    icon: Rocket,
-    price: "$197/mo",
-    priceLabel: "Price",
-    active: 0,
-    activeLabel: "clients",
-    mrr: 0,
-    pipeline: 0,
-    pipelineLabel: "prospects",
-    goal: "500 clients ($98K MRR)",
-    goalTarget: 500,
-    accent: "purple",
-  },
-  {
-    name: "Business Intelligence",
-    icon: BarChart3,
-    price: "$997/mo",
-    priceLabel: "Price",
-    active: 0,
-    activeLabel: "clients",
-    mrr: 0,
-    pipeline: 0,
-    pipelineLabel: "prospects",
-    goal: "50 clients ($50K MRR)",
-    goalTarget: 50,
-    accent: "blue",
-  },
-  {
-    name: "AI Business Systems",
-    icon: Bot,
-    price: "$2,997/mo",
-    priceLabel: "Price",
-    active: 0,
-    activeLabel: "clients",
-    mrr: 0,
-    pipeline: 0,
-    pipelineLabel: "prospects",
-    goal: "20 clients ($60K MRR)",
-    goalTarget: 20,
-    accent: "green",
-  },
-  {
-    name: "Enterprise Solutions",
-    icon: Building2,
-    price: "$9,997/mo",
-    priceLabel: "Price",
-    active: 0,
-    activeLabel: "clients",
-    mrr: 0,
-    pipeline: 0,
-    pipelineLabel: "prospects",
-    goal: "5 clients ($50K MRR)",
-    goalTarget: 5,
-    accent: "yellow",
-  },
-  {
-    name: "Custom Development",
-    icon: Code2,
-    price: "$75K+",
-    priceLabel: "Avg Project",
-    active: 0,
-    activeLabel: "projects",
-    mrr: 0,
-    pipeline: 0,
-    pipelineLabel: "prospects",
-    goal: "12 projects/year ($900K)",
-    goalTarget: 12,
-    accent: "red",
-  },
-  {
-    name: "Managed AI Services",
-    icon: Settings,
-    price: "$5K+/mo",
-    priceLabel: "Avg Price",
-    active: 0,
-    activeLabel: "clients",
-    mrr: 0,
-    pipeline: 0,
-    pipelineLabel: "prospects",
-    goal: "8 clients ($40K MRR)",
-    goalTarget: 8,
-    accent: "pink",
-  },
+  { name: "Startup Automation", icon: Rocket, price: "$197/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "500 clients ($98K)", goalTarget: 500, accent: "purple" },
+  { name: "Business Intelligence", icon: BarChart3, price: "$997/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "50 clients ($50K)", goalTarget: 50, accent: "blue" },
+  { name: "AI Business Systems", icon: Bot, price: "$2,997/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "20 clients ($60K)", goalTarget: 20, accent: "green" },
+  { name: "Enterprise Solutions", icon: Building2, price: "$9,997/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "5 clients ($50K)", goalTarget: 5, accent: "yellow" },
+  { name: "Custom Development", icon: Code2, price: "$75K+", clients: 0, clientLabel: "projects", mrr: 0, pipeline: 0, goal: "12 projects ($900K)", goalTarget: 12, accent: "red" },
+  { name: "Managed AI Services", icon: Settings, price: "$5K+/mo", clients: 0, clientLabel: "clients", mrr: 0, pipeline: 0, goal: "8 clients ($40K)", goalTarget: 8, accent: "pink" },
 ];
 
-const accentColors: Record<string, { border: string; text: string; bg: string }> = {
-  purple: { border: "border-purple-500", text: "text-purple-400", bg: "bg-purple-500" },
-  blue: { border: "border-blue-500", text: "text-blue-400", bg: "bg-blue-500" },
-  green: { border: "border-green-500", text: "text-green-400", bg: "bg-green-500" },
-  yellow: { border: "border-yellow-500", text: "text-yellow-400", bg: "bg-yellow-500" },
-  red: { border: "border-red-500", text: "text-red-400", bg: "bg-red-500" },
-  pink: { border: "border-pink-500", text: "text-pink-400", bg: "bg-pink-500" },
+const accentMap: Record<string, { border: string; text: string; bar: string }> = {
+  purple: { border: "border-l-purple-500", text: "text-purple-400", bar: "bg-purple-500" },
+  blue: { border: "border-l-blue-500", text: "text-blue-400", bar: "bg-blue-500" },
+  green: { border: "border-l-green-500", text: "text-green-400", bar: "bg-green-500" },
+  yellow: { border: "border-l-yellow-500", text: "text-yellow-400", bar: "bg-yellow-500" },
+  red: { border: "border-l-red-500", text: "text-red-400", bar: "bg-red-500" },
+  pink: { border: "border-l-pink-500", text: "text-pink-400", bar: "bg-pink-500" },
 };
 
-const quickActions = [
-  { icon: Mail, label: "Send Campaign", sub: "Email sequences" },
-  { icon: Smartphone, label: "Social Posts", sub: "Automated posting" },
-  { icon: Phone, label: "Lead Follow-up", sub: "AI automation" },
-  { icon: TrendingUp, label: "Analytics", sub: "Deep insights" },
+const sampleClients = [
+  { name: "Citywide HVAC", tier: "Business Intelligence", status: "active", mrr: 997, joined: "Mar 1" },
+  { name: "Apex Plumbing", tier: "Startup Automation", status: "active", mrr: 197, joined: "Feb 28" },
+  { name: "Metro Electric Co", tier: "AI Business Systems", status: "trial", mrr: 0, joined: "Mar 4" },
+  { name: "Summit Roofing", tier: "Startup Automation", status: "active", mrr: 197, joined: "Feb 15" },
+  { name: "GreenScape Landscaping", tier: "Growth Accelerator", status: "active", mrr: 497, joined: "Jan 20" },
 ];
 
-/* ---------- helpers ---------- */
+const samplePipeline = [
+  { name: "BlueStar HVAC", stage: "Discovery", value: "$997/mo", probability: "60%", lastContact: "Mar 4" },
+  { name: "Premier Electric", stage: "Proposal Sent", value: "$2,997/mo", probability: "40%", lastContact: "Mar 3" },
+  { name: "Atlas Construction", stage: "Demo Scheduled", value: "$9,997/mo", probability: "25%", lastContact: "Mar 5" },
+  { name: "Comfort Air Systems", stage: "Follow-up", value: "$197/mo", probability: "70%", lastContact: "Mar 2" },
+  { name: "ProClean Services", stage: "Negotiation", value: "$997/mo", probability: "80%", lastContact: "Mar 5" },
+];
 
-const fmt = (n: number) => "$" + n.toLocaleString();
+const sampleCampaigns = [
+  { name: "HVAC Spring Outreach", status: "active", sent: 200, opened: 68, replied: 12, date: "Mar 3" },
+  { name: "Plumbing Cold Email v2", status: "active", sent: 150, opened: 45, replied: 8, date: "Mar 1" },
+  { name: "Roofing Lead Gen", status: "draft", sent: 0, opened: 0, replied: 0, date: "Mar 5" },
+  { name: "General Contractors", status: "paused", sent: 100, opened: 32, replied: 5, date: "Feb 25" },
+];
 
-/* ---------- component ---------- */
+/* ================================================================
+   SHARED UI
+   ================================================================ */
 
-const AdminDashboard = () => {
+const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <div className={`bg-[#111827] border border-white/[0.06] rounded-xl ${className}`}>{children}</div>
+);
+
+/* ================================================================
+   LAYOUT
+   ================================================================ */
+
+const AdminShell = ({
+  activePage,
+  setPage,
+  children,
+}: {
+  activePage: Page;
+  setPage: (p: Page) => void;
+  children: React.ReactNode;
+}) => {
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
-
   useEffect(() => {
     const id = setInterval(() => setLastUpdated(new Date().toLocaleTimeString()), 30000);
     return () => clearInterval(id);
   }, []);
 
-  const totalMRR = pillars.reduce((s, p) => s + p.mrr, 0);
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-950 via-blue-950 to-indigo-950 text-white">
-      {/* Header */}
-      <header className="glass-dark p-6">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <a href="/" className="text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="w-5 h-5" />
-            </a>
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              Ava's Command Center
-            </h1>
+    <div className="min-h-screen bg-[#0b1121] text-gray-100 flex">
+      {/* Sidebar */}
+      <aside className="w-[180px] shrink-0 bg-[#0b1121] border-r border-white/[0.06] flex flex-col fixed inset-y-0 left-0 z-40">
+        <div className="p-4 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-white shrink-0">
+            K
           </div>
-          <div className="text-sm text-gray-300 text-right">
-            <div>Last Updated: {lastUpdated}</div>
-            <div>Revenue Goal: $200K-$300K/mo</div>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-7xl mx-auto p-6 space-y-6">
-        {/* Revenue Overview - 6 cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {[
-            { label: "Total MRR", value: fmt(totalMRR), sub: "+0% from last month", color: "text-purple-400" },
-            { label: "ARR", value: fmt(totalMRR * 12), sub: "Annualized", color: "text-blue-400" },
-            { label: "Active Clients", value: String(pillars.reduce((s, p) => s + p.active, 0)), sub: "Across all tiers", color: "text-green-400" },
-            { label: "Pipeline Value", value: "$0", sub: "Weighted forecast", color: "text-yellow-400" },
-            { label: "Churn Rate", value: "0%", sub: "Monthly average", color: "text-red-400" },
-            { label: "Goal Progress", value: totalMRR > 0 ? Math.round((totalMRR / 200000) * 100) + "%" : "0%", sub: "To $200K MRR", color: "text-pink-400" },
-          ].map((card, i) => (
-            <motion.div
-              key={card.label}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-              className="glass rounded-xl p-4"
-            >
-              <h3 className={`text-sm font-semibold ${card.color}`}>{card.label}</h3>
-              <div className="text-2xl font-bold mt-1">{card.value}</div>
-              <div className="text-xs text-gray-400 mt-1">{card.sub}</div>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* 6 Revenue Pillars */}
-        <div className="glass-dark rounded-xl p-6">
-          <h2 className="text-xl md:text-2xl font-bold mb-6 text-center bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-            6 Revenue Pillars Performance
-          </h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {pillars.map((p, i) => {
-              const colors = accentColors[p.accent];
-              const Icon = p.icon;
-              const progress = p.goalTarget > 0 ? Math.min((p.active / p.goalTarget) * 100, 100) : 0;
-              return (
-                <motion.div
-                  key={p.name}
-                  initial={{ opacity: 0, y: 16 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.06 }}
-                  className={`glass rounded-xl p-5 border-l-4 ${colors.border}`}
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className={`text-base font-semibold ${colors.text}`}>{p.name}</h3>
-                    <Icon className={`w-5 h-5 ${colors.text}`} />
-                  </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">{p.priceLabel}:</span>
-                      <span className="font-semibold">{p.price}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Active:</span>
-                      <span className="font-semibold">{p.active} {p.activeLabel}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">MRR:</span>
-                      <span className="font-semibold text-green-400">{fmt(p.mrr)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Pipeline:</span>
-                      <span className="font-semibold text-yellow-400">{p.pipeline} {p.pipelineLabel}</span>
-                    </div>
-                    <div className="w-full bg-gray-700 rounded-full h-2 mt-3">
-                      <div className={`${colors.bg} h-2 rounded-full transition-all`} style={{ width: `${progress}%` }} />
-                    </div>
-                    <div className="text-xs text-gray-500 text-center">Goal: {p.goal}</div>
-                  </div>
-                </motion.div>
-              );
-            })}
+          <div className="min-w-0">
+            <p className="text-sm font-semibold truncate">Kaldr Tech</p>
+            <p className="text-[10px] text-gray-500 truncate">Admin Panel</p>
           </div>
         </div>
 
-        {/* Revenue Chart */}
-        <div className="glass-dark rounded-xl p-6">
-          <h2 className="text-xl font-bold mb-4">Revenue Projection</h2>
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={projectionData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                <XAxis dataKey="month" stroke="rgba(255,255,255,0.5)" tick={{ fontSize: 12 }} />
-                <YAxis
-                  stroke="rgba(255,255,255,0.5)"
-                  tick={{ fontSize: 12 }}
-                  tickFormatter={(v) => "$" + (v / 1000) + "K"}
-                />
-                <Tooltip
-                  contentStyle={{ backgroundColor: "rgba(0,0,0,0.8)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8 }}
-                  formatter={(value: number) => ["$" + value.toLocaleString()]}
-                />
-                <Legend />
-                <Line type="monotone" dataKey="actual" stroke="#a855f7" strokeWidth={2} name="Actual Revenue" dot={false} />
-                <Line type="monotone" dataKey="projected" stroke="#3b82f6" strokeWidth={2} strokeDasharray="5 5" name="Projected Revenue" dot={false} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+        <nav className="flex-1 px-2 py-2 space-y-0.5">
+          {navItems.map((item) => {
+            const active = activePage === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setPage(item.id)}
+                className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-colors ${
+                  active
+                    ? "bg-primary text-white"
+                    : "text-gray-400 hover:text-gray-200 hover:bg-white/[0.04]"
+                }`}
+              >
+                <item.icon className="w-4 h-4 shrink-0" />
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {quickActions.map((action, i) => (
-            <motion.button
-              key={action.label}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + i * 0.05 }}
-              whileHover={{ scale: 1.04 }}
-              className="glass rounded-xl p-6 text-center hover:bg-white/5 transition-all group"
-            >
-              <action.icon className="w-8 h-8 mx-auto mb-2 text-primary group-hover:scale-110 transition-transform" />
-              <div className="font-semibold text-sm">{action.label}</div>
-              <div className="text-xs text-gray-400">{action.sub}</div>
-            </motion.button>
-          ))}
+        <div className="p-3 border-t border-white/[0.06]">
+          <p className="text-[10px] text-gray-600 text-center">&copy; 2026 Kaldr Tech</p>
         </div>
+      </aside>
+
+      <div className="flex-1 ml-[180px]">
+        <header className="h-12 border-b border-white/[0.06] flex items-center justify-end px-6 gap-4 bg-[#0b1121] sticky top-0 z-30">
+          <span className="text-[11px] text-gray-500">Updated: {lastUpdated}</span>
+          <span className="text-[11px] text-gray-500">Goal: $200K-$300K/mo</span>
+          <button className="w-7 h-7 rounded-full bg-white/[0.06] flex items-center justify-center hover:bg-white/10 transition-colors">
+            <Sun className="w-3.5 h-3.5 text-gray-400" />
+          </button>
+          <a
+            href="/"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/90 hover:bg-primary text-white text-xs font-medium transition-colors"
+          >
+            <LogOut className="w-3 h-3" /> Exit
+          </a>
+        </header>
+
+        <main className="p-6">
+          <motion.div
+            key={activePage}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            {children}
+          </motion.div>
+        </main>
       </div>
     </div>
+  );
+};
+
+/* ================================================================
+   PAGE: OVERVIEW
+   ================================================================ */
+
+const fmt = (n: number) => "$" + n.toLocaleString();
+
+const OverviewPage = () => {
+  const totalMRR = pillars.reduce((s, p) => s + p.mrr, 0);
+  const totalClients = pillars.reduce((s, p) => s + p.clients, 0);
+
+  return (
+    <div className="space-y-6">
+      {/* KPI row */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        {[
+          { label: "Total MRR", value: fmt(totalMRR), icon: DollarSign, color: "text-purple-400" },
+          { label: "ARR", value: fmt(totalMRR * 12), icon: TrendingUp, color: "text-blue-400" },
+          { label: "Active Clients", value: String(totalClients), icon: Users, color: "text-green-400" },
+          { label: "Pipeline", value: "$0", icon: UserPlus, color: "text-yellow-400" },
+          { label: "Churn Rate", value: "0%", icon: AlertCircle, color: "text-red-400" },
+          { label: "Goal Progress", value: "0%", icon: CheckCircle2, color: "text-pink-400" },
+        ].map((kpi, i) => (
+          <motion.div
+            key={kpi.label}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.04 }}
+          >
+            <Card className="p-4">
+              <div className="flex items-center gap-2 mb-1">
+                <kpi.icon className={`w-4 h-4 ${kpi.color}`} />
+                <span className="text-[11px] text-gray-500 font-medium">{kpi.label}</span>
+              </div>
+              <p className="text-xl font-bold">{kpi.value}</p>
+            </Card>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Revenue Pillars */}
+      <Card className="p-6">
+        <h2 className="text-base font-bold mb-5">6 Revenue Pillars</h2>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {pillars.map((p, i) => {
+            const c = accentMap[p.accent];
+            const Icon = p.icon;
+            const pct = p.goalTarget > 0 ? Math.min((p.clients / p.goalTarget) * 100, 100) : 0;
+            return (
+              <motion.div
+                key={p.name}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 + i * 0.04 }}
+                className={`bg-[#0b1121] border border-white/[0.04] border-l-4 ${c.border} rounded-lg p-4`}
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className={`text-sm font-semibold ${c.text}`}>{p.name}</h3>
+                  <Icon className={`w-4 h-4 ${c.text}`} />
+                </div>
+                <div className="space-y-1.5 text-xs">
+                  <div className="flex justify-between"><span className="text-gray-500">Price:</span><span className="font-medium">{p.price}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">Active:</span><span className="font-medium">{p.clients} {p.clientLabel}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">MRR:</span><span className="font-medium text-green-400">{fmt(p.mrr)}</span></div>
+                  <div className="flex justify-between"><span className="text-gray-500">Pipeline:</span><span className="font-medium text-yellow-400">{p.pipeline} prospects</span></div>
+                </div>
+                <div className="w-full bg-gray-700/50 rounded-full h-1.5 mt-3">
+                  <div className={`${c.bar} h-1.5 rounded-full transition-all`} style={{ width: `${pct}%` }} />
+                </div>
+                <p className="text-[10px] text-gray-600 text-center mt-1">Goal: {p.goal}</p>
+              </motion.div>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* Revenue chart */}
+      <Card className="p-6">
+        <h2 className="text-base font-bold mb-4">Revenue Projection</h2>
+        <div className="h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={projectionData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="month" stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
+              <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} tickFormatter={(v) => "$" + (v / 1000) + "K"} />
+              <Tooltip
+                contentStyle={{ backgroundColor: "#111827", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, fontSize: 12 }}
+                formatter={(value: number) => ["$" + value.toLocaleString()]}
+              />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <Line type="monotone" dataKey="actual" stroke="#a855f7" strokeWidth={2} name="Actual" dot={false} />
+              <Line type="monotone" dataKey="projected" stroke="#3b82f6" strokeWidth={2} strokeDasharray="5 5" name="Projected" dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+/* ================================================================
+   PAGE: CLIENTS
+   ================================================================ */
+
+const ClientsPage = () => (
+  <Card className="overflow-hidden">
+    <div className="p-5 border-b border-white/[0.06] flex items-center justify-between">
+      <h2 className="text-base font-bold">All Clients</h2>
+      <button className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-1.5">
+        <UserPlus className="w-3 h-3" /> Add Client
+      </button>
+    </div>
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-white/[0.04] text-xs text-gray-500">
+            <th className="text-left px-5 py-3 font-medium">Company</th>
+            <th className="text-left px-5 py-3 font-medium">Tier</th>
+            <th className="text-center px-5 py-3 font-medium">Status</th>
+            <th className="text-right px-5 py-3 font-medium">MRR</th>
+            <th className="text-right px-5 py-3 font-medium">Joined</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sampleClients.map((c) => (
+            <tr key={c.name} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+              <td className="px-5 py-3 font-medium">{c.name}</td>
+              <td className="px-5 py-3 text-gray-400">{c.tier}</td>
+              <td className="px-5 py-3 text-center">
+                <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${
+                  c.status === "active" ? "bg-green-500/10 text-green-400" : "bg-yellow-500/10 text-yellow-400"
+                }`}>
+                  {c.status}
+                </span>
+              </td>
+              <td className="px-5 py-3 text-right font-medium text-green-400">{c.mrr > 0 ? fmt(c.mrr) : "-"}</td>
+              <td className="px-5 py-3 text-right text-gray-500">{c.joined}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </Card>
+);
+
+/* ================================================================
+   PAGE: PIPELINE
+   ================================================================ */
+
+const PipelinePage = () => (
+  <Card className="overflow-hidden">
+    <div className="p-5 border-b border-white/[0.06]">
+      <h2 className="text-base font-bold">Sales Pipeline</h2>
+    </div>
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-white/[0.04] text-xs text-gray-500">
+            <th className="text-left px-5 py-3 font-medium">Prospect</th>
+            <th className="text-left px-5 py-3 font-medium">Stage</th>
+            <th className="text-right px-5 py-3 font-medium">Value</th>
+            <th className="text-center px-5 py-3 font-medium">Probability</th>
+            <th className="text-right px-5 py-3 font-medium">Last Contact</th>
+          </tr>
+        </thead>
+        <tbody>
+          {samplePipeline.map((p) => (
+            <tr key={p.name} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+              <td className="px-5 py-3 font-medium">{p.name}</td>
+              <td className="px-5 py-3">
+                <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">{p.stage}</span>
+              </td>
+              <td className="px-5 py-3 text-right font-medium">{p.value}</td>
+              <td className="px-5 py-3 text-center text-gray-400">{p.probability}</td>
+              <td className="px-5 py-3 text-right text-gray-500">{p.lastContact}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </Card>
+);
+
+/* ================================================================
+   PAGE: ANALYTICS
+   ================================================================ */
+
+const AnalyticsPage = () => (
+  <div className="space-y-6">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      {[
+        { label: "Emails Sent", value: "450", sub: "This month" },
+        { label: "Open Rate", value: "34%", sub: "Avg across campaigns" },
+        { label: "Reply Rate", value: "5.6%", sub: "Avg across campaigns" },
+        { label: "Meetings Booked", value: "8", sub: "From outreach" },
+      ].map((s) => (
+        <Card key={s.label} className="p-4">
+          <p className="text-2xl font-bold text-primary">{s.value}</p>
+          <p className="text-xs font-medium mt-1">{s.label}</p>
+          <p className="text-[10px] text-gray-500">{s.sub}</p>
+        </Card>
+      ))}
+    </div>
+    <Card className="p-6">
+      <h2 className="text-base font-bold mb-4">Revenue Trend</h2>
+      <div className="h-72">
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={projectionData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+            <XAxis dataKey="month" stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} />
+            <YAxis stroke="rgba(255,255,255,0.3)" tick={{ fontSize: 11 }} tickFormatter={(v) => "$" + (v / 1000) + "K"} />
+            <Tooltip contentStyle={{ backgroundColor: "#111827", border: "1px solid rgba(255,255,255,0.06)", borderRadius: 8, fontSize: 12 }} formatter={(value: number) => ["$" + value.toLocaleString()]} />
+            <Line type="monotone" dataKey="projected" stroke="#3b82f6" strokeWidth={2} name="Revenue" dot={false} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </Card>
+  </div>
+);
+
+/* ================================================================
+   PAGE: CAMPAIGNS
+   ================================================================ */
+
+const CampaignsPage = () => (
+  <Card className="overflow-hidden">
+    <div className="p-5 border-b border-white/[0.06] flex items-center justify-between">
+      <h2 className="text-base font-bold">Email Campaigns</h2>
+      <button className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-1.5">
+        <Mail className="w-3 h-3" /> New Campaign
+      </button>
+    </div>
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="border-b border-white/[0.04] text-xs text-gray-500">
+            <th className="text-left px-5 py-3 font-medium">Campaign</th>
+            <th className="text-center px-5 py-3 font-medium">Status</th>
+            <th className="text-right px-5 py-3 font-medium">Sent</th>
+            <th className="text-right px-5 py-3 font-medium">Opened</th>
+            <th className="text-right px-5 py-3 font-medium">Replied</th>
+            <th className="text-right px-5 py-3 font-medium">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sampleCampaigns.map((c) => (
+            <tr key={c.name} className="border-b border-white/[0.03] hover:bg-white/[0.02] transition-colors">
+              <td className="px-5 py-3 font-medium">{c.name}</td>
+              <td className="px-5 py-3 text-center">
+                <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${
+                  c.status === "active" ? "bg-green-500/10 text-green-400" :
+                  c.status === "draft" ? "bg-gray-500/10 text-gray-400" :
+                  "bg-yellow-500/10 text-yellow-400"
+                }`}>
+                  {c.status}
+                </span>
+              </td>
+              <td className="px-5 py-3 text-right text-gray-300">{c.sent}</td>
+              <td className="px-5 py-3 text-right text-gray-300">{c.opened}</td>
+              <td className="px-5 py-3 text-right text-primary font-medium">{c.replied}</td>
+              <td className="px-5 py-3 text-right text-gray-500">{c.date}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </Card>
+);
+
+/* ================================================================
+   PAGE: SETTINGS
+   ================================================================ */
+
+const SettingsPage = () => (
+  <div className="space-y-6">
+    <Card className="p-6">
+      <h2 className="text-base font-bold mb-5">Platform Settings</h2>
+      <div className="space-y-4 max-w-lg">
+        {[
+          { label: "Company Name", value: "Kaldr Tech" },
+          { label: "Admin Email", value: "dre@kaldrbusiness.com" },
+          { label: "Stripe Status", value: "Connected" },
+          { label: "Resend API", value: "Connected" },
+        ].map((s) => (
+          <div key={s.label} className="flex items-center justify-between py-2 border-b border-white/[0.04]">
+            <span className="text-sm text-gray-400">{s.label}</span>
+            <span className="text-sm font-medium">{s.value}</span>
+          </div>
+        ))}
+      </div>
+    </Card>
+    <Card className="p-6">
+      <h2 className="text-base font-bold mb-5">Integrations</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {[
+          { name: "Stripe Payments", status: true },
+          { name: "Resend Email", status: true },
+          { name: "Vapi Voice AI", status: true },
+          { name: "Supabase CRM", status: true },
+          { name: "Brave Search", status: true },
+          { name: "Telegram Bot", status: true },
+        ].map((int) => (
+          <div key={int.name} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
+            <span className="text-sm">{int.name}</span>
+            <span className="flex items-center gap-1.5 text-[11px] font-medium text-green-400">
+              <CheckCircle2 className="w-3 h-3" /> Connected
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  </div>
+);
+
+/* ================================================================
+   MAIN
+   ================================================================ */
+
+const AdminDashboard = () => {
+  const [page, setPage] = useState<Page>("overview");
+
+  const pages: Record<Page, React.ReactNode> = {
+    overview: <OverviewPage />,
+    clients: <ClientsPage />,
+    pipeline: <PipelinePage />,
+    analytics: <AnalyticsPage />,
+    campaigns: <CampaignsPage />,
+    settings: <SettingsPage />,
+  };
+
+  return (
+    <AdminShell activePage={page} setPage={setPage}>
+      {pages[page]}
+    </AdminShell>
   );
 };
 

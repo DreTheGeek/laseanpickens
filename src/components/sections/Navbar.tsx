@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, LogIn, Shield } from "lucide-react";
+import { Menu, X, LogIn } from "lucide-react";
 
 const links = [
   { label: "About", href: "#about" },
@@ -46,15 +46,9 @@ const Navbar = () => {
           ))}
           <a
             href="/portal"
-            className="px-4 py-2 rounded-lg border border-primary/30 text-primary text-sm font-semibold hover:bg-primary/10 transition-colors inline-flex items-center gap-1.5"
+            className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold glow-blue hover:bg-primary/90 transition-colors inline-flex items-center gap-1.5"
           >
-            <LogIn className="w-4 h-4" /> Client Login
-          </a>
-          <a
-            href="/admin"
-            className="px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold glow-blue hover:bg-primary/90 transition-colors inline-flex items-center gap-1.5"
-          >
-            <Shield className="w-4 h-4" /> Admin
+            <LogIn className="w-4 h-4" /> Client Portal
           </a>
         </div>
 
@@ -91,16 +85,9 @@ const Navbar = () => {
               <a
                 href="/portal"
                 onClick={() => setMobileOpen(false)}
-                className="block text-center px-5 py-3 rounded-lg border border-primary/30 text-primary text-sm font-semibold"
-              >
-                <LogIn className="w-4 h-4 inline mr-1.5" /> Client Login
-              </a>
-              <a
-                href="/admin"
-                onClick={() => setMobileOpen(false)}
                 className="block text-center px-5 py-3 rounded-lg bg-primary text-primary-foreground text-sm font-semibold glow-blue"
               >
-                <Shield className="w-4 h-4 inline mr-1.5" /> Admin
+                <LogIn className="w-4 h-4 inline mr-1.5" /> Client Portal
               </a>
             </div>
           </motion.div>

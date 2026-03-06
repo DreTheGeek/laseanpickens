@@ -10,6 +10,7 @@ import BundlePage from "./pages/BundlePage";
 import Checkout from "./pages/Checkout";
 import AdminDashboard from "./pages/AdminDashboard";
 import ClientPortal from "./pages/ClientPortal";
+import LegalPage from "./pages/LegalPage";
 import NotFound from "./pages/NotFound";
 import IntroAnimation from "./components/IntroAnimation";
 
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/checkout/:slug" element={<Checkout />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/portal" element={<ClientPortal />} />
+            <Route path="/legal/:slug" element={<LegalPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

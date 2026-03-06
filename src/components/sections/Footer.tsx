@@ -1,12 +1,12 @@
 import { Twitter, Instagram, Linkedin, Youtube, Facebook, Music2, Shield, Lock, Clock, Heart } from "lucide-react";
 
 const socials = [
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Youtube, href: "#", label: "YouTube" },
-  { icon: Instagram, href: "#", label: "Instagram" },
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Music2, href: "#", label: "TikTok" },
+  { icon: Linkedin, href: "https://linkedin.com/in/laseanpickens", label: "LinkedIn" },
+  { icon: Twitter, href: "https://twitter.com/laseanpickens", label: "Twitter" },
+  { icon: Youtube, href: "https://youtube.com/@laseanpickens", label: "YouTube" },
+  { icon: Instagram, href: "https://instagram.com/laseanpickens", label: "Instagram" },
+  { icon: Facebook, href: "https://facebook.com/laseanpickens", label: "Facebook" },
+  { icon: Music2, href: "https://tiktok.com/@laseanpickens", label: "TikTok" },
 ];
 
 const services = [
@@ -20,15 +20,15 @@ const company = [
   { label: "About LaSean", href: "#about" },
   { label: "Our Process", href: "#process" },
   { label: "Testimonials", href: "#testimonials" },
-  { label: "Apply for Consultation", href: "#book" },
+  { label: "Contact Us", href: "#book" },
 ];
 
 const legal = [
-  { label: "Privacy Policy", href: "#" },
-  { label: "Terms of Service", href: "#" },
-  { label: "Refund Policy", href: "#" },
-  { label: "Cookie Policy", href: "#" },
-  { label: "Disclaimer", href: "#" },
+  { label: "Privacy Policy", href: "/legal/privacy" },
+  { label: "Terms of Service", href: "/legal/terms" },
+  { label: "Refund Policy", href: "/legal/refund" },
+  { label: "Cookie Policy", href: "/legal/cookies" },
+  { label: "Disclaimer", href: "/legal/disclaimer" },
 ];
 
 const trustBadges = [
@@ -68,6 +68,8 @@ const Footer = () => (
               <a
                 key={s.label}
                 href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={s.label}
                 className="w-9 h-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all"
               >

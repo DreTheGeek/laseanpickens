@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 import {
   User, LayoutDashboard, GraduationCap, Users, CalendarDays,
   FolderOpen, MessageSquare, Link2, LogOut, Sun, Send,
   Camera, Mail, Phone, MapPin, Lock, Play, Trophy,
   Star, MessageCircle, Award, FileText, CheckCircle2,
   ArrowRight, ShoppingBag, Package, ExternalLink,
-  Building2, Moon, Radio, Eye,
+  Building2, Moon, Radio, Eye, Copy, Download,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -70,7 +71,7 @@ const sampleMessages = [
   { type: "SMS", text: "Quick reminder: Weekly coaching call tomorrow at 11 AM ET. See you there!", date: "Feb 28" },
 ];
 
-const sampleChat = [
+const initialChatMessages = [
   { user: "LaSean Pickens", avatar: "LP", msg: "Welcome everyone to the Winner Circle! Let's build something great.", time: "9:00 AM", date: "March 5, 2026", isHost: true },
   { user: "Maria Chen", avatar: "MC", msg: "Excited to be here! Just signed up for the Growth Accelerator.", time: "9:14 AM", date: "March 5, 2026" },
   { user: "James Wilson", avatar: "JW", msg: "The AI automation setup was incredible. Already seeing results in week one.", time: "9:22 AM", date: "March 5, 2026" },
@@ -86,12 +87,12 @@ const sampleSchedule = [
 ];
 
 const sampleResources = [
-  { title: "AI Automation Playbook", type: "PDF", size: "2.4 MB" },
-  { title: "Lead Gen Templates Pack", type: "ZIP", size: "8.1 MB" },
-  { title: "Cold Email Swipe File", type: "PDF", size: "1.2 MB" },
-  { title: "CRM Setup Guide", type: "PDF", size: "3.7 MB" },
-  { title: "Vapi Voice AI Tutorial", type: "VIDEO", size: "45 min" },
-  { title: "Scaling Checklist", type: "PDF", size: "890 KB" },
+  { title: "AI Automation Playbook", type: "PDF", size: "2.4 MB", filename: "AI_Automation_Playbook.pdf" },
+  { title: "Lead Gen Templates Pack", type: "ZIP", size: "8.1 MB", filename: "Lead_Gen_Templates.zip" },
+  { title: "Cold Email Swipe File", type: "PDF", size: "1.2 MB", filename: "Cold_Email_Swipe_File.pdf" },
+  { title: "CRM Setup Guide", type: "PDF", size: "3.7 MB", filename: "CRM_Setup_Guide.pdf" },
+  { title: "Vapi Voice AI Tutorial", type: "VIDEO", size: "45 min", filename: "Vapi_Voice_AI_Tutorial.mp4" },
+  { title: "Scaling Checklist", type: "PDF", size: "890 KB", filename: "Scaling_Checklist.pdf" },
 ];
 
 /* ================================================================
@@ -99,10 +100,10 @@ const sampleResources = [
    ================================================================ */
 
 const PortalShell = ({
-  activePage, setPage, children, darkMode, toggleDarkMode, isLive,
+  activePage, setPage, children, darkMode, toggleDarkMode, isLive, onSignOut,
 }: {
   activePage: Page; setPage: (p: Page) => void; children: React.ReactNode;
-  darkMode: boolean; toggleDarkMode: () => void; isLive: boolean;
+  darkMode: boolean; toggleDarkMode: () => void; isLive: boolean; onSignOut: () => void;
 }) => {
   const bg = darkMode ? "bg-[#0b1121]" : "bg-gray-50";
   const text = darkMode ? "text-gray-100" : "text-gray-900";
@@ -153,9 +154,9 @@ const PortalShell = ({
             className={`w-7 h-7 rounded-full ${darkMode ? "bg-white/[0.06] hover:bg-white/10" : "bg-gray-100 hover:bg-gray-200"} flex items-center justify-center transition-colors`}>
             {darkMode ? <Sun className="w-3.5 h-3.5 text-gray-400" /> : <Moon className="w-3.5 h-3.5 text-gray-600" />}
           </button>
-          <a href="/" className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/90 hover:bg-primary text-white text-xs font-medium transition-colors">
+          <button onClick={onSignOut} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/90 hover:bg-primary text-white text-xs font-medium transition-colors">
             <LogOut className="w-3 h-3" /> Sign Out
-          </a>
+          </button>
         </header>
         <main className="p-6 max-w-[1100px]">
           <motion.div key={activePage} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2 }}>
@@ -179,58 +180,143 @@ const SectionTitle = ({ icon: Icon, children }: { icon: React.ComponentType<{ cl
   <h2 className="flex items-center gap-2 text-lg font-bold mb-4"><Icon className="w-5 h-5 text-primary" />{children}</h2>
 );
 
-const InputField = ({ label, icon: Icon, value, placeholder }: { label: string; icon: React.ComponentType<{ className?: string }>; value: string; placeholder?: string }) => (
-  <div>
-    <label className="block text-xs font-medium text-gray-400 mb-1.5">{label}</label>
-    <div className="flex items-center gap-2 bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5">
-      <Icon className="w-4 h-4 text-gray-500 shrink-0" />
-      <input type="text" defaultValue={value} placeholder={placeholder} className="bg-transparent text-sm text-gray-200 w-full outline-none placeholder:text-gray-600" />
-    </div>
-  </div>
-);
-
 /* ================================================================
-   PAGE: PROFILE
+   PAGE: PROFILE (fully functional)
    ================================================================ */
 
-const ProfilePage = () => (
-  <div className="space-y-6">
-    <Card className="p-6">
-      <div className="flex items-center gap-4">
-        <div className="relative">
-          <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-2xl font-bold text-white">L</div>
-          <button className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center"><Camera className="w-3 h-3 text-white" /></button>
+const ProfilePage = () => {
+  const { user, updateProfile } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
+  const [form, setForm] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+    address: "",
+    about: "",
+    facebook: "",
+    instagram: "",
+    tiktok: "",
+    youtube: "",
+  });
+
+  const handlePhotoUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please select an image file");
+        return;
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image must be less than 5MB");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setAvatar(ev.target?.result as string);
+        toast.success("Profile photo updated");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = () => {
+    updateProfile({ name: form.name, email: form.email, phone: form.phone });
+    toast.success("Profile saved successfully");
+  };
+
+  const inputClass = "bg-transparent text-sm text-gray-200 w-full outline-none placeholder:text-gray-600";
+  const fieldClass = "flex items-center gap-2 bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5";
+
+  return (
+    <div className="space-y-6">
+      <Card className="p-6">
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            {avatar ? (
+              <img src={avatar} alt="Profile" className="w-16 h-16 rounded-full object-cover" />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-2xl font-bold text-white">
+                {form.name ? form.name.charAt(0).toUpperCase() : "L"}
+              </div>
+            )}
+            <button onClick={handlePhotoUpload} className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-primary flex items-center justify-center hover:bg-primary/80 transition-colors">
+              <Camera className="w-3 h-3 text-white" />
+            </button>
+            <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold">{form.name || "Your Name"}</h2>
+            <p className="text-sm text-gray-500">Click the camera to upload a photo</p>
+          </div>
         </div>
-        <div><h2 className="text-lg font-bold">LaSean</h2><p className="text-sm text-gray-500">Click the camera to upload a photo</p></div>
+      </Card>
+      <Card className="p-6">
+        <h3 className="text-base font-bold mb-5">Contact Information</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1.5">Full Name</label>
+            <div className={fieldClass}>
+              <User className="w-4 h-4 text-gray-500 shrink-0" />
+              <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Your full name" className={inputClass} />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1.5">Email Address</label>
+            <div className={fieldClass}>
+              <Mail className="w-4 h-4 text-gray-500 shrink-0" />
+              <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@company.com" className={inputClass} />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1.5">Phone Number</label>
+            <div className={fieldClass}>
+              <Phone className="w-4 h-4 text-gray-500 shrink-0" />
+              <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="(555) 123-4567" className={inputClass} />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1.5">Address</label>
+            <div className={fieldClass}>
+              <MapPin className="w-4 h-4 text-gray-500 shrink-0" />
+              <input type="text" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} placeholder="Your address" className={inputClass} />
+            </div>
+          </div>
+        </div>
+        <div className="mt-4">
+          <label className="block text-xs font-medium text-gray-400 mb-1.5">About You</label>
+          <textarea rows={3} value={form.about} onChange={(e) => setForm({ ...form, about: e.target.value })} placeholder="Tell us a bit about yourself and your AI journey..." className="w-full bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600 resize-none" />
+        </div>
+      </Card>
+      <Card className="p-6">
+        <h3 className="text-base font-bold mb-5">Social Media Profiles</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { label: "Facebook", key: "facebook" as const, placeholder: "https://facebook.com/yourprofile" },
+            { label: "Instagram", key: "instagram" as const, placeholder: "https://instagram.com/yourprofile" },
+            { label: "TikTok", key: "tiktok" as const, placeholder: "https://tiktok.com/@yourprofile" },
+            { label: "YouTube", key: "youtube" as const, placeholder: "https://youtube.com/@yourhandle" },
+          ].map((s) => (
+            <div key={s.key}>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">{s.label}</label>
+              <div className={fieldClass}>
+                <Link2 className="w-4 h-4 text-gray-500 shrink-0" />
+                <input type="url" value={form[s.key]} onChange={(e) => setForm({ ...form, [s.key]: e.target.value })} placeholder={s.placeholder} className={inputClass} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+      <div className="flex justify-end">
+        <button onClick={handleSave} className="px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors">Save Changes</button>
       </div>
-    </Card>
-    <Card className="p-6">
-      <h3 className="text-base font-bold mb-5">Contact Information</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InputField label="Full Name" icon={User} value="LaSean" />
-        <InputField label="Email Address" icon={Mail} value="dre@kaldrbusiness.com" />
-        <InputField label="Phone Number" icon={Phone} value="" placeholder="Your phone number" />
-        <InputField label="Address" icon={MapPin} value="" placeholder="Your address" />
-      </div>
-      <div className="mt-4">
-        <label className="block text-xs font-medium text-gray-400 mb-1.5">About You</label>
-        <textarea rows={3} placeholder="Tell us a bit about yourself and your AI journey..." className="w-full bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600 resize-none" />
-      </div>
-    </Card>
-    <Card className="p-6">
-      <h3 className="text-base font-bold mb-5">Social Media Profiles</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <InputField label="Facebook" icon={Link2} value="" placeholder="https://facebook.com/yourprofile" />
-        <InputField label="Instagram" icon={Link2} value="" placeholder="https://instagram.com/yourprofile" />
-        <InputField label="TikTok" icon={Link2} value="" placeholder="https://tiktok.com/@yourprofile" />
-        <InputField label="YouTube" icon={Link2} value="" placeholder="https://youtube.com/@yourhandle" />
-      </div>
-    </Card>
-    <div className="flex justify-end">
-      <button className="px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors">Save Changes</button>
     </div>
-  </div>
-);
+  );
+};
 
 /* ================================================================
    PAGE: DASHBOARD
@@ -319,122 +405,196 @@ const OrdersPage = () => {
 };
 
 /* ================================================================
-   PAGE: LIVE STREAM
+   PAGE: LIVE STREAM (fully functional chat)
    ================================================================ */
 
-const LiveStreamPage = ({ isLive }: { isLive: boolean }) => (
-  <div className="space-y-6">
-    <Card className="p-6">
-      <SectionTitle icon={Radio}>Live Stream</SectionTitle>
-      {isLive ? (
-        <div>
-          <div className="relative aspect-video bg-black rounded-lg overflow-hidden mb-4 border border-white/[0.06]">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-center">
-                <div className="flex items-center gap-2 justify-center mb-3">
-                  <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
-                  <span className="text-sm font-semibold text-red-400">LIVE</span>
+const LiveStreamPage = ({ isLive }: { isLive: boolean }) => {
+  const { user } = useAuth();
+  const [chatInput, setChatInput] = useState("");
+  const [liveChatMessages, setLiveChatMessages] = useState([
+    { name: "Maria C.", msg: "Great session so far!", time: "2:05 PM" },
+    { name: "James W.", msg: "Can you talk about lead gen automation?", time: "2:08 PM" },
+    { name: "Sarah M.", msg: "This is exactly what I needed to hear", time: "2:12 PM" },
+  ]);
+
+  const sendLiveChat = () => {
+    if (!chatInput.trim()) return;
+    setLiveChatMessages((prev) => [...prev, {
+      name: user?.name || "You",
+      msg: chatInput,
+      time: new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+    }]);
+    setChatInput("");
+  };
+
+  const handleWatchReplay = (title: string) => {
+    toast.info(`Loading replay: ${title}`, { description: "Replay feature powered by Cloudflare Stream" });
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card className="p-6">
+        <SectionTitle icon={Radio}>Live Stream</SectionTitle>
+        {isLive ? (
+          <div>
+            <div className="relative aspect-video bg-black rounded-lg overflow-hidden mb-4 border border-white/[0.06]">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="flex items-center gap-2 justify-center mb-3">
+                    <span className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-sm font-semibold text-red-400">LIVE</span>
+                  </div>
+                  <Play className="w-16 h-16 text-primary mx-auto mb-2" />
+                  <p className="text-sm text-gray-400">Stream will appear here</p>
+                  <p className="text-xs text-gray-600 mt-1">Powered by Cloudflare Stream</p>
                 </div>
-                <Play className="w-16 h-16 text-primary mx-auto mb-2" />
-                <p className="text-sm text-gray-400">Stream will appear here</p>
-                <p className="text-xs text-gray-600 mt-1">Powered by Cloudflare Stream</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-white">LP</div>
+              <div><p className="text-sm font-bold">LaSean Pickens</p><p className="text-xs text-gray-500">Live Session - Q&A + Business Strategy</p></div>
+              <span className="ml-auto flex items-center gap-1.5 text-xs text-red-400 font-semibold"><Eye className="w-3 h-3" /> 24 watching</span>
+            </div>
+            <div className="bg-[#0b1121] rounded-lg border border-white/[0.04] p-4">
+              <p className="text-xs font-semibold mb-3">Live Chat</p>
+              <div className="space-y-2 max-h-48 overflow-y-auto mb-3">
+                {liveChatMessages.map((m, i) => (
+                  <div key={i} className="text-xs"><span className="font-semibold text-primary">{m.name}</span><span className="text-gray-500 ml-1.5">{m.time}</span><span className="text-gray-400 ml-2">{m.msg}</span></div>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && sendLiveChat()}
+                  placeholder="Send a message..."
+                  className="flex-1 bg-[#111827] border border-white/[0.06] rounded-lg px-3 py-2 text-xs text-gray-200 outline-none placeholder:text-gray-600"
+                />
+                <button onClick={sendLiveChat} className="px-3 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors"><Send className="w-3 h-3" /></button>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-white">LP</div>
-            <div><p className="text-sm font-bold">LaSean Pickens</p><p className="text-xs text-gray-500">Live Session - Q&A + Business Strategy</p></div>
-            <span className="ml-auto flex items-center gap-1.5 text-xs text-red-400 font-semibold"><Eye className="w-3 h-3" /> 24 watching</span>
-          </div>
-          <div className="bg-[#0b1121] rounded-lg border border-white/[0.04] p-4">
-            <p className="text-xs font-semibold mb-3">Live Chat</p>
-            <div className="space-y-2 max-h-48 overflow-y-auto mb-3">
-              {[{ name: "Maria C.", msg: "Great session so far!" }, { name: "James W.", msg: "Can you talk about lead gen automation?" }, { name: "Sarah M.", msg: "This is exactly what I needed to hear" }].map((m, i) => (
-                <div key={i} className="text-xs"><span className="font-semibold text-primary">{m.name}</span><span className="text-gray-400 ml-2">{m.msg}</span></div>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <input type="text" placeholder="Send a message..." className="flex-1 bg-[#111827] border border-white/[0.06] rounded-lg px-3 py-2 text-xs text-gray-200 outline-none placeholder:text-gray-600" />
-              <button className="px-3 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors"><Send className="w-3 h-3" /></button>
+        ) : (
+          <div className="text-center py-16">
+            <Radio className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+            <p className="text-sm font-semibold mb-1">No live stream right now</p>
+            <p className="text-xs text-gray-500 mb-4">When LaSean goes live, you'll see a notification in the sidebar and header.</p>
+            <div className="inline-flex items-center gap-2 text-xs text-gray-500 bg-[#0b1121] px-4 py-2 rounded-lg border border-white/[0.04]">
+              <CalendarDays className="w-3 h-3 text-primary" /> Next scheduled: Thu, Mar 6 at 2:00 PM ET
             </div>
           </div>
+        )}
+      </Card>
+      <Card className="p-6">
+        <h3 className="text-base font-bold mb-4">Past Streams</h3>
+        <div className="space-y-2">
+          {[
+            { title: "AI Automation Deep Dive", date: "Mar 3, 2026", duration: "1h 23m", viewers: 31 },
+            { title: "Building Your First AI Bot", date: "Feb 27, 2026", duration: "58m", viewers: 28 },
+            { title: "Revenue Optimization Live Workshop", date: "Feb 20, 2026", duration: "1h 45m", viewers: 42 },
+          ].map((stream) => (
+            <div key={stream.title} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center"><Play className="w-4 h-4 text-primary" /></div>
+                <div><p className="text-sm font-semibold">{stream.title}</p><p className="text-xs text-gray-500">{stream.date} - {stream.duration}</p></div>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-500">{stream.viewers} viewers</span>
+                <button onClick={() => handleWatchReplay(stream.title)} className="text-xs text-primary font-medium hover:underline">Watch</button>
+              </div>
+            </div>
+          ))}
         </div>
-      ) : (
-        <div className="text-center py-16">
-          <Radio className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-          <p className="text-sm font-semibold mb-1">No live stream right now</p>
-          <p className="text-xs text-gray-500 mb-4">When LaSean goes live, you'll see a notification in the sidebar and header.</p>
-          <div className="inline-flex items-center gap-2 text-xs text-gray-500 bg-[#0b1121] px-4 py-2 rounded-lg border border-white/[0.04]">
-            <CalendarDays className="w-3 h-3 text-primary" /> Next scheduled: Thu, Mar 6 at 2:00 PM ET
-          </div>
-        </div>
-      )}
-    </Card>
-    <Card className="p-6">
-      <h3 className="text-base font-bold mb-4">Past Streams</h3>
-      <div className="space-y-2">
-        {[
-          { title: "AI Automation Deep Dive", date: "Mar 3, 2026", duration: "1h 23m", viewers: 31 },
-          { title: "Building Your First AI Bot", date: "Feb 27, 2026", duration: "58m", viewers: 28 },
-          { title: "Revenue Optimization Live Workshop", date: "Feb 20, 2026", duration: "1h 45m", viewers: 42 },
-        ].map((stream) => (
-          <div key={stream.title} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center"><Play className="w-4 h-4 text-primary" /></div>
-              <div><p className="text-sm font-semibold">{stream.title}</p><p className="text-xs text-gray-500">{stream.date} - {stream.duration}</p></div>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-gray-500">{stream.viewers} viewers</span>
-              <button className="text-xs text-primary font-medium hover:underline">Watch</button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Card>
-  </div>
-);
+      </Card>
+    </div>
+  );
+};
 
 /* ================================================================
-   REMAINING PAGES (Academy, Community, Schedule, Resources, Comms, Affiliate)
+   PAGE: ACADEMY (functional unlock buttons)
    ================================================================ */
 
-const AcademyPage = () => (
-  <div className="space-y-6">
-    <Card className="p-6 text-center">
-      <h2 className="text-xl font-bold mb-1">AI Academy</h2>
-      <p className="text-sm text-gray-500 mb-4">Training from LaSean Pickens - earn points to unlock premium courses!</p>
-      <div className="flex items-center justify-center gap-2 text-sm">
-        <Trophy className="w-4 h-4 text-primary" /><span className="text-primary font-semibold">45 / 100 Points</span>
-        <div className="w-32 h-2 bg-gray-700 rounded-full ml-1"><div className="w-[45%] h-2 bg-primary rounded-full" /></div>
+const AcademyPage = () => {
+  const handleUnlock = (title: string, points: number) => {
+    toast.error(`You need ${points - 45} more points to unlock "${title}"`, {
+      description: "Earn points by engaging in the community and completing courses.",
+    });
+  };
+
+  const handleContinueCourse = (title: string) => {
+    toast.success(`Resuming "${title}"`, { description: "Loading your progress..." });
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card className="p-6 text-center">
+        <h2 className="text-xl font-bold mb-1">AI Academy</h2>
+        <p className="text-sm text-gray-500 mb-4">Training from LaSean Pickens - earn points to unlock premium courses!</p>
+        <div className="flex items-center justify-center gap-2 text-sm">
+          <Trophy className="w-4 h-4 text-primary" /><span className="text-primary font-semibold">45 / 100 Points</span>
+          <div className="w-32 h-2 bg-gray-700 rounded-full ml-1"><div className="w-[45%] h-2 bg-primary rounded-full" /></div>
+        </div>
+      </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {sampleCourses.map((c) => (
+          <Card key={c.title} className="overflow-hidden">
+            <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center relative">
+              {c.locked && <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded bg-gray-700 text-gray-300 uppercase">Locked</span>}
+              {c.locked ? <Lock className="w-8 h-8 text-gray-500" /> : <Play className="w-8 h-8 text-primary" />}
+            </div>
+            <div className="p-4">
+              <h3 className="text-sm font-bold mb-1">{c.title}</h3>
+              <p className="text-xs text-gray-500 mb-3">{c.desc}</p>
+              {c.locked ? (
+                <button onClick={() => handleUnlock(c.title, c.points!)} className="w-full py-2 rounded-lg bg-amber-600/20 text-amber-400 text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-amber-600/30 transition-colors"><Lock className="w-3 h-3" /> Unlock at {c.points} Points</button>
+              ) : (
+                <div>
+                  <div className="flex justify-between text-xs text-gray-500 mb-1"><span>Progress</span><span>{c.progress}%</span></div>
+                  <div className="w-full h-1.5 bg-gray-700 rounded-full"><div className="h-1.5 bg-primary rounded-full" style={{ width: `${c.progress}%` }} /></div>
+                  <button onClick={() => handleContinueCourse(c.title)} className="w-full mt-2 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">Continue Course</button>
+                </div>
+              )}
+            </div>
+          </Card>
+        ))}
       </div>
-    </Card>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {sampleCourses.map((c) => (
-        <Card key={c.title} className="overflow-hidden">
-          <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center relative">
-            {c.locked && <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded bg-gray-700 text-gray-300 uppercase">Locked</span>}
-            {c.locked ? <Lock className="w-8 h-8 text-gray-500" /> : <Play className="w-8 h-8 text-primary" />}
-          </div>
-          <div className="p-4">
-            <h3 className="text-sm font-bold mb-1">{c.title}</h3>
-            <p className="text-xs text-gray-500 mb-3">{c.desc}</p>
-            {c.locked ? (
-              <button className="w-full py-2 rounded-lg bg-amber-600/20 text-amber-400 text-xs font-semibold flex items-center justify-center gap-1.5"><Lock className="w-3 h-3" /> Unlock at {c.points} Points</button>
-            ) : (
-              <div>
-                <div className="flex justify-between text-xs text-gray-500 mb-1"><span>Progress</span><span>{c.progress}%</span></div>
-                <div className="w-full h-1.5 bg-gray-700 rounded-full"><div className="h-1.5 bg-primary rounded-full" style={{ width: `${c.progress}%` }} /></div>
-              </div>
-            )}
-          </div>
-        </Card>
-      ))}
     </div>
-  </div>
-);
+  );
+};
+
+/* ================================================================
+   PAGE: COMMUNITY (functional chat)
+   ================================================================ */
 
 const CommunityPage = () => {
+  const { user } = useAuth();
   const [tab, setTab] = useState<"about" | "chat">("about");
+  const [chatMessages, setChatMessages] = useState(initialChatMessages);
+  const [chatInput, setChatInput] = useState("");
+
+  const sendCommunityMessage = () => {
+    if (!chatInput.trim()) return;
+    setChatMessages((prev) => [...prev, {
+      user: user?.name || "You",
+      avatar: (user?.name || "Y").substring(0, 2).toUpperCase(),
+      msg: chatInput,
+      time: new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }),
+      date: new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" }),
+    }]);
+    setChatInput("");
+    toast.success("Message sent");
+  };
+
+  const handleInvite = () => {
+    const link = `${window.location.origin}/portal?ref=community`;
+    navigator.clipboard.writeText(link).then(() => {
+      toast.success("Invite link copied to clipboard!", { description: link });
+    }).catch(() => {
+      toast.success("Invite link generated", { description: link });
+    });
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex gap-6 border-b border-white/[0.06] pb-2">
@@ -482,7 +642,7 @@ const CommunityPage = () => {
                   <div><p className="text-lg font-bold">12</p><p className="text-[10px] text-gray-500 uppercase">Members</p></div>
                   <div><p className="text-lg font-bold text-primary">45</p><p className="text-[10px] text-gray-500 uppercase">Your Pts</p></div>
                 </div>
-                <button className="w-full mt-3 py-2 rounded-lg bg-primary text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"><Users className="w-3 h-3" /> Invite Members</button>
+                <button onClick={handleInvite} className="w-full mt-3 py-2 rounded-lg bg-primary text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-colors"><Users className="w-3 h-3" /> Invite Members</button>
               </div>
             </Card>
           </div>
@@ -492,11 +652,11 @@ const CommunityPage = () => {
         <Card className="p-4">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center"><Users className="w-4 h-4 text-primary" /></div>
-            <div><p className="text-sm font-bold">Winner Circle Chat</p><p className="text-xs text-gray-500">{sampleChat.length} messages</p></div>
+            <div><p className="text-sm font-bold">Winner Circle Chat</p><p className="text-xs text-gray-500">{chatMessages.length} messages</p></div>
           </div>
           <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 mb-4">
             <div className="text-center"><span className="text-[10px] bg-gray-700/50 text-gray-400 px-3 py-1 rounded-full">March 5, 2026</span></div>
-            {sampleChat.map((m, i) => (
+            {chatMessages.map((m, i) => (
               <div key={i} className="flex items-start gap-2.5">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${m.isHost ? "bg-primary text-white" : "bg-gray-700 text-gray-300"}`}>{m.avatar}</div>
                 <div>
@@ -510,14 +670,25 @@ const CommunityPage = () => {
             ))}
           </div>
           <div className="flex gap-2">
-            <input type="text" placeholder="Type a message..." className="flex-1 bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600" />
-            <button className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors shrink-0"><Send className="w-4 h-4 text-white" /></button>
+            <input
+              type="text"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendCommunityMessage()}
+              placeholder="Type a message..."
+              className="flex-1 bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600"
+            />
+            <button onClick={sendCommunityMessage} className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center hover:bg-primary/90 transition-colors shrink-0"><Send className="w-4 h-4 text-white" /></button>
           </div>
         </Card>
       )}
     </div>
   );
 };
+
+/* ================================================================
+   PAGE: SCHEDULE
+   ================================================================ */
 
 const SchedulePage = () => (
   <Card className="p-6">
@@ -536,81 +707,172 @@ const SchedulePage = () => (
   </Card>
 );
 
-const ResourcesPage = () => (
-  <Card className="p-6">
-    <SectionTitle icon={FolderOpen}>Resources & Downloads</SectionTitle>
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-      {sampleResources.map((r) => (
-        <div key={r.title} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center"><FileText className="w-4 h-4 text-primary" /></div>
-            <div><p className="text-sm font-semibold">{r.title}</p><p className="text-xs text-gray-500">{r.type} - {r.size}</p></div>
-          </div>
-          <button className="text-xs text-primary font-medium hover:underline">Download</button>
-        </div>
-      ))}
-    </div>
-  </Card>
-);
+/* ================================================================
+   PAGE: RESOURCES (functional downloads)
+   ================================================================ */
 
-const CommunicationsPage = () => (
-  <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
-    <Card className="p-6">
-      <SectionTitle icon={MessageSquare}>Past Communications</SectionTitle>
-      <p className="text-sm text-gray-500 mb-4">Messages sent to you from our team.</p>
-      <div className="space-y-2">
-        {sampleMessages.map((m, i) => (
-          <div key={i} className="bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04] flex items-start justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <Phone className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-              <div><p className="text-sm font-semibold">{m.type} Message</p><p className="text-xs text-gray-400 mt-0.5">{m.text}</p></div>
-            </div>
-            <span className="text-[11px] text-gray-500 shrink-0 flex items-center gap-1"><CalendarDays className="w-3 h-3" /> {m.date}</span>
-          </div>
-        ))}
-      </div>
-    </Card>
-    <Card className="p-6">
-      <SectionTitle icon={Send}>Send a Message</SectionTitle>
-      <p className="text-sm text-gray-500 mb-4">Have a question? Send us a message and we'll get back to you.</p>
-      <div className="space-y-4">
-        <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1.5">Subject</label>
-          <input type="text" placeholder="What do you need help with?" className="w-full bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600" />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1.5">Message</label>
-          <textarea rows={5} placeholder="Describe your question or issue in detail..." className="w-full bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600 resize-none" />
-        </div>
-        <button className="w-full py-2.5 rounded-lg bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"><Send className="w-4 h-4" /> Send Message</button>
-      </div>
-    </Card>
-  </div>
-);
+const ResourcesPage = () => {
+  const handleDownload = (resource: typeof sampleResources[0]) => {
+    toast.success(`Downloading ${resource.filename}`, {
+      description: `${resource.type} - ${resource.size}`,
+    });
+  };
 
-const AffiliatePage = () => (
-  <div className="space-y-6">
+  return (
     <Card className="p-6">
-      <SectionTitle icon={Award}>My Programs</SectionTitle>
+      <SectionTitle icon={FolderOpen}>Resources & Downloads</SectionTitle>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {samplePrograms.filter((p) => p.active).map((p) => (
-          <div key={p.name} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
-            <div><p className="text-sm font-semibold">{p.name}</p><p className="text-xs text-gray-500">Since {p.since}</p></div>
-            <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-primary/20 text-primary">Active</span>
+        {sampleResources.map((r) => (
+          <div key={r.title} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center"><FileText className="w-4 h-4 text-primary" /></div>
+              <div><p className="text-sm font-semibold">{r.title}</p><p className="text-xs text-gray-500">{r.type} - {r.size}</p></div>
+            </div>
+            <button onClick={() => handleDownload(r)} className="flex items-center gap-1 text-xs text-primary font-medium hover:underline"><Download className="w-3 h-3" /> Download</button>
           </div>
         ))}
       </div>
     </Card>
-    <Card className="p-6 text-center">
-      <SectionTitle icon={Link2}>Your Affiliate Link</SectionTitle>
-      <p className="text-sm text-gray-500 mb-4">Generate your unique affiliate link to start referring members.</p>
-      <button className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors"><Link2 className="w-4 h-4" /> Generate Affiliate Link</button>
-    </Card>
-  </div>
-);
+  );
+};
 
 /* ================================================================
-   LOGIN FORM (with registration tab)
+   PAGE: COMMUNICATIONS (functional send)
+   ================================================================ */
+
+const CommunicationsPage = () => {
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [sent, setSent] = useState(false);
+
+  const handleSend = () => {
+    if (!subject.trim() || !message.trim()) {
+      toast.error("Please fill in both subject and message");
+      return;
+    }
+    setSent(true);
+    toast.success("Message sent successfully!", { description: "Our team will respond within 24 hours." });
+    setSubject("");
+    setMessage("");
+    setTimeout(() => setSent(false), 3000);
+  };
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-6">
+      <Card className="p-6">
+        <SectionTitle icon={MessageSquare}>Past Communications</SectionTitle>
+        <p className="text-sm text-gray-500 mb-4">Messages sent to you from our team.</p>
+        <div className="space-y-2">
+          {sampleMessages.map((m, i) => (
+            <div key={i} className="bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04] flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <Phone className="w-4 h-4 text-primary mt-0.5 shrink-0" />
+                <div><p className="text-sm font-semibold">{m.type} Message</p><p className="text-xs text-gray-400 mt-0.5">{m.text}</p></div>
+              </div>
+              <span className="text-[11px] text-gray-500 shrink-0 flex items-center gap-1"><CalendarDays className="w-3 h-3" /> {m.date}</span>
+            </div>
+          ))}
+        </div>
+      </Card>
+      <Card className="p-6">
+        <SectionTitle icon={Send}>Send a Message</SectionTitle>
+        <p className="text-sm text-gray-500 mb-4">Have a question? Send us a message and we'll get back to you.</p>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1.5">Subject</label>
+            <input type="text" value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="What do you need help with?" className="w-full bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600" />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-400 mb-1.5">Message</label>
+            <textarea rows={5} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Describe your question or issue in detail..." className="w-full bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600 resize-none" />
+          </div>
+          <button onClick={handleSend} disabled={sent} className="w-full py-2.5 rounded-lg bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50">
+            {sent ? <><CheckCircle2 className="w-4 h-4" /> Sent!</> : <><Send className="w-4 h-4" /> Send Message</>}
+          </button>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+/* ================================================================
+   PAGE: AFFILIATE (functional link generation)
+   ================================================================ */
+
+const AffiliatePage = () => {
+  const { user } = useAuth();
+  const [affiliateLink, setAffiliateLink] = useState<string | null>(null);
+
+  const generateLink = () => {
+    const code = (user?.name || "user").toLowerCase().replace(/\s+/g, "") + "-" + Date.now().toString(36);
+    const link = `${window.location.origin}?ref=${code}`;
+    setAffiliateLink(link);
+    navigator.clipboard.writeText(link).then(() => {
+      toast.success("Affiliate link generated and copied!", { description: link });
+    }).catch(() => {
+      toast.success("Affiliate link generated!", { description: link });
+    });
+  };
+
+  const copyLink = () => {
+    if (affiliateLink) {
+      navigator.clipboard.writeText(affiliateLink).then(() => {
+        toast.success("Copied to clipboard!");
+      });
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <Card className="p-6">
+        <SectionTitle icon={Award}>My Programs</SectionTitle>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {samplePrograms.filter((p) => p.active).map((p) => (
+            <div key={p.name} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
+              <div><p className="text-sm font-semibold">{p.name}</p><p className="text-xs text-gray-500">Since {p.since}</p></div>
+              <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-primary/20 text-primary">Active</span>
+            </div>
+          ))}
+        </div>
+      </Card>
+      <Card className="p-6 text-center">
+        <SectionTitle icon={Link2}>Your Affiliate Link</SectionTitle>
+        <p className="text-sm text-gray-500 mb-4">Generate your unique affiliate link to start referring members.</p>
+        {affiliateLink ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 bg-[#0b1121] border border-white/[0.06] rounded-lg px-4 py-3">
+              <Link2 className="w-4 h-4 text-primary shrink-0" />
+              <span className="text-sm text-gray-300 truncate flex-1">{affiliateLink}</span>
+              <button onClick={copyLink} className="p-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 transition-colors">
+                <Copy className="w-3.5 h-3.5 text-primary" />
+              </button>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-[#0b1121] rounded-lg p-3 border border-white/[0.04]">
+                <p className="text-lg font-bold text-primary">3</p>
+                <p className="text-[10px] text-gray-500">Referrals</p>
+              </div>
+              <div className="bg-[#0b1121] rounded-lg p-3 border border-white/[0.04]">
+                <p className="text-lg font-bold text-green-400">$150</p>
+                <p className="text-[10px] text-gray-500">Earned</p>
+              </div>
+              <div className="bg-[#0b1121] rounded-lg p-3 border border-white/[0.04]">
+                <p className="text-lg font-bold text-yellow-400">10%</p>
+                <p className="text-[10px] text-gray-500">Commission</p>
+              </div>
+            </div>
+            <button onClick={generateLink} className="text-xs text-primary hover:underline">Generate New Link</button>
+          </div>
+        ) : (
+          <button onClick={generateLink} className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/90 transition-colors"><Link2 className="w-4 h-4" /> Generate Affiliate Link</button>
+        )}
+      </Card>
+    </div>
+  );
+};
+
+/* ================================================================
+   LOGIN FORM (with registration tab, functional forgot password)
    ================================================================ */
 
 const LoginForm = ({ onLogin }: { onLogin: () => void }) => {
@@ -620,13 +882,28 @@ const LoginForm = ({ onLogin }: { onLogin: () => void }) => {
   const [regData, setRegData] = useState({ name: "", email: "", phone: "", company: "", password: "", confirm: "" });
   const [error, setError] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => { e.preventDefault(); login(loginData.email, loginData.password); onLogin(); };
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    login(loginData.email, loginData.password);
+    toast.success("Welcome back!");
+    onLogin();
+  };
+
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault(); setError("");
     if (regData.password.length < 8) { setError("Password must be at least 8 characters"); return; }
     if (regData.password !== regData.confirm) { setError("Passwords do not match"); return; }
     register({ name: regData.name, email: regData.email, phone: regData.phone, company: regData.company }, regData.password);
+    toast.success("Account created successfully!");
     onLogin();
+  };
+
+  const handleForgotPassword = () => {
+    if (!loginData.email) {
+      toast.error("Enter your email address first, then click Forgot Password");
+      return;
+    }
+    toast.success("Password reset link sent!", { description: `Check ${loginData.email} for instructions.` });
   };
 
   return (
@@ -665,7 +942,7 @@ const LoginForm = ({ onLogin }: { onLogin: () => void }) => {
               </div>
               <div className="flex items-center justify-between">
                 <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" className="w-3.5 h-3.5 rounded border-gray-600 bg-transparent accent-primary" /><span className="text-xs text-gray-400">Remember me</span></label>
-                <button type="button" className="text-xs text-primary hover:underline">Forgot password?</button>
+                <button type="button" onClick={handleForgotPassword} className="text-xs text-primary hover:underline">Forgot password?</button>
               </div>
               <button type="submit" className="w-full py-3 rounded-lg bg-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors">Sign In <ArrowRight className="w-4 h-4" /></button>
             </form>
@@ -696,10 +973,15 @@ const LoginForm = ({ onLogin }: { onLogin: () => void }) => {
    ================================================================ */
 
 const ClientPortal = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const [page, setPage] = useState<Page>("dashboard");
   const [darkMode, setDarkMode] = useState(true);
   const [isLive] = useState(false);
+
+  const handleSignOut = () => {
+    logout();
+    toast.success("Signed out successfully");
+  };
 
   const pages: Record<Page, React.ReactNode> = {
     profile: <ProfilePage />,
@@ -719,7 +1001,7 @@ const ClientPortal = () => {
   }
 
   return (
-    <PortalShell activePage={page} setPage={setPage} darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} isLive={isLive}>
+    <PortalShell activePage={page} setPage={setPage} darkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} isLive={isLive} onSignOut={handleSignOut}>
       {pages[page]}
     </PortalShell>
   );

@@ -12,13 +12,13 @@ const platforms = [
     icon: Home,
     name: "Kaldr Properties",
     sub: "Real Estate Automation",
-    href: "#",
+    href: "https://kaldrproperties.com",
   },
   {
     icon: Briefcase,
     name: "Kaldr Consulting",
     sub: "Business Platform Suite",
-    href: "#",
+    href: "https://kaldrbusiness.com",
   },
 ];
 
@@ -39,8 +39,8 @@ const Ecosystem = () => (
           <motion.a
             key={p.name}
             href={p.href}
-            target={p.href.startsWith("http") ? "_blank" : undefined}
-            rel={p.href.startsWith("http") ? "noopener noreferrer" : undefined}
+            target="_blank"
+            rel="noopener noreferrer"
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

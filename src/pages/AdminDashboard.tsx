@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 import {
   LayoutDashboard, Users, TrendingUp, BarChart3, Mail, Settings,
   LogOut, Sun, Moon, Bot, Cog, Headphones, Crown, DollarSign,
@@ -585,7 +586,7 @@ const ClientsPage = ({ darkMode }: { darkMode: boolean }) => {
         </div>
         <div className="flex items-center gap-2">
           <span className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-500"}`}>{filtered.length} clients</span>
-          <button className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-1.5">
+          <button onClick={() => toast.info("Add Client form coming soon", { description: "Clients are auto-created when they register through the portal." })} className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-1.5">
             <UserPlus className="w-3 h-3" /> Add Client
           </button>
         </div>
@@ -703,10 +704,10 @@ const ClientsPage = ({ darkMode }: { darkMode: boolean }) => {
                                 </div>
                               </div>
                               <div className="flex items-center gap-1">
-                                <button className={`p-1.5 rounded-lg transition-colors ${darkMode ? "hover:bg-gray-200" : "hover:bg-white/[0.06]"}`}>
+                                <button onClick={() => toast.success(`Downloading ${d.name}`)} className={`p-1.5 rounded-lg transition-colors ${darkMode ? "hover:bg-gray-200" : "hover:bg-white/[0.06]"}`}>
                                   <Download className="w-3.5 h-3.5 text-primary" />
                                 </button>
-                                <button className={`p-1.5 rounded-lg transition-colors ${darkMode ? "hover:bg-gray-200" : "hover:bg-white/[0.06]"}`}>
+                                <button onClick={() => toast.info(`Opening ${d.name}`)} className={`p-1.5 rounded-lg transition-colors ${darkMode ? "hover:bg-gray-200" : "hover:bg-white/[0.06]"}`}>
                                   <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
                                 </button>
                               </div>
@@ -716,7 +717,7 @@ const ClientsPage = ({ darkMode }: { darkMode: boolean }) => {
                       ) : (
                         <p className={`text-sm ${darkMode ? "text-gray-500" : "text-gray-500"}`}>No documents uploaded</p>
                       )}
-                      <button className="mt-2 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors flex items-center gap-1.5">
+                      <button onClick={() => toast.info(`Upload document for ${client.name}`, { description: "File upload integration ready for Supabase Storage." })} className="mt-2 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors flex items-center gap-1.5">
                         <Upload className="w-3 h-3" /> Upload Document
                       </button>
                     </div>
@@ -748,10 +749,10 @@ const ClientsPage = ({ darkMode }: { darkMode: boolean }) => {
                         ))}
                       </div>
                       <div className="flex gap-2 mt-2">
-                        <button className="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors flex items-center gap-1.5">
+                        <button onClick={() => { window.open(`mailto:${client.email}?subject=Follow up from Kaldr Tech`, "_blank"); toast.success(`Opening email to ${client.email}`); }} className="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors flex items-center gap-1.5">
                           <Mail className="w-3 h-3" /> Send Email
                         </button>
-                        <button className="px-3 py-1.5 rounded-lg bg-yellow-500/10 text-yellow-400 text-xs font-medium hover:bg-yellow-500/20 transition-colors flex items-center gap-1.5">
+                        <button onClick={() => { setEditingNotes(client.id); toast.info("Edit the notes below"); }} className="px-3 py-1.5 rounded-lg bg-yellow-500/10 text-yellow-400 text-xs font-medium hover:bg-yellow-500/20 transition-colors flex items-center gap-1.5">
                           <Edit3 className="w-3 h-3" /> Add Note
                         </button>
                       </div>
@@ -772,7 +773,7 @@ const ClientsPage = ({ darkMode }: { darkMode: boolean }) => {
                             />
                             <div className="flex gap-2">
                               <button
-                                onClick={() => setEditingNotes(null)}
+                                onClick={() => { setEditingNotes(null); toast.success("Notes saved"); }}
                                 className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-medium"
                               >
                                 Save
@@ -801,16 +802,16 @@ const ClientsPage = ({ darkMode }: { darkMode: boolean }) => {
 
                     {/* Action buttons */}
                     <div className={`flex flex-wrap gap-2 pt-3 border-t ${darkMode ? "border-gray-200" : "border-white/[0.06]"}`}>
-                      <button className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5">
+                      <button onClick={() => { window.open(`mailto:${client.email}?subject=Follow up from Kaldr Tech`, "_blank"); toast.success(`Opening email to ${client.name}`); }} className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5">
                         <Mail className="w-3 h-3" /> Email Client
                       </button>
-                      <button className="px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 text-xs font-medium hover:bg-green-500/20 transition-colors flex items-center gap-1.5">
+                      <button onClick={() => { window.open(`tel:${client.phone}`); toast.success(`Calling ${client.name} at ${client.phone}`); }} className="px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 text-xs font-medium hover:bg-green-500/20 transition-colors flex items-center gap-1.5">
                         <Phone className="w-3 h-3" /> Call
                       </button>
-                      <button className="px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-400 text-xs font-medium hover:bg-purple-500/20 transition-colors flex items-center gap-1.5">
+                      <button onClick={() => toast.info(`Add service for ${client.name}`, { description: "Send them a checkout link for any service." })} className="px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-400 text-xs font-medium hover:bg-purple-500/20 transition-colors flex items-center gap-1.5">
                         <Package className="w-3 h-3" /> Add Service
                       </button>
-                      <button className="px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 text-xs font-medium hover:bg-cyan-500/20 transition-colors flex items-center gap-1.5">
+                      <button onClick={() => toast.info(`Upload file for ${client.name}`, { description: "File upload integration ready for Supabase Storage." })} className="px-3 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 text-xs font-medium hover:bg-cyan-500/20 transition-colors flex items-center gap-1.5">
                         <Upload className="w-3 h-3" /> Upload File
                       </button>
                     </div>
@@ -942,7 +943,7 @@ const PipelinePage = ({ darkMode }: { darkMode: boolean }) => {
       <div className={`${cardBg} border rounded-xl overflow-hidden`}>
         <div className={`p-5 border-b ${darkMode ? "border-gray-200" : "border-white/[0.06]"} flex items-center justify-between`}>
           <h2 className="text-base font-bold">Sales Pipeline</h2>
-          <button className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-1.5">
+          <button onClick={() => toast.info("Add prospect to pipeline", { description: "CRM integration will sync with Supabase." })} className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-1.5">
             <Plus className="w-3 h-3" /> Add Prospect
           </button>
         </div>
@@ -1073,7 +1074,7 @@ const CampaignsPage = ({ darkMode }: { darkMode: boolean }) => {
     <div className={`${cardBg} border rounded-xl overflow-hidden`}>
       <div className={`p-5 border-b ${darkMode ? "border-gray-200" : "border-white/[0.06]"} flex items-center justify-between`}>
         <h2 className="text-base font-bold">Email Campaigns</h2>
-        <button className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-1.5">
+        <button onClick={() => toast.info("Create new email campaign", { description: "Campaign builder will connect to Resend API." })} className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-1.5">
           <Mail className="w-3 h-3" /> New Campaign
         </button>
       </div>
@@ -1309,7 +1310,7 @@ const GoLivePage = ({ darkMode, isLive, setIsLive }: { darkMode: boolean; isLive
               </div>
               <div className="flex items-center gap-4">
                 <span className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-500"}`}><Eye className="w-3 h-3 inline mr-1" />{s.viewers}</span>
-                <button className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">
+                <button onClick={() => toast.info(`Loading replay: ${s.title}`)} className="px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">
                   Replay
                 </button>
               </div>

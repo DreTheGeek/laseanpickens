@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, FileDown, Sparkles } from "lucide-react";
 
@@ -6,39 +6,37 @@ const ExitIntentPopup = () => {
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     // Only show on desktop
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) return;
+    if (window.innerWidth < 768) return;
 
     // Only show once per session
     if (sessionStorage.getItem("exit_popup_shown")) return;
 
     const handleMouseLeave = (e: MouseEvent) => {
-      if (e.clientY <= 0 && !dismissed) {
+      // Trigger when cursor moves above the viewport (toward browser chrome / tab bar)
+      if (e.clientY <= 0) {
         setShow(true);
         sessionStorage.setItem("exit_popup_shown", "1");
-        document.removeEventListener("mouseout", handleMouseLeave);
+        document.documentElement.removeEventListener("mouseleave", handleMouseLeave);
       }
     };
 
-    // Delay adding listener to avoid triggering immediately
+    // Wait 5 seconds before arming (avoid false triggers on page load)
     const timer = setTimeout(() => {
-      document.addEventListener("mouseout", handleMouseLeave);
-    }, 10000);
+      document.documentElement.addEventListener("mouseleave", handleMouseLeave);
+    }, 5000);
 
     return () => {
       clearTimeout(timer);
-      document.removeEventListener("mouseout", handleMouseLeave);
+      document.documentElement.removeEventListener("mouseleave", handleMouseLeave);
     };
-  }, [dismissed]);
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = useCallback(() => {
     setShow(false);
-    setDismissed(true);
-  };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

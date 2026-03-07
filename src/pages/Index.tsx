@@ -3,7 +3,6 @@ import Navbar from "@/components/sections/Navbar";
 import HeroVoiceWidget from "@/components/HeroVoiceWidget";
 import FeaturedEvent from "@/components/sections/FeaturedEvent";
 import AuthorityBio from "@/components/sections/AuthorityBio";
-import AuthorityBadges from "@/components/sections/AuthorityBadges";
 import ProcessSteps from "@/components/sections/ProcessSteps";
 import KaldrShowcase from "@/components/sections/KaldrShowcase";
 import PricingTiers from "@/components/sections/PricingTiers";
@@ -20,7 +19,7 @@ import BusinessAssessment from "@/components/sections/BusinessAssessment";
 import AutomationChecklist from "@/components/sections/AutomationChecklist";
 import RoiCalculator from "@/components/sections/RoiCalculator";
 import BookingWidget from "@/components/sections/BookingWidget";
-import { StatsBar, ClientLogos } from "@/components/SocialProofWidgets";
+import { ClientLogos } from "@/components/SocialProofWidgets";
 import { ArrowRight, ArrowDown, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -89,8 +88,6 @@ const Index = () => {
       <ClientLogos />
       <FeaturedEvent />
       <AuthorityBio />
-      <AuthorityBadges />
-      <StatsBar />
       <ProcessSteps />
       <ServiceQuiz />
       <KaldrShowcase />

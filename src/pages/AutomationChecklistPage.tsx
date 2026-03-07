@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, CheckCircle, Clock, DollarSign, Bot, BarChart3, Users, MessageSquare, Star, Zap, Shield, FileSearch } from "lucide-react";
+import SEO from "@/components/SEO";
 
 const checklistSections = [
   {
@@ -96,6 +97,7 @@ const checklistSections = [
 const AutomationChecklistPage = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEO title="AI Automation Checklist" description="The 10-point AI automation checklist - identify your biggest automation opportunities and save 15+ hours per week." />
       <div className="max-w-4xl mx-auto px-4 py-16">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Home

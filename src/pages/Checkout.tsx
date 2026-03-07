@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { getServiceBySlug, getBundleBySlug, getServicesForBundle, typeLabels } from "@/data/services";
 import { useAuth } from "@/contexts/AuthContext";
+import SEO from "@/components/SEO";
 
 /* ================================================================
    STEP 0: REGISTER / LOGIN
@@ -24,7 +25,7 @@ const AuthStep = ({
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (form.password.length < 8) {
@@ -35,14 +36,16 @@ const AuthStep = ({
       setError("Passwords do not match");
       return;
     }
-    register({ name: form.name, email: form.email, phone: form.phone, company: form.company }, form.password);
+    const err = await register({ name: form.name, email: form.email, phone: form.phone, company: form.company }, form.password);
+    if (err) { setError(err); return; }
     onComplete();
   };
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    login(loginForm.email, loginForm.password);
+    const err = await login(loginForm.email, loginForm.password);
+    if (err) { setError(err); return; }
     onComplete();
   };
 
@@ -657,6 +660,7 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEO title="Checkout" description="Complete your purchase securely." />
       {/* Nav */}
       <div className="border-b border-border bg-background/90 backdrop-blur-lg sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">

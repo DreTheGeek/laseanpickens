@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, FileDown, Video, BookOpen, FileText, Calculator, Lock, CheckCircle } from "lucide-react";
+import SEO from "@/components/SEO";
 
 interface Resource {
   slug: string;
@@ -51,6 +52,7 @@ const ResourceLibrary = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEO title="Resources" description="Free resources, guides, and tools for AI business automation." />
       <div className="max-w-5xl mx-auto px-4 py-16">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Home

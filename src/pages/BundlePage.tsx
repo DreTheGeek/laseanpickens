@@ -2,6 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check, ChevronRight, Package, Sparkles } from "lucide-react";
 import { getBundleBySlug, getServicesForBundle, typeLabels } from "@/data/services";
+import SEO from "@/components/SEO";
 
 const BundlePage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -23,6 +24,7 @@ const BundlePage = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEO title={bundle.name} description={`${bundle.name} - Save ${bundle.savings}. ${bundle.tagline}`} />
       {/* Nav */}
       <div className="border-b border-border bg-background/90 backdrop-blur-lg sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">

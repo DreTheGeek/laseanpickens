@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -12,6 +12,8 @@ import {
   Bell, Headphones,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import SEO from "@/components/SEO";
+import { supabase } from "@/lib/supabase";
 
 /* ================================================================
    TYPES
@@ -138,6 +140,7 @@ const PortalShell = ({
 
   return (
     <div className={`min-h-screen ${bg} ${text} flex`}>
+      <SEO title="Client Portal" description="Access your LaSean Pickens client portal - view orders, courses, community, and resources." />
       <aside className={`w-[180px] shrink-0 ${sidebarBg} border-r ${borderColor} flex flex-col fixed inset-y-0 left-0 z-40`}>
         <div className="p-4 flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-sm font-bold text-white shrink-0">L</div>
@@ -956,6 +959,29 @@ const sampleTickets = [
 
 const TicketsPage = () => {
   const [tickets, setTickets] = useState(sampleTickets);
+  useEffect(() => {
+    const loadTickets = async () => {
+      const { data } = await supabase
+        .from("lp_support_tickets")
+        .select("*, lp_support_ticket_messages(*)")
+        .order("created_at", { ascending: false });
+      if (data && data.length > 0) {
+        setTickets(data.map((t: any) => ({
+          id: t.id.substring(0, 8).toUpperCase(),
+          subject: t.subject,
+          priority: t.priority,
+          status: t.status,
+          created: new Date(t.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+          messages: (t.lp_support_ticket_messages || []).map((m: any) => ({
+            author: m.author_type === "admin" ? "Support Team" : "You",
+            text: m.message,
+            time: new Date(m.created_at).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
+          })),
+        })));
+      }
+    };
+    loadTickets();
+  }, []);
   const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
   const [showNewForm, setShowNewForm] = useState(false);
   const [newTicket, setNewTicket] = useState({ subject: "", description: "", priority: "normal" as "normal" | "high" | "low" });
@@ -1225,18 +1251,27 @@ const LoginForm = ({ onLogin }: { onLogin: () => void }) => {
   const [regData, setRegData] = useState({ name: "", email: "", phone: "", company: "", password: "", confirm: "" });
   const [error, setError] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(loginData.email, loginData.password);
+    setError("");
+    const err = await login(loginData.email, loginData.password);
+    if (err) {
+      setError(err);
+      return;
+    }
     toast.success("Welcome back!");
     onLogin();
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault(); setError("");
     if (regData.password.length < 8) { setError("Password must be at least 8 characters"); return; }
     if (regData.password !== regData.confirm) { setError("Passwords do not match"); return; }
-    register({ name: regData.name, email: regData.email, phone: regData.phone, company: regData.company }, regData.password);
+    const err = await register({ name: regData.name, email: regData.email, phone: regData.phone, company: regData.company }, regData.password);
+    if (err) {
+      setError(err);
+      return;
+    }
     toast.success("Account created successfully!");
     onLogin();
   };
@@ -1316,7 +1351,7 @@ const LoginForm = ({ onLogin }: { onLogin: () => void }) => {
    ================================================================ */
 
 const ClientPortal = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, loading } = useAuth();
   const [page, setPage] = useState<Page>("dashboard");
   const [darkMode, setDarkMode] = useState(true);
   const [isLive] = useState(false);
@@ -1340,6 +1375,17 @@ const ClientPortal = () => {
     tickets: <TicketsPage />,
     invoices: <InvoicesPage />,
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0b1121] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-sm text-gray-500">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <LoginForm onLogin={() => {}} />;

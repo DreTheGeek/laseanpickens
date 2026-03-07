@@ -1,5 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, Shield } from "lucide-react";
+import SEO from "@/components/SEO";
 
 const legalContent: Record<string, { title: string; content: string[] }> = {
   privacy: {
@@ -96,6 +97,7 @@ const LegalPage = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <SEO title={page.title} description="Legal information for LaSean Pickens services." />
       <div className="max-w-3xl mx-auto px-4 py-16">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Home

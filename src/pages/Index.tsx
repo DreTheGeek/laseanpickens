@@ -1,3 +1,4 @@
+import SEO from "@/components/SEO";
 import CountdownBanner from "@/components/sections/CountdownBanner";
 import Navbar from "@/components/sections/Navbar";
 import HeroVoiceWidget from "@/components/HeroVoiceWidget";
@@ -26,6 +27,7 @@ import { motion } from "framer-motion";
 const Index = () => {
   return (
     <main className="min-h-screen bg-background text-foreground">
+      <SEO />
       <CountdownBanner />
       <Navbar />
 

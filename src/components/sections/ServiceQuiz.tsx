@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, ArrowLeft, Sparkles, CheckCircle, Target } from "lucide-react";
 import { services, tiers, getServicesByTier } from "@/data/services";
+import { submitQuizResults } from "@/lib/webhooks";
 
 interface Answer {
   label: string;
@@ -93,7 +94,14 @@ const ServiceQuiz = () => {
     if (step < questions.length - 1) {
       setTimeout(() => setStep(step + 1), 300);
     } else {
-      setTimeout(() => setShowResults(true), 300);
+      setTimeout(() => {
+        setShowResults(true);
+        // Save quiz results to Supabase
+        const sorted = Object.entries(newScores).sort((a, b) => b[1] - a[1]);
+        const topTierSlug = sorted[0]?.[0] || "";
+        const topServices = getServicesByTier(topTierSlug);
+        submitQuizResults(null, newAnswers, topTierSlug, topServices.slice(0, 3).map((s) => s.slug));
+      }, 300);
     }
   };
 

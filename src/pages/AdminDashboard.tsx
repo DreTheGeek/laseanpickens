@@ -14,6 +14,8 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend, BarChart, Bar, PieChart, Pie, Cell,
 } from "recharts";
+import { supabase } from "@/lib/supabase";
+import SEO from "@/components/SEO";
 
 /* ================================================================
    TYPES
@@ -289,6 +291,7 @@ const AdminShell = ({
 
   return (
     <div className={`min-h-screen ${bg} flex`}>
+      <SEO title="Admin Dashboard" description="Kaldr Tech admin panel - manage clients, orders, pipeline, and campaigns." />
       {/* Sidebar */}
       <aside className={`w-[200px] shrink-0 ${sidebarBg} border-r flex flex-col fixed inset-y-0 left-0 z-40`}>
         <div className="p-4 flex items-center gap-3">
@@ -432,6 +435,32 @@ const AdminShell = ({
 const fmt = (n: number) => "$" + n.toLocaleString();
 
 const OverviewPage = ({ darkMode }: { darkMode: boolean }) => {
+  const [kpis, setKpis] = useState({
+    totalMRR: 0,
+    activeClients: 0,
+    pipelineCount: 0,
+    churnRate: "0%",
+  });
+
+  useEffect(() => {
+    const loadKpis = async () => {
+      const [clientsRes, ordersRes, pipelineRes] = await Promise.all([
+        supabase.from("lp_clients").select("id, status", { count: "exact" }),
+        supabase.from("lp_orders").select("amount").eq("status", "confirmed"),
+        supabase.from("lp_pipeline").select("id", { count: "exact" }),
+      ]);
+      const activeCount = (clientsRes.data || []).filter((c: any) => c.status === "active").length;
+      const totalRev = (ordersRes.data || []).reduce((s: number, o: any) => s + (Number(o.amount) || 0), 0);
+      setKpis({
+        totalMRR: totalRev,
+        activeClients: activeCount,
+        pipelineCount: pipelineRes.count || 0,
+        churnRate: "0%",
+      });
+    };
+    loadKpis();
+  }, []);
+
   const totalMRR = pillars.reduce((s, p) => s + p.mrr, 0);
   const totalClients = pillars.reduce((s, p) => s + p.clients, 0);
   const cardBg = darkMode ? "bg-white border-gray-200" : "bg-[#111827] border-white/[0.06]";
@@ -442,12 +471,12 @@ const OverviewPage = ({ darkMode }: { darkMode: boolean }) => {
       {/* KPI row */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
-          { label: "Total MRR", value: fmt(totalMRR), icon: DollarSign, color: "text-purple-400" },
-          { label: "ARR", value: fmt(totalMRR * 12), icon: TrendingUp, color: "text-blue-400" },
-          { label: "Active Clients", value: String(totalClients), icon: Users, color: "text-green-400" },
-          { label: "Pipeline", value: "$0", icon: UserPlus, color: "text-yellow-400" },
-          { label: "Churn Rate", value: "0%", icon: AlertCircle, color: "text-red-400" },
-          { label: "Goal Progress", value: "0%", icon: CheckCircle2, color: "text-pink-400" },
+          { label: "Total Revenue", value: fmt(kpis.totalMRR), icon: DollarSign, color: "text-purple-400" },
+          { label: "ARR Projection", value: fmt(kpis.totalMRR * 12), icon: TrendingUp, color: "text-blue-400" },
+          { label: "Active Clients", value: String(kpis.activeClients), icon: Users, color: "text-green-400" },
+          { label: "Pipeline", value: String(kpis.pipelineCount) + " prospects", icon: UserPlus, color: "text-yellow-400" },
+          { label: "Churn Rate", value: kpis.churnRate, icon: AlertCircle, color: "text-red-400" },
+          { label: "Goal Progress", value: kpis.totalMRR > 0 ? Math.min(Math.round((kpis.totalMRR / 300000) * 100), 100) + "%" : "0%", icon: CheckCircle2, color: "text-pink-400" },
         ].map((kpi, i) => (
           <motion.div
             key={kpi.label}
@@ -678,18 +707,49 @@ const ClientsPage = ({ darkMode }: { darkMode: boolean }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterTier, setFilterTier] = useState<string>("all");
   const [editingNotes, setEditingNotes] = useState<string | null>(null);
+  const [clients, setClients] = useState(sampleClients);
+
+  useEffect(() => {
+    const loadClients = async () => {
+      const { data } = await supabase
+        .from("lp_clients")
+        .select("*")
+        .order("joined_at", { ascending: false });
+      if (data && data.length > 0) {
+        const mapped = data.map((c: any) => ({
+          id: c.id,
+          name: c.name || "Unknown",
+          email: c.email || "",
+          phone: c.phone || "",
+          company: c.company || "",
+          tier: c.tier || "AI & Automation",
+          status: c.status || "active",
+          mrr: 0,
+          joined: c.joined_at ? new Date(c.joined_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "-",
+          lastActive: c.last_active ? new Date(c.last_active).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "-",
+          orders: [],
+          documents: [],
+          communications: [],
+          notes: "",
+          totalSpent: Number(c.total_spent) || 0,
+        }));
+        setClients(mapped);
+      }
+    };
+    loadClients();
+  }, []);
 
   const cardBg = darkMode ? "bg-white border-gray-200" : "bg-[#111827] border-white/[0.06]";
   const innerBg = darkMode ? "bg-gray-50 border-gray-100" : "bg-[#0b1121] border-white/[0.04]";
   const inputBg = darkMode ? "bg-gray-100 border-gray-200 text-gray-900" : "bg-white/[0.04] border-white/[0.06] text-white";
 
-  const filtered = sampleClients.filter((c) => {
+  const filtered = clients.filter((c) => {
     const matchSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase()) || c.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchTier = filterTier === "all" || c.tier === filterTier;
     return matchSearch && matchTier;
   });
 
-  const tiers = [...new Set(sampleClients.map((c) => c.tier))];
+  const tiers = [...new Set(clients.map((c) => c.tier))];
 
   const statusColor = (s: string) => {
     if (s === "active") return "bg-green-500/10 text-green-400";
@@ -973,12 +1033,37 @@ const ClientsPage = ({ darkMode }: { darkMode: boolean }) => {
 
 const OrdersPage = ({ darkMode }: { darkMode: boolean }) => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [liveOrders, setLiveOrders] = useState(allOrders);
+
+  useEffect(() => {
+    const loadOrders = async () => {
+      const { data } = await supabase
+        .from("lp_orders")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (data && data.length > 0) {
+        setLiveOrders(data.map((o: any) => ({
+          id: o.id.substring(0, 8).toUpperCase(),
+          itemName: o.service || "Service",
+          itemPrice: o.amount ? `$${Number(o.amount).toLocaleString()}` : "$0",
+          date: new Date(o.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+          status: o.status || "confirmed",
+          termsAccepted: true,
+          refundPolicyAccepted: true,
+          clientName: o.name || "Unknown",
+          clientEmail: o.email || "",
+        })));
+      }
+    };
+    loadOrders();
+  }, []);
+
   const cardBg = darkMode ? "bg-white border-gray-200" : "bg-[#111827] border-white/[0.06]";
   const inputBg = darkMode ? "bg-gray-100 border-gray-200 text-gray-900" : "bg-white/[0.04] border-white/[0.06] text-white";
 
-  const filteredOrders = statusFilter === "all" ? allOrders : allOrders.filter((o) => o.status === statusFilter);
+  const filteredOrders = statusFilter === "all" ? liveOrders : liveOrders.filter((o) => o.status === statusFilter);
 
-  const totalRevenue = allOrders.reduce((sum, o) => {
+  const totalRevenue = liveOrders.reduce((sum, o) => {
     const num = parseFloat(o.itemPrice.replace(/[$,/mo]/g, ""));
     return sum + (isNaN(num) ? 0 : num);
   }, 0);
@@ -988,10 +1073,10 @@ const OrdersPage = ({ darkMode }: { darkMode: boolean }) => {
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         {[
-          { label: "Total Orders", value: String(allOrders.length), color: "text-primary" },
+          { label: "Total Orders", value: String(liveOrders.length), color: "text-primary" },
           { label: "Revenue", value: fmt(totalRevenue), color: "text-green-400" },
-          { label: "Completed", value: String(allOrders.filter((o) => o.status === "completed").length), color: "text-green-400" },
-          { label: "Processing", value: String(allOrders.filter((o) => o.status === "processing").length), color: "text-blue-400" },
+          { label: "Completed", value: String(liveOrders.filter((o) => o.status === "completed").length), color: "text-green-400" },
+          { label: "Processing", value: String(liveOrders.filter((o) => o.status === "processing").length), color: "text-blue-400" },
         ].map((s) => (
           <div key={s.label} className={`${cardBg} border rounded-xl p-4`}>
             <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
@@ -1064,10 +1149,32 @@ const OrdersPage = ({ darkMode }: { darkMode: boolean }) => {
    ================================================================ */
 
 const PipelinePage = ({ darkMode }: { darkMode: boolean }) => {
+  const [livePipeline, setLivePipeline] = useState(samplePipeline);
+
+  useEffect(() => {
+    const loadPipeline = async () => {
+      const { data } = await supabase
+        .from("lp_pipeline")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (data && data.length > 0) {
+        setLivePipeline(data.map((p: any) => ({
+          name: p.name || p.company || "Unknown",
+          stage: p.stage || "Discovery",
+          value: p.value ? `$${Number(p.value).toLocaleString()}` : "$0",
+          probability: p.probability ? `${p.probability}%` : "0%",
+          lastContact: p.updated_at ? new Date(p.updated_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "-",
+          tier: p.service || "AI & Automation",
+        })));
+      }
+    };
+    loadPipeline();
+  }, []);
+
   const cardBg = darkMode ? "bg-white border-gray-200" : "bg-[#111827] border-white/[0.06]";
 
   const stages = ["Discovery", "Demo Scheduled", "Proposal Sent", "Negotiation", "Follow-up"];
-  const stageCounts = stages.map((s) => ({ stage: s, count: samplePipeline.filter((p) => p.stage === s).length }));
+  const stageCounts = stages.map((s) => ({ stage: s, count: livePipeline.filter((p) => p.stage === s).length }));
 
   return (
     <div className="space-y-4">
@@ -1101,7 +1208,7 @@ const PipelinePage = ({ darkMode }: { darkMode: boolean }) => {
               </tr>
             </thead>
             <tbody>
-              {samplePipeline.map((p) => (
+              {livePipeline.map((p) => (
                 <tr key={p.name} className={`border-b transition-colors ${darkMode ? "border-gray-100 hover:bg-gray-50" : "border-white/[0.03] hover:bg-white/[0.02]"}`}>
                   <td className="px-5 py-3 font-medium">{p.name}</td>
                   <td className={`px-5 py-3 ${darkMode ? "text-gray-600" : "text-gray-400"}`}>{p.tier}</td>
@@ -1209,6 +1316,28 @@ const AnalyticsPage = ({ darkMode }: { darkMode: boolean }) => {
    ================================================================ */
 
 const CampaignsPage = ({ darkMode }: { darkMode: boolean }) => {
+  const [liveCampaigns, setLiveCampaigns] = useState(sampleCampaigns);
+
+  useEffect(() => {
+    const loadCampaigns = async () => {
+      const { data } = await supabase
+        .from("lp_campaigns")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (data && data.length > 0) {
+        setLiveCampaigns(data.map((c: any) => ({
+          name: c.name || "Campaign",
+          status: c.status || "draft",
+          sent: c.sent_count || 0,
+          opened: c.open_count || 0,
+          replied: c.click_count || 0,
+          date: c.created_at ? new Date(c.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "-",
+        })));
+      }
+    };
+    loadCampaigns();
+  }, []);
+
   const cardBg = darkMode ? "bg-white border-gray-200" : "bg-[#111827] border-white/[0.06]";
 
   return (
@@ -1232,7 +1361,7 @@ const CampaignsPage = ({ darkMode }: { darkMode: boolean }) => {
             </tr>
           </thead>
           <tbody>
-            {sampleCampaigns.map((c) => (
+            {liveCampaigns.map((c) => (
               <tr key={c.name} className={`border-b transition-colors ${darkMode ? "border-gray-100 hover:bg-gray-50" : "border-white/[0.03] hover:bg-white/[0.02]"}`}>
                 <td className="px-5 py-3 font-medium">{c.name}</td>
                 <td className="px-5 py-3 text-center">

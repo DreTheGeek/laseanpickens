@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, Shield } from "lucide-react";
+import { submitLeadCapture } from "@/lib/webhooks";
 
 const LeadCapture = () => {
   const [submitted, setSubmitted] = useState(false);
@@ -14,8 +15,7 @@ const LeadCapture = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !name) return;
-    // TODO: wire to LP-004 Lead Capture webhook
-    console.log("Lead capture:", { name, email, company, message });
+    submitLeadCapture({ name, email, company, message });
     setSubmitted(true);
   };
 

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { FileDown, CheckSquare, Mail, ArrowRight } from "lucide-react";
+import { submitChecklistSignup } from "@/lib/webhooks";
 
 const checklistItems = [
   "Map every manual task your team does daily",
@@ -24,8 +25,8 @@ const AutomationChecklist = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
+      submitChecklistSignup(email);
       setSubmitted(true);
-      // Redirect to full checklist after short delay
       setTimeout(() => navigate("/resources/automation-checklist"), 2000);
     }
   };

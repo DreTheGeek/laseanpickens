@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, FileDown, Sparkles } from "lucide-react";
+import { submitExitIntentSignup } from "@/lib/webhooks";
 
 const ExitIntentPopup = () => {
   const [show, setShow] = useState(false);
@@ -41,6 +42,7 @@ const ExitIntentPopup = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email) {
+      submitExitIntentSignup(email);
       setSubmitted(true);
       setTimeout(() => {
         window.location.href = "/resources/automation-checklist";

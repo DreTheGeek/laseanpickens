@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Mail, ArrowRight, Check, Gift } from "lucide-react";
+import { submitNewsletter } from "@/lib/webhooks";
 
 const Newsletter = () => {
   const [email, setEmail] = useState("");
@@ -10,8 +11,7 @@ const Newsletter = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
-    // TODO: wire to LP-005 Newsletter Signup webhook
-    console.log("Newsletter signup:", email);
+    submitNewsletter(email);
     setSubmitted(true);
   };
 

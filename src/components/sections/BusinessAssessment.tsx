@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Brain, ArrowRight, ArrowLeft, BarChart3, Zap, AlertTriangle, CheckCircle2, TrendingUp } from "lucide-react";
+import { submitAssessmentEmail } from "@/lib/webhooks";
 
 interface AssessmentQuestion {
   id: string;
@@ -134,7 +135,7 @@ const BusinessAssessment = () => {
               </div>
               <h3 className="text-2xl font-heading font-bold text-foreground mb-2">Your Results Are Ready!</h3>
               <p className="text-muted-foreground mb-6">Enter your email to unlock your full AI Readiness Report with personalized recommendations.</p>
-              <form onSubmit={(e) => { e.preventDefault(); if (email) setEmailCaptured(true); }} className="max-w-sm mx-auto space-y-3">
+              <form onSubmit={(e) => { e.preventDefault(); if (email) { submitAssessmentEmail(email, totalScore, result.grade); setEmailCaptured(true); } }} className="max-w-sm mx-auto space-y-3">
                 <input
                   type="email"
                   required

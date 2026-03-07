@@ -13,6 +13,7 @@ import ClientPortal from "./pages/ClientPortal";
 import LegalPage from "./pages/LegalPage";
 import ResourceLibrary from "./pages/ResourceLibrary";
 import CaseStudy from "./pages/CaseStudy";
+import AutomationChecklistPage from "./pages/AutomationChecklistPage";
 import NotFound from "./pages/NotFound";
 import IntroAnimation from "./components/IntroAnimation";
 import ExitIntentPopup from "./components/ExitIntentPopup";
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/legal/:slug" element={<LegalPage />} />
             <Route path="/resources" element={<ResourceLibrary />} />
             <Route path="/case-study/:slug" element={<CaseStudy />} />
+            <Route path="/resources/automation-checklist" element={<AutomationChecklistPage />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

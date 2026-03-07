@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { FileDown, CheckSquare, Mail, ArrowRight } from "lucide-react";
 
 const checklistItems = [
@@ -18,10 +19,15 @@ const checklistItems = [
 const AutomationChecklist = () => {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) setSubmitted(true);
+    if (email) {
+      setSubmitted(true);
+      // Redirect to full checklist after short delay
+      setTimeout(() => navigate("/resources/automation-checklist"), 2000);
+    }
   };
 
   return (
@@ -85,11 +91,11 @@ const AutomationChecklist = () => {
                 <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
                   <CheckSquare className="w-7 h-7 text-emerald-400" />
                 </div>
-                <h3 className="text-xl font-heading font-bold text-foreground mb-2">Check Your Email!</h3>
-                <p className="text-muted-foreground mb-4">We have sent the full AI Automation Checklist to <strong className="text-foreground">{email}</strong></p>
-                <p className="text-sm text-muted-foreground mb-6">While you wait, take our free AI Business Assessment to see exactly where your business stands.</p>
-                <a href="#assessment" className="inline-flex items-center gap-2 text-primary font-medium text-sm hover:underline">
-                  <ArrowRight className="w-4 h-4" /> Take the Assessment
+                <h3 className="text-xl font-heading font-bold text-foreground mb-2">You are In!</h3>
+                <p className="text-muted-foreground mb-4">Redirecting you to the full checklist now...</p>
+                <p className="text-sm text-muted-foreground mb-6">We also sent a copy to <strong className="text-foreground">{email}</strong></p>
+                <a href="/resources/automation-checklist" className="inline-flex items-center gap-2 text-primary font-medium text-sm hover:underline">
+                  <ArrowRight className="w-4 h-4" /> Go to Checklist Now
                 </a>
               </motion.div>
             )}

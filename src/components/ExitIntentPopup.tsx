@@ -42,7 +42,12 @@ const ExitIntentPopup = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) setSubmitted(true);
+    if (email) {
+      setSubmitted(true);
+      setTimeout(() => {
+        window.location.href = "/resources/automation-checklist";
+      }, 2000);
+    }
   };
 
   return (
@@ -102,9 +107,9 @@ const ExitIntentPopup = () => {
                 <div className="w-16 h-16 rounded-full bg-emerald-500/20 flex items-center justify-center mx-auto mb-4">
                   <FileDown className="w-7 h-7 text-emerald-400" />
                 </div>
-                <h3 className="text-xl font-heading font-bold text-foreground mb-2">Check Your Email!</h3>
-                <p className="text-muted-foreground">Your AI Automation Checklist is on its way to <strong className="text-foreground">{email}</strong></p>
-                <button onClick={handleClose} className="mt-4 text-sm text-primary hover:underline">Close</button>
+                <h3 className="text-xl font-heading font-bold text-foreground mb-2">You are In!</h3>
+                <p className="text-muted-foreground">Redirecting you to the full checklist now...</p>
+                <a href="/resources/automation-checklist" className="mt-4 text-sm text-primary hover:underline inline-block">Go to Checklist Now</a>
               </div>
             )}
           </motion.div>

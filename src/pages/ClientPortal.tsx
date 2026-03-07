@@ -9,6 +9,7 @@ import {
   Star, MessageCircle, Award, FileText, CheckCircle2,
   ArrowRight, ShoppingBag, Package, ExternalLink,
   Building2, Moon, Radio, Eye, Copy, Download,
+  Bell, Headphones,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -26,7 +27,9 @@ type Page =
   | "resources"
   | "communications"
   | "affiliate"
-  | "live";
+  | "live"
+  | "tickets"
+  | "invoices";
 
 /* ================================================================
    SIDEBAR NAV ITEMS
@@ -43,6 +46,8 @@ const navItems: { id: Page; label: string; icon: React.ComponentType<{ className
   { id: "resources", label: "Resources", icon: FolderOpen },
   { id: "communications", label: "Communications", icon: MessageSquare },
   { id: "affiliate", label: "Affiliate Portal", icon: Link2 },
+  { id: "tickets", label: "Support", icon: Headphones },
+  { id: "invoices", label: "Invoices", icon: FileText },
 ];
 
 /* ================================================================
@@ -110,6 +115,27 @@ const PortalShell = ({
   const sidebarBg = darkMode ? "bg-[#0b1121]" : "bg-white";
   const borderColor = darkMode ? "border-white/[0.06]" : "border-gray-200";
 
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { title: "Order Confirmed", message: "Your AI Business Audit order has been confirmed", time: "2 hours ago", read: false, type: "success" as const },
+    { title: "New Course Available", message: "Advanced AI Systems is now unlocked", time: "1 day ago", read: false, type: "info" as const },
+    { title: "Coaching Call Reminder", message: "Group coaching call starts in 1 hour", time: "3 hours ago", read: true, type: "warning" as const },
+    { title: "Community Update", message: "LaSean posted a new message in Winner Circle", time: "5 hours ago", read: true, type: "info" as const },
+  ]);
+
+  const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const markAllRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    toast.success("All notifications marked as read");
+  };
+
+  const notificationIcon = (type: "success" | "info" | "warning") => {
+    if (type === "success") return <CheckCircle2 className="w-4 h-4 text-green-400 shrink-0" />;
+    if (type === "warning") return <CalendarDays className="w-4 h-4 text-yellow-400 shrink-0" />;
+    return <Star className="w-4 h-4 text-primary shrink-0" />;
+  };
+
   return (
     <div className={`min-h-screen ${bg} ${text} flex`}>
       <aside className={`w-[180px] shrink-0 ${sidebarBg} border-r ${borderColor} flex flex-col fixed inset-y-0 left-0 z-40`}>
@@ -150,6 +176,42 @@ const PortalShell = ({
             </button>
           )}
           <span className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-400"}`}>dre@kaldrbusiness.com</span>
+          <div className="relative">
+            <button onClick={() => setShowNotifications(!showNotifications)}
+              className={`w-7 h-7 rounded-full ${darkMode ? "bg-white/[0.06] hover:bg-white/10" : "bg-gray-100 hover:bg-gray-200"} flex items-center justify-center transition-colors relative`}>
+              <Bell className="w-3.5 h-3.5 text-gray-400" />
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-[10px] font-bold text-white flex items-center justify-center">{unreadCount}</span>
+              )}
+            </button>
+            {showNotifications && (
+              <div className={`absolute right-0 top-9 w-80 ${darkMode ? "bg-[#111827] border-white/[0.06]" : "bg-white border-gray-200"} border rounded-xl shadow-2xl z-50 overflow-hidden`}>
+                <div className={`px-4 py-3 border-b ${darkMode ? "border-white/[0.06]" : "border-gray-200"} flex items-center justify-between`}>
+                  <p className="text-sm font-semibold">Notifications</p>
+                  {unreadCount > 0 && <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{unreadCount} new</span>}
+                </div>
+                <div className="max-h-72 overflow-y-auto">
+                  {notifications.map((n, i) => (
+                    <div key={i} className={`px-4 py-3 flex items-start gap-3 ${!n.read ? (darkMode ? "bg-primary/5" : "bg-blue-50") : ""} ${darkMode ? "hover:bg-white/[0.02]" : "hover:bg-gray-50"} transition-colors cursor-pointer`}
+                      onClick={() => setNotifications((prev) => prev.map((notif, idx) => idx === i ? { ...notif, read: true } : notif))}>
+                      {notificationIcon(n.type)}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-xs font-semibold">{n.title}</p>
+                        <p className={`text-[11px] ${darkMode ? "text-gray-400" : "text-gray-500"} mt-0.5 line-clamp-1`}>{n.message}</p>
+                        <p className={`text-[10px] ${darkMode ? "text-gray-600" : "text-gray-400"} mt-1`}>{n.time}</p>
+                      </div>
+                      {!n.read && <span className="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0" />}
+                    </div>
+                  ))}
+                </div>
+                {unreadCount > 0 && (
+                  <div className={`px-4 py-2.5 border-t ${darkMode ? "border-white/[0.06]" : "border-gray-200"}`}>
+                    <button onClick={markAllRead} className="w-full text-xs text-primary font-medium hover:underline">Mark all as read</button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           <button onClick={toggleDarkMode}
             className={`w-7 h-7 rounded-full ${darkMode ? "bg-white/[0.06] hover:bg-white/10" : "bg-gray-100 hover:bg-gray-200"} flex items-center justify-center transition-colors`}>
             {darkMode ? <Sun className="w-3.5 h-3.5 text-gray-400" /> : <Moon className="w-3.5 h-3.5 text-gray-600" />}
@@ -872,6 +934,287 @@ const AffiliatePage = () => {
 };
 
 /* ================================================================
+   PAGE: SUPPORT TICKETS
+   ================================================================ */
+
+const sampleTickets = [
+  {
+    id: "TKT-001", subject: "Help with AI chatbot setup", priority: "high" as const, status: "in_progress" as const, created: "Mar 5, 2026",
+    messages: [
+      { author: "You", text: "I need help configuring the chatbot for my website...", time: "Mar 5, 10:00 AM" },
+      { author: "Support Team", text: "I'd be happy to help! Can you share your website URL?", time: "Mar 5, 2:30 PM" },
+    ],
+  },
+  {
+    id: "TKT-002", subject: "Invoice for February services", priority: "normal" as const, status: "resolved" as const, created: "Mar 1, 2026",
+    messages: [
+      { author: "You", text: "Can I get a copy of my February invoice?", time: "Mar 1, 9:00 AM" },
+      { author: "Support Team", text: "Your invoice has been sent to your email. Let us know if you need anything else!", time: "Mar 1, 11:00 AM" },
+    ],
+  },
+];
+
+const TicketsPage = () => {
+  const [tickets, setTickets] = useState(sampleTickets);
+  const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
+  const [showNewForm, setShowNewForm] = useState(false);
+  const [newTicket, setNewTicket] = useState({ subject: "", description: "", priority: "normal" as "normal" | "high" | "low" });
+  const [replyText, setReplyText] = useState("");
+
+  const handleCreateTicket = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTicket.subject.trim() || !newTicket.description.trim()) return;
+    const ticket = {
+      id: `TKT-${String(tickets.length + 1).padStart(3, "0")}`,
+      subject: newTicket.subject,
+      priority: newTicket.priority as "normal" | "high" | "low",
+      status: "open" as const,
+      created: "Mar 6, 2026",
+      messages: [{ author: "You", text: newTicket.description, time: "Mar 6, " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) }],
+    };
+    setTickets((prev) => [ticket, ...prev]);
+    setNewTicket({ subject: "", description: "", priority: "normal" });
+    setShowNewForm(false);
+    toast.success("Ticket created!", { description: `Ticket ${ticket.id} has been submitted.` });
+  };
+
+  const handleReply = (ticketId: string) => {
+    if (!replyText.trim()) return;
+    setTickets((prev) =>
+      prev.map((t) =>
+        t.id === ticketId
+          ? { ...t, messages: [...t.messages, { author: "You", text: replyText, time: "Mar 6, " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) }] }
+          : t
+      )
+    );
+    setReplyText("");
+    toast.success("Reply sent!");
+  };
+
+  const statusBadge = (status: string) => {
+    const styles: Record<string, string> = {
+      open: "bg-blue-500/10 text-blue-400",
+      in_progress: "bg-yellow-500/10 text-yellow-400",
+      resolved: "bg-green-500/10 text-green-400",
+    };
+    const labels: Record<string, string> = { open: "Open", in_progress: "In Progress", resolved: "Resolved" };
+    return <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${styles[status] || styles.open}`}>{labels[status] || status}</span>;
+  };
+
+  const priorityBadge = (priority: string) => {
+    const styles: Record<string, string> = { high: "text-red-400", normal: "text-gray-400", low: "text-gray-500" };
+    return <span className={`text-[10px] font-medium ${styles[priority] || styles.normal}`}>{priority.charAt(0).toUpperCase() + priority.slice(1)}</span>;
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <SectionTitle icon={Headphones}>Support Tickets</SectionTitle>
+        <button onClick={() => setShowNewForm(!showNewForm)} className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2">
+          <Send className="w-3 h-3" /> New Ticket
+        </button>
+      </div>
+
+      {showNewForm && (
+        <Card className="p-6">
+          <h3 className="text-sm font-bold mb-4">Create New Ticket</h3>
+          <form onSubmit={handleCreateTicket} className="space-y-4">
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Subject</label>
+              <input type="text" required placeholder="Brief description of your issue" value={newTicket.subject} onChange={(e) => setNewTicket({ ...newTicket, subject: e.target.value })}
+                className="w-full bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Description</label>
+              <textarea required placeholder="Describe your issue in detail..." rows={4} value={newTicket.description} onChange={(e) => setNewTicket({ ...newTicket, description: e.target.value })}
+                className="w-full bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none placeholder:text-gray-600 resize-none" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">Priority</label>
+              <select value={newTicket.priority} onChange={(e) => setNewTicket({ ...newTicket, priority: e.target.value as "normal" | "high" | "low" })}
+                className="bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2.5 text-sm text-gray-200 outline-none">
+                <option value="low">Low</option>
+                <option value="normal">Normal</option>
+                <option value="high">High</option>
+              </select>
+            </div>
+            <div className="flex gap-3">
+              <button type="submit" className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors">Submit Ticket</button>
+              <button type="button" onClick={() => setShowNewForm(false)} className="px-4 py-2 rounded-lg bg-white/[0.06] text-gray-400 text-xs font-semibold hover:bg-white/10 transition-colors">Cancel</button>
+            </div>
+          </form>
+        </Card>
+      )}
+
+      <div className="space-y-3">
+        {tickets.map((ticket) => (
+          <Card key={ticket.id} className="overflow-hidden">
+            <button onClick={() => setExpandedTicket(expandedTicket === ticket.id ? null : ticket.id)}
+              className="w-full px-5 py-4 flex items-center gap-4 text-left hover:bg-white/[0.02] transition-colors">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-mono text-gray-500">{ticket.id}</span>
+                  {statusBadge(ticket.status)}
+                  {priorityBadge(ticket.priority)}
+                </div>
+                <p className="text-sm font-semibold truncate">{ticket.subject}</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-[10px] text-gray-500">{ticket.created}</p>
+                <p className="text-[10px] text-gray-600">{ticket.messages.length} message{ticket.messages.length !== 1 ? "s" : ""}</p>
+              </div>
+              <ArrowRight className={`w-4 h-4 text-gray-500 transition-transform ${expandedTicket === ticket.id ? "rotate-90" : ""}`} />
+            </button>
+
+            {expandedTicket === ticket.id && (
+              <div className="border-t border-white/[0.06] px-5 py-4">
+                <div className="space-y-3 mb-4">
+                  {ticket.messages.map((msg, i) => (
+                    <div key={i} className={`flex gap-3 ${msg.author === "You" ? "" : ""}`}>
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 ${msg.author === "You" ? "bg-primary text-white" : "bg-green-500/20 text-green-400"}`}>
+                        {msg.author === "You" ? "Y" : "S"}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className="text-xs font-semibold">{msg.author}</p>
+                          <p className="text-[10px] text-gray-500">{msg.time}</p>
+                        </div>
+                        <p className="text-xs text-gray-400 mt-1">{msg.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {ticket.status !== "resolved" && (
+                  <div className="flex gap-2">
+                    <input type="text" value={replyText} onChange={(e) => setReplyText(e.target.value)}
+                      onKeyDown={(e) => e.key === "Enter" && handleReply(ticket.id)}
+                      placeholder="Type your reply..."
+                      className="flex-1 bg-[#0b1121] border border-white/[0.06] rounded-lg px-3 py-2 text-xs text-gray-200 outline-none placeholder:text-gray-600" />
+                    <button onClick={() => handleReply(ticket.id)} className="px-3 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors">
+                      <Send className="w-3 h-3" />
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ================================================================
+   PAGE: INVOICES
+   ================================================================ */
+
+const sampleInvoices = [
+  { id: "INV-2026-001", service: "AI Business Audit & Strategy", amount: "$697.00", status: "paid" as const, date: "Mar 1, 2026", paidDate: "Mar 1, 2026", dueDate: undefined },
+  { id: "INV-2026-002", service: "Social Media Management - March", amount: "$497.00", status: "paid" as const, date: "Mar 1, 2026", paidDate: "Mar 3, 2026", dueDate: undefined },
+  { id: "INV-2026-003", service: "Email Marketing - March", amount: "$297.00", status: "pending" as const, date: "Mar 5, 2026", paidDate: undefined, dueDate: "Mar 15, 2026" },
+];
+
+const InvoicesPage = () => {
+  const [invoices] = useState(sampleInvoices);
+  const [viewingInvoice, setViewingInvoice] = useState<string | null>(null);
+
+  const totalPaid = invoices.filter((inv) => inv.status === "paid").reduce((sum, inv) => sum + parseFloat(inv.amount.replace(/[$,]/g, "")), 0);
+  const totalOutstanding = invoices.filter((inv) => inv.status === "pending").reduce((sum, inv) => sum + parseFloat(inv.amount.replace(/[$,]/g, "")), 0);
+  const thisMonth = invoices.reduce((sum, inv) => sum + parseFloat(inv.amount.replace(/[$,]/g, "")), 0);
+
+  const statusBadge = (status: string) => {
+    if (status === "paid") return <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-500/10 text-green-400">Paid</span>;
+    if (status === "pending") return <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-yellow-500/10 text-yellow-400">Pending</span>;
+    return <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-500/10 text-red-400">Overdue</span>;
+  };
+
+  return (
+    <div className="space-y-6">
+      <SectionTitle icon={FileText}>Invoices</SectionTitle>
+
+      <div className="grid grid-cols-3 gap-4">
+        {[
+          { label: "Total Paid", value: `$${totalPaid.toFixed(2)}`, color: "text-green-400" },
+          { label: "Outstanding", value: `$${totalOutstanding.toFixed(2)}`, color: "text-yellow-400" },
+          { label: "This Month", value: `$${thisMonth.toFixed(2)}`, color: "text-primary" },
+        ].map((stat) => (
+          <Card key={stat.label} className="p-4">
+            <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{stat.label}</p>
+            <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
+          </Card>
+        ))}
+      </div>
+
+      <div className="space-y-3">
+        {invoices.map((inv) => (
+          <Card key={inv.id} className="overflow-hidden">
+            <div className="px-5 py-4 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                <FileText className="w-4 h-4 text-primary" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-mono text-gray-500">{inv.id}</span>
+                  {statusBadge(inv.status)}
+                </div>
+                <p className="text-sm font-semibold truncate">{inv.service}</p>
+              </div>
+              <p className="text-sm font-bold text-primary shrink-0">{inv.amount}</p>
+              <div className="flex items-center gap-2 shrink-0">
+                <button onClick={() => setViewingInvoice(viewingInvoice === inv.id ? null : inv.id)}
+                  className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-gray-400 text-xs font-medium hover:bg-white/10 transition-colors flex items-center gap-1.5">
+                  <Eye className="w-3 h-3" /> View
+                </button>
+                <button onClick={() => toast.info("Downloading invoice...", { description: `${inv.id} will be saved to your downloads folder.` })}
+                  className="px-3 py-1.5 rounded-lg bg-white/[0.06] text-gray-400 text-xs font-medium hover:bg-white/10 transition-colors flex items-center gap-1.5">
+                  <Download className="w-3 h-3" /> Download
+                </button>
+              </div>
+            </div>
+
+            {viewingInvoice === inv.id && (
+              <div className="border-t border-white/[0.06] px-5 py-4 bg-[#0b1121]/50">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Invoice Number</p>
+                    <p className="text-sm font-semibold">{inv.id}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Service</p>
+                    <p className="text-sm font-semibold">{inv.service}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Issue Date</p>
+                    <p className="text-sm">{inv.date}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">{inv.status === "paid" ? "Paid Date" : "Due Date"}</p>
+                    <p className="text-sm">{inv.paidDate || inv.dueDate || "-"}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Amount</p>
+                    <p className="text-lg font-bold text-primary">{inv.amount}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Status</p>
+                    <div className="mt-0.5">{statusBadge(inv.status)}</div>
+                  </div>
+                </div>
+                <div className="mt-4 pt-3 border-t border-white/[0.06]">
+                  <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Billed To</p>
+                  <p className="text-sm">LaSean Pickens</p>
+                  <p className="text-xs text-gray-500">dre@kaldrbusiness.com</p>
+                </div>
+              </div>
+            )}
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+/* ================================================================
    LOGIN FORM (with registration tab, functional forgot password)
    ================================================================ */
 
@@ -994,6 +1337,8 @@ const ClientPortal = () => {
     resources: <ResourcesPage />,
     communications: <CommunicationsPage />,
     affiliate: <AffiliatePage />,
+    tickets: <TicketsPage />,
+    invoices: <InvoicesPage />,
   };
 
   if (!isAuthenticated) {

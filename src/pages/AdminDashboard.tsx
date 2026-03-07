@@ -8,7 +8,7 @@ import {
   Video, VideoOff, Eye, MessageSquare, Send, ChevronDown, ChevronUp,
   FileText, Phone, Package, Search, Filter,
   Download, Upload, Edit3, Plus, Copy, ExternalLink,
-  Activity, Zap, Globe, Shield,
+  Activity, Zap, Globe, Shield, Bell, Clock,
 } from "lucide-react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -19,7 +19,7 @@ import {
    TYPES
    ================================================================ */
 
-type Page = "overview" | "clients" | "orders" | "pipeline" | "analytics" | "campaigns" | "golive" | "settings";
+type Page = "overview" | "clients" | "orders" | "pipeline" | "analytics" | "campaigns" | "tickets" | "golive" | "settings";
 
 interface ClientOrder {
   id: string;
@@ -74,6 +74,7 @@ const navItems: { id: Page; label: string; icon: React.ComponentType<{ className
   { id: "pipeline", label: "Pipeline", icon: TrendingUp },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
   { id: "campaigns", label: "Campaigns", icon: Mail },
+  { id: "tickets", label: "Tickets", icon: Headphones },
   { id: "golive", label: "Go Live", icon: Video },
   { id: "settings", label: "Settings", icon: Settings },
 ];
@@ -260,10 +261,27 @@ const AdminShell = ({
   children: React.ReactNode;
 }) => {
   const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
+  const [showNotifications, setShowNotifications] = useState(false);
   useEffect(() => {
     const id = setInterval(() => setLastUpdated(new Date().toLocaleTimeString()), 30000);
     return () => clearInterval(id);
   }, []);
+
+  const adminNotifications = [
+    { title: "New Lead Captured", message: "mike@citywidehvac.com submitted contact form", time: "5 min ago", type: "lead" },
+    { title: "New Order", message: "Apex Plumbing purchased Social Media Management", time: "1 hour ago", type: "order" },
+    { title: "Newsletter Signup", message: "3 new subscribers from exit-intent popup", time: "2 hours ago", type: "signup" },
+    { title: "Assessment Completed", message: "james@metroelectric.com scored 78/100 (A-)", time: "4 hours ago", type: "assessment" },
+    { title: "Checklist Downloaded", message: "linda@greenscape.com downloaded automation checklist", time: "6 hours ago", type: "download" },
+  ];
+
+  const notifIcon = (type: string) => {
+    if (type === "lead") return "text-cyan-400";
+    if (type === "order") return "text-green-400";
+    if (type === "signup") return "text-blue-400";
+    if (type === "assessment") return "text-purple-400";
+    return "text-amber-400";
+  };
 
   const bg = darkMode ? "bg-gray-50 text-gray-900" : "bg-[#0b1121] text-gray-100";
   const sidebarBg = darkMode ? "bg-white border-gray-200" : "bg-[#0b1121] border-white/[0.06]";
@@ -323,6 +341,59 @@ const AdminShell = ({
           )}
           <span className={`text-[11px] ${darkMode ? "text-gray-500" : "text-gray-500"}`}>Updated: {lastUpdated}</span>
           <span className={`text-[11px] ${darkMode ? "text-gray-500" : "text-gray-500"}`}>Goal: $200K-$300K/mo</span>
+          {/* Notification bell */}
+          <div className="relative">
+            <button
+              onClick={() => setShowNotifications(!showNotifications)}
+              className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors relative ${
+                darkMode ? "bg-gray-100 hover:bg-gray-200" : "bg-white/[0.06] hover:bg-white/10"
+              }`}
+            >
+              <Bell className={`w-3.5 h-3.5 ${darkMode ? "text-gray-600" : "text-gray-400"}`} />
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center">5</span>
+            </button>
+            {showNotifications && (
+              <div className={`absolute right-0 top-9 w-80 rounded-xl border shadow-2xl z-50 ${darkMode ? "bg-white border-gray-200" : "bg-[#111827] border-white/[0.06]"}`}>
+                <div className={`px-4 py-3 border-b ${darkMode ? "border-gray-200" : "border-white/[0.06]"} flex items-center justify-between`}>
+                  <h3 className="text-sm font-bold">Notifications</h3>
+                  <button
+                    onClick={() => { toast.success("All notifications marked as read"); setShowNotifications(false); }}
+                    className="text-[11px] text-primary font-medium hover:underline"
+                  >
+                    Mark all read
+                  </button>
+                </div>
+                <div className="max-h-80 overflow-y-auto divide-y divide-white/[0.04]">
+                  {adminNotifications.map((n, i) => (
+                    <div key={i} className={`px-4 py-3 transition-colors ${darkMode ? "hover:bg-gray-50" : "hover:bg-white/[0.02]"}`}>
+                      <div className="flex items-start gap-3">
+                        <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${
+                          n.type === "lead" ? "bg-cyan-400" :
+                          n.type === "order" ? "bg-green-400" :
+                          n.type === "signup" ? "bg-blue-400" :
+                          n.type === "assessment" ? "bg-purple-400" :
+                          "bg-amber-400"
+                        }`} />
+                        <div className="flex-1 min-w-0">
+                          <p className={`text-xs font-semibold ${notifIcon(n.type)}`}>{n.title}</p>
+                          <p className={`text-[11px] mt-0.5 ${darkMode ? "text-gray-600" : "text-gray-400"}`}>{n.message}</p>
+                          <p className={`text-[10px] mt-1 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>{n.time}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className={`px-4 py-3 border-t ${darkMode ? "border-gray-200" : "border-white/[0.06]"}`}>
+                  <button
+                    onClick={() => { toast.info("Viewing all notifications"); setShowNotifications(false); }}
+                    className="w-full text-center text-xs font-medium text-primary hover:underline"
+                  >
+                    View All
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
           <button
             onClick={toggleDarkMode}
             className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
@@ -522,6 +593,76 @@ const OverviewPage = ({ darkMode }: { darkMode: boolean }) => {
               </PieChart>
             </ResponsiveContainer>
           </div>
+        </div>
+      </div>
+
+      {/* Activity Feed */}
+      <div className={`${cardBg} border rounded-xl p-6`}>
+        <div className="flex items-center gap-2 mb-5">
+          <Activity className="w-4 h-4 text-cyan-400" />
+          <h2 className="text-base font-bold">Activity Feed</h2>
+        </div>
+        <div className="space-y-3">
+          {[
+            { type: "order", text: "Citywide HVAC purchased AI Business Audit - $697", time: "5 min ago" },
+            { type: "signup", text: "New portal registration: sarah@apexplumbing.com", time: "22 min ago" },
+            { type: "lead", text: "Contact form submission from james@metroelectric.com", time: "1 hour ago" },
+            { type: "newsletter", text: "Newsletter signup: linda@greenscape.com (exit intent)", time: "2 hours ago" },
+            { type: "assessment", text: "AI Readiness Assessment completed - Score: 78/100 (A-)", time: "3 hours ago" },
+            { type: "checklist", text: "Automation checklist downloaded by tom@summitroofing.com", time: "4 hours ago" },
+            { type: "order", text: "Summit Roofing purchased Complete Business Rebrand - $2,997", time: "6 hours ago" },
+            { type: "campaign", text: "HVAC Spring Outreach campaign sent - 200 emails", time: "8 hours ago" },
+          ].map((item, i) => {
+            const borderColor =
+              item.type === "order" ? "border-l-green-500" :
+              item.type === "signup" ? "border-l-blue-500" :
+              item.type === "lead" ? "border-l-cyan-500" :
+              item.type === "campaign" ? "border-l-purple-500" :
+              item.type === "newsletter" ? "border-l-blue-400" :
+              item.type === "assessment" ? "border-l-amber-500" :
+              "border-l-gray-500";
+            const iconColor =
+              item.type === "order" ? "text-green-400" :
+              item.type === "signup" ? "text-blue-400" :
+              item.type === "lead" ? "text-cyan-400" :
+              item.type === "campaign" ? "text-purple-400" :
+              item.type === "newsletter" ? "text-blue-300" :
+              item.type === "assessment" ? "text-amber-400" :
+              "text-gray-400";
+            const IconComponent =
+              item.type === "order" ? ShoppingCart :
+              item.type === "signup" ? UserPlus :
+              item.type === "lead" ? Users :
+              item.type === "campaign" ? Mail :
+              item.type === "newsletter" ? Mail :
+              item.type === "assessment" ? CheckCircle2 :
+              Download;
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: i * 0.03 }}
+                className={`${innerBg} border border-l-4 ${borderColor} rounded-lg px-4 py-3 flex items-center justify-between`}
+              >
+                <div className="flex items-center gap-3">
+                  <IconComponent className={`w-4 h-4 shrink-0 ${iconColor}`} />
+                  <div>
+                    <p className="text-sm">{item.text}</p>
+                    <p className={`text-[10px] mt-0.5 ${darkMode ? "text-gray-400" : "text-gray-600"}`}>{item.time}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => toast.info("Viewing activity details")}
+                  className={`text-[11px] font-medium px-2.5 py-1 rounded-lg transition-colors ${
+                    darkMode ? "text-gray-500 hover:bg-gray-100" : "text-gray-500 hover:bg-white/[0.06]"
+                  }`}
+                >
+                  View
+                </button>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -1400,6 +1541,225 @@ const SettingsPage = ({ darkMode }: { darkMode: boolean }) => {
 };
 
 /* ================================================================
+   PAGE: TICKETS
+   ================================================================ */
+
+interface TicketMessage {
+  author: string;
+  text: string;
+  time: string;
+}
+
+interface SupportTicket {
+  id: string;
+  client: string;
+  subject: string;
+  priority: "high" | "normal" | "low";
+  status: "open" | "in_progress" | "resolved";
+  created: string;
+  lastReply: string;
+  messages: TicketMessage[];
+}
+
+const sampleTickets: SupportTicket[] = [
+  {
+    id: "TKT-001", client: "Citywide HVAC", subject: "Help with AI chatbot setup", priority: "high", status: "in_progress", created: "Mar 5", lastReply: "Mar 5, 2:30 PM",
+    messages: [
+      { author: "Client", text: "I need help configuring the chatbot for my website", time: "Mar 5, 10:00 AM" },
+      { author: "Admin", text: "I'd be happy to help! Can you share your website URL?", time: "Mar 5, 2:30 PM" },
+    ],
+  },
+  {
+    id: "TKT-002", client: "Apex Plumbing", subject: "Social media content approval", priority: "normal", status: "open", created: "Mar 4", lastReply: "Mar 4, 3:00 PM",
+    messages: [
+      { author: "Client", text: "Where can I review the March social media calendar?", time: "Mar 4, 3:00 PM" },
+    ],
+  },
+  {
+    id: "TKT-003", client: "Summit Roofing", subject: "Logo revision request", priority: "normal", status: "open", created: "Mar 3", lastReply: "Mar 3, 1:15 PM",
+    messages: [
+      { author: "Client", text: "Can we try a version with a darker blue?", time: "Mar 3, 11:00 AM" },
+      { author: "Admin", text: "Absolutely! I'll have revised options for you by Friday.", time: "Mar 3, 1:00 PM" },
+      { author: "Client", text: "Perfect, thank you!", time: "Mar 3, 1:15 PM" },
+    ],
+  },
+  {
+    id: "TKT-004", client: "GreenScape Landscaping", subject: "February invoice request", priority: "low", status: "resolved", created: "Mar 1", lastReply: "Mar 1, 11:00 AM",
+    messages: [
+      { author: "Client", text: "Can I get a copy of my February invoice?", time: "Mar 1, 9:00 AM" },
+      { author: "Admin", text: "Sent to your email! Let us know if you need anything else.", time: "Mar 1, 11:00 AM" },
+    ],
+  },
+];
+
+const TicketsPage = ({ darkMode }: { darkMode: boolean }) => {
+  const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
+
+  const cardBg = darkMode ? "bg-white border-gray-200" : "bg-[#111827] border-white/[0.06]";
+  const innerBg = darkMode ? "bg-gray-50 border-gray-100" : "bg-[#0b1121] border-white/[0.04]";
+  const inputBg = darkMode ? "bg-gray-100 border-gray-200 text-gray-900" : "bg-white/[0.04] border-white/[0.06] text-white";
+
+  const priorityBadge = (p: string) => {
+    if (p === "high") return "bg-red-500/10 text-red-400";
+    if (p === "normal") return "bg-blue-500/10 text-blue-400";
+    return "bg-gray-500/10 text-gray-400";
+  };
+
+  const statusBadge = (s: string) => {
+    if (s === "open") return "bg-yellow-500/10 text-yellow-400";
+    if (s === "in_progress") return "bg-blue-500/10 text-blue-400";
+    return "bg-green-500/10 text-green-400";
+  };
+
+  const statusLabel = (s: string) => {
+    if (s === "in_progress") return "In Progress";
+    if (s === "open") return "Open";
+    return "Resolved";
+  };
+
+  const openCount = sampleTickets.filter((t) => t.status === "open").length;
+  const inProgressCount = sampleTickets.filter((t) => t.status === "in_progress").length;
+  const resolvedCount = sampleTickets.filter((t) => t.status === "resolved").length;
+
+  return (
+    <div className="space-y-4">
+      {/* Stats row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          { label: "Open", value: String(openCount), color: "text-yellow-400", icon: AlertCircle },
+          { label: "In Progress", value: String(inProgressCount), color: "text-blue-400", icon: Clock },
+          { label: "Resolved Today", value: "5", color: "text-green-400", icon: CheckCircle2 },
+          { label: "Avg Response Time", value: "2.4 hrs", color: "text-purple-400", icon: Zap },
+        ].map((s) => (
+          <div key={s.label} className={`${cardBg} border rounded-xl p-4`}>
+            <div className="flex items-center gap-2 mb-1">
+              <s.icon className={`w-4 h-4 ${s.color}`} />
+              <span className={`text-[11px] font-medium ${darkMode ? "text-gray-500" : "text-gray-500"}`}>{s.label}</span>
+            </div>
+            <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Tickets table */}
+      <div className={`${cardBg} border rounded-xl overflow-hidden`}>
+        <div className={`p-5 border-b ${darkMode ? "border-gray-200" : "border-white/[0.06]"} flex items-center justify-between`}>
+          <h2 className="text-base font-bold flex items-center gap-2">
+            <Headphones className="w-4 h-4 text-primary" /> Support Tickets
+          </h2>
+          <button
+            onClick={() => toast.info("Create new ticket", { description: "Ticket creation form coming soon." })}
+            className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-1.5"
+          >
+            <Plus className="w-3 h-3" /> New Ticket
+          </button>
+        </div>
+
+        <div className="divide-y divide-white/[0.04]">
+          {sampleTickets.map((ticket) => {
+            const expanded = expandedTicket === ticket.id;
+            return (
+              <div key={ticket.id}>
+                {/* Ticket row */}
+                <button
+                  onClick={() => { setExpandedTicket(expanded ? null : ticket.id); setReplyText(""); }}
+                  className={`w-full text-left px-5 py-4 flex items-center gap-4 transition-colors ${
+                    darkMode ? "hover:bg-gray-50" : "hover:bg-white/[0.02]"
+                  }`}
+                >
+                  <span className="text-xs font-mono text-primary w-20 shrink-0">{ticket.id}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold">{ticket.client}</span>
+                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${priorityBadge(ticket.priority)}`}>{ticket.priority}</span>
+                      <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-full ${statusBadge(ticket.status)}`}>{statusLabel(ticket.status)}</span>
+                    </div>
+                    <p className={`text-xs mt-0.5 ${darkMode ? "text-gray-500" : "text-gray-400"}`}>{ticket.subject}</p>
+                  </div>
+                  <div className="text-right hidden md:block">
+                    <p className={`text-xs ${darkMode ? "text-gray-500" : "text-gray-500"}`}>Created {ticket.created}</p>
+                    <p className={`text-[11px] ${darkMode ? "text-gray-400" : "text-gray-600"}`}>Last reply {ticket.lastReply}</p>
+                  </div>
+                  {expanded ? <ChevronUp className="w-4 h-4 shrink-0" /> : <ChevronDown className="w-4 h-4 shrink-0" />}
+                </button>
+
+                {/* Expanded ticket */}
+                {expanded && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                    className={`border-t ${darkMode ? "border-gray-200" : "border-white/[0.06]"}`}
+                  >
+                    <div className="p-5 space-y-4">
+                      {/* Message thread */}
+                      <div className="space-y-3">
+                        {ticket.messages.map((msg, i) => (
+                          <div
+                            key={i}
+                            className={`${msg.author === "Admin" ? (darkMode ? "bg-primary/5 border-primary/20" : "bg-primary/10 border-primary/20") : `${innerBg}`} border rounded-lg px-4 py-3`}
+                          >
+                            <div className="flex items-center justify-between mb-1">
+                              <span className={`text-xs font-semibold ${msg.author === "Admin" ? "text-primary" : (darkMode ? "text-gray-700" : "text-gray-300")}`}>
+                                {msg.author}
+                              </span>
+                              <span className={`text-[10px] ${darkMode ? "text-gray-400" : "text-gray-600"}`}>{msg.time}</span>
+                            </div>
+                            <p className={`text-sm ${darkMode ? "text-gray-700" : "text-gray-300"}`}>{msg.text}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Reply box */}
+                      {ticket.status !== "resolved" && (
+                        <div className="space-y-2">
+                          <textarea
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value)}
+                            placeholder="Type your reply..."
+                            rows={3}
+                            className={`w-full px-3 py-2 rounded-lg text-sm ${inputBg} border outline-none focus:ring-1 focus:ring-primary resize-none`}
+                          />
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => { toast.success(`Reply sent to ${ticket.client}`); setReplyText(""); }}
+                              className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-1.5"
+                            >
+                              <Send className="w-3 h-3" /> Send Reply
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Action buttons */}
+                      <div className={`flex flex-wrap gap-2 pt-3 border-t ${darkMode ? "border-gray-200" : "border-white/[0.06]"}`}>
+                        <button
+                          onClick={() => toast.success(`Ticket ${ticket.id} assigned to you`)}
+                          className="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors flex items-center gap-1.5"
+                        >
+                          <Users className="w-3 h-3" /> Assign to me
+                        </button>
+                        <button
+                          onClick={() => toast.success(`Ticket ${ticket.id} closed`)}
+                          className="px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 text-xs font-medium hover:bg-green-500/20 transition-colors flex items-center gap-1.5"
+                        >
+                          <CheckCircle2 className="w-3 h-3" /> Close ticket
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ================================================================
    MAIN
    ================================================================ */
 
@@ -1417,6 +1777,7 @@ const AdminDashboard = () => {
     pipeline: <PipelinePage darkMode={darkMode} />,
     analytics: <AnalyticsPage darkMode={darkMode} />,
     campaigns: <CampaignsPage darkMode={darkMode} />,
+    tickets: <TicketsPage darkMode={darkMode} />,
     golive: <GoLivePage darkMode={darkMode} isLive={isLive} setIsLive={setIsLive} />,
     settings: <SettingsPage darkMode={darkMode} />,
   };

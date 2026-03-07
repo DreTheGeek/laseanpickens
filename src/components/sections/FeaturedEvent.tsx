@@ -33,7 +33,7 @@ const FeaturedEvent = () => {
             <h2 className="text-3xl md:text-5xl font-heading font-bold leading-tight">
               The AI Leverage
               <br />
-              <span className="text-gradient-blue">Summit 2025</span>
+              <span className="text-gradient-blue">Summit 2026</span>
             </h2>
             <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-lg">
               A 3-day immersive experience where I break down the exact AI systems, automations,
@@ -42,7 +42,7 @@ const FeaturedEvent = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {[
-                { icon: Calendar, label: "March 21–23", sub: "2025" },
+                { icon: Calendar, label: "June 20–22", sub: "2026" },
                 { icon: Users, label: "50 Seats", sub: "Only" },
                 { icon: Clock, label: "3 Days", sub: "Intensive" },
               ].map((item, i) => (

@@ -17,13 +17,13 @@ interface Resource {
 
 const resources: Resource[] = [
   { slug: "ai-automation-checklist", title: "The 10-Point AI Automation Checklist", description: "Identify your biggest automation opportunities and start saving 15+ hours per week with this actionable framework.", type: "pdf", gated: true, category: "Automation", downloadUrl: "/resources/automation-checklist" },
-  { slug: "ai-tools-guide", title: "2026 AI Tools Recommendation Guide", description: "Our curated list of the best AI tools for small-to-mid businesses, organized by use case with pricing comparisons.", type: "guide", gated: true, category: "Technology", downloadUrl: "/resources/automation-checklist" },
+  { slug: "ai-tools-guide", title: "2026 AI Tools Recommendation Guide", description: "Our curated list of the best AI tools for small-to-mid businesses, organized by use case with pricing comparisons.", type: "guide", gated: true, category: "Technology" },
   { slug: "roi-calculator", title: "AI ROI Calculator", description: "Calculate exactly how much time and money AI automation could save your business. Interactive tool on our homepage.", type: "tool", gated: false, category: "Automation", downloadUrl: "/#roi" },
   { slug: "case-study-hvac", title: "Case Study: How an HVAC Company 10x'd Reviews", description: "Learn how we helped a mid-sized HVAC company go from 3 reviews/month to 47 using automated review collection.", type: "pdf", gated: false, category: "Case Studies", downloadUrl: "/case-study/hvac-automation" },
-  { slug: "business-plan-template", title: "AI-Ready Business Plan Template", description: "The same framework we use for our $997 Business Plan service. Includes financial projections and growth strategy sections.", type: "pdf", gated: true, category: "Strategy", downloadUrl: "/resources/automation-checklist" },
-  { slug: "email-marketing-playbook", title: "Email Marketing Playbook for Service Businesses", description: "Copy-paste email templates, sequence blueprints, and subject line formulas that drive opens and conversions.", type: "guide", gated: true, category: "Marketing", downloadUrl: "/resources/automation-checklist" },
+  { slug: "business-plan-template", title: "AI-Ready Business Plan Template", description: "The same framework we use for our $997 Business Plan service. Includes financial projections and growth strategy sections.", type: "pdf", gated: true, category: "Strategy" },
+  { slug: "email-marketing-playbook", title: "Email Marketing Playbook for Service Businesses", description: "Copy-paste email templates, sequence blueprints, and subject line formulas that drive opens and conversions.", type: "guide", gated: true, category: "Marketing" },
   { slug: "intro-to-ai-automation", title: "Introduction to AI for Business Owners", description: "A 20-minute video walkthrough explaining AI automation in plain English - no jargon, just practical applications.", type: "video", gated: false, category: "Education", downloadUrl: "/#quiz" },
-  { slug: "cost-of-not-automating", title: "The Cost of Not Automating", description: "An eye-opening breakdown of what manual processes actually cost your business in time, money, and missed opportunities.", type: "pdf", gated: true, category: "Automation", downloadUrl: "/resources/automation-checklist" },
+  { slug: "cost-of-not-automating", title: "The Cost of Not Automating", description: "An eye-opening breakdown of what manual processes actually cost your business in time, money, and missed opportunities.", type: "pdf", gated: true, category: "Automation" },
 ];
 
 const typeIcons: Record<string, React.ReactNode> = {
@@ -107,11 +107,17 @@ const ResourceLibrary = () => {
 
                   <div className="mt-4">
                     {!resource.gated || unlockedEmails[resource.slug] ? (
-                      <a href={resource.downloadUrl || "#"} className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline">
-                        {resource.type === "video" ? <Video className="w-4 h-4" /> : <FileDown className="w-4 h-4" />}
-                        {resource.type === "video" ? "Watch Now" : resource.type === "tool" ? "Open Tool" : "Download"}
-                        {unlockedEmails[resource.slug] && <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />}
-                      </a>
+                      resource.downloadUrl ? (
+                        <a href={resource.downloadUrl} className="inline-flex items-center gap-2 text-sm text-primary font-medium hover:underline">
+                          {resource.type === "video" ? <Video className="w-4 h-4" /> : <FileDown className="w-4 h-4" />}
+                          {resource.type === "video" ? "Watch Now" : resource.type === "tool" ? "Open Tool" : "Download"}
+                          {unlockedEmails[resource.slug] && <CheckCircle className="w-3.5 h-3.5 text-emerald-400" />}
+                        </a>
+                      ) : (
+                        <span className="inline-flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                          <CheckCircle className="w-3.5 h-3.5 text-emerald-400" /> Unlocked - available in your Client Portal
+                        </span>
+                      )
                     ) : unlockingSlug === resource.slug ? (
                       <form onSubmit={(e) => { e.preventDefault(); handleUnlock(resource.slug); }} className="flex gap-2">
                         <input

@@ -294,9 +294,9 @@ const AdminShell = ({
     return "text-amber-400";
   };
 
-  const bg = darkMode ? "bg-gray-50 text-gray-900" : "bg-[#0b1121] text-gray-100";
-  const sidebarBg = darkMode ? "bg-white border-gray-200" : "bg-[#0b1121] border-white/[0.06]";
-  const headerBg = darkMode ? "bg-white border-gray-200" : "bg-[#0b1121] border-white/[0.06]";
+  const bg = darkMode ? "bg-[#0b1121] text-gray-100" : "bg-gray-50 text-gray-900";
+  const sidebarBg = darkMode ? "bg-[#0b1121] border-white/[0.06]" : "bg-white border-gray-200";
+  const headerBg = darkMode ? "bg-[#0b1121] border-white/[0.06]" : "bg-white border-gray-200";
 
   return (
     <div className={`min-h-screen ${bg} flex`}>

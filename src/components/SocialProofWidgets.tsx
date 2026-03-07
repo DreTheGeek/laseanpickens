@@ -21,7 +21,6 @@ export const PurchaseToast = () => {
 
   useEffect(() => {
     if (dismissed) return;
-    // Show first toast after 15 seconds
     const initial = setTimeout(() => {
       setVisible(true);
       setCurrent(Math.floor(Math.random() * recentPurchases.length));
@@ -31,7 +30,6 @@ export const PurchaseToast = () => {
 
   useEffect(() => {
     if (!visible || dismissed) return;
-    // Auto-hide after 6 seconds, show next after 45 seconds
     const hide = setTimeout(() => setVisible(false), 6000);
     const next = setTimeout(() => {
       setCurrent((c) => (c + 1) % recentPurchases.length);

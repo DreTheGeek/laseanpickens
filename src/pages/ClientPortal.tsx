@@ -146,7 +146,7 @@ const PortalShell = ({
           })}
         </nav>
         <div className={`p-3 border-t ${borderColor}`}>
-          <p className={`text-[10px] ${darkMode ? "text-gray-600" : "text-gray-400"} text-center`}>&copy; 2026 LaSean Pickens</p>
+          <p className={`text-[10px] ${darkMode ? "text-gray-600" : "text-gray-400"} text-center`}>&copy; 2026 Kaldr Tech</p>
         </div>
       </aside>
 
@@ -216,8 +216,8 @@ const PortalShell = ({
    SHARED UI
    ================================================================ */
 
-const Card = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <div className={`bg-[#111827] border border-white/[0.06] rounded-xl ${className}`}>{children}</div>
+const Card = ({ children, className = "", dark = true }: { children: React.ReactNode; className?: string; dark?: boolean }) => (
+  <div className={`${dark ? "bg-[#111827] border-white/[0.06]" : "bg-white border-gray-200"} border rounded-xl ${className}`}>{children}</div>
 );
 
 const SectionTitle = ({ icon: Icon, children }: { icon: React.ComponentType<{ className?: string }>; children: React.ReactNode }) => (

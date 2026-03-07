@@ -160,10 +160,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setOrders([]);
   };
 
-  const addOrder = (order: Omit<Order, "id" | "date" | "status">) => {
+  const addOrder = (order: Omit<Order, "id" | "date" | "status"> & { id?: string }) => {
     const newOrder: Order = {
-      ...order,
-      id: `ORD-${Date.now().toString(36).toUpperCase()}`,
+      itemName: order.itemName,
+      itemSlug: order.itemSlug,
+      itemPrice: order.itemPrice,
+      itemType: order.itemType,
+      isBundle: order.isBundle,
+      termsAccepted: order.termsAccepted,
+      refundPolicyAccepted: order.refundPolicyAccepted,
+      id: order.id || `ORD-${Date.now().toString(36).toUpperCase()}`,
       date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
       status: "confirmed",
     };
@@ -179,7 +185,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         amount: parseFloat(order.itemPrice.replace(/[$,]/g, "")) || 0,
         currency: "usd",
         status: "confirmed",
-      }).then(() => {});
+      }).then(({ error }) => { if (error) console.error("Order insert error:", error); });
     }
   };
 
@@ -188,9 +194,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     if (user?.email) {
       await supabase.from("lp_clients").update({
-        ...(updates.name && { name: updates.name }),
-        ...(updates.phone && { phone: updates.phone }),
-        ...(updates.company && { company: updates.company }),
+        ...(updates.name !== undefined && { name: updates.name }),
+        ...(updates.phone !== undefined && { phone: updates.phone }),
+        ...(updates.company !== undefined && { company: updates.company }),
         last_active: new Date().toISOString(),
       }).eq("email", user.email);
     }

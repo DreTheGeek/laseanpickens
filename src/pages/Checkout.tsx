@@ -213,9 +213,9 @@ const ProfileStep = ({ onNext }: { onNext: () => void }) => {
     company: user?.company || "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateProfile(form);
+    await updateProfile(form);
     onNext();
   };
 
@@ -645,6 +645,7 @@ const Checkout = () => {
     const newOrderId = `ORD-${Date.now().toString(36).toUpperCase()}`;
     setOrderId(newOrderId);
     addOrder({
+      id: newOrderId,
       itemName,
       itemSlug: slug || "",
       itemPrice,

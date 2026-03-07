@@ -9,7 +9,8 @@ import {
   Star, MessageCircle, Award, FileText, CheckCircle2,
   ArrowRight, ShoppingBag, Package, ExternalLink,
   Building2, Moon, Radio, Eye, Copy, Download,
-  Bell, Headphones,
+  Bell, Headphones, ChevronLeft, Clock, Video, X,
+  AlertTriangle,
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import SEO from "@/components/SEO";
@@ -63,14 +64,6 @@ const samplePrograms = [
   { name: "Empire Mastermind", since: "03/05/2026", active: false },
 ];
 
-const sampleCourses = [
-  { title: "AI Automation 101", desc: "Learn the fundamentals of business AI automation", locked: false, progress: 65 },
-  { title: "Lead Generation Mastery", desc: "Master automated lead gen systems", locked: false, progress: 30 },
-  { title: "Sales Pipeline Automation", desc: "Build end-to-end automated sales funnels", locked: true, points: 100 },
-  { title: "Advanced AI Systems", desc: "Design custom AI workflows for your business", locked: true, points: 200 },
-  { title: "Scaling with AI", desc: "Scale operations without scaling headcount", locked: true, points: 300 },
-  { title: "Enterprise AI Strategy", desc: "AI strategy for multi-location businesses", locked: true, points: 500 },
-];
 
 const sampleMessages = [
   { type: "SMS", text: "Welcome to Kaldr Tech! Your AI systems are being configured...", date: "Mar 5" },
@@ -86,21 +79,7 @@ const initialChatMessages = [
   { user: "LaSean Pickens", avatar: "LP", msg: "Absolutely Sarah - I'll cover that in Thursday's coaching call.", time: "10:12 AM", date: "March 5, 2026", isHost: true },
 ];
 
-const sampleSchedule = [
-  { title: "Weekly Group Coaching Call", date: "Thu, Mar 6", time: "2:00 PM ET", type: "Zoom" },
-  { title: "AI Academy Live Q&A", date: "Mon, Mar 10", time: "11:00 AM ET", type: "Zoom" },
-  { title: "1-on-1 Strategy Session", date: "Wed, Mar 12", time: "3:00 PM ET", type: "Zoom" },
-  { title: "Empire Mastermind Meetup", date: "Fri, Mar 21", time: "10:00 AM ET", type: "In-Person" },
-];
 
-const sampleResources = [
-  { title: "AI Automation Playbook", type: "PDF", size: "2.4 MB", filename: "AI_Automation_Playbook.pdf" },
-  { title: "Lead Gen Templates Pack", type: "ZIP", size: "8.1 MB", filename: "Lead_Gen_Templates.zip" },
-  { title: "Cold Email Swipe File", type: "PDF", size: "1.2 MB", filename: "Cold_Email_Swipe_File.pdf" },
-  { title: "CRM Setup Guide", type: "PDF", size: "3.7 MB", filename: "CRM_Setup_Guide.pdf" },
-  { title: "Vapi Voice AI Tutorial", type: "VIDEO", size: "45 min", filename: "Vapi_Voice_AI_Tutorial.mp4" },
-  { title: "Scaling Checklist", type: "PDF", size: "890 KB", filename: "Scaling_Checklist.pdf" },
-];
 
 /* ================================================================
    LAYOUT SHELL (with day/night toggle)
@@ -289,8 +268,8 @@ const ProfilePage = () => {
     }
   };
 
-  const handleSave = () => {
-    updateProfile({ name: form.name, email: form.email, phone: form.phone });
+  const handleSave = async () => {
+    await updateProfile({ name: form.name, email: form.email, phone: form.phone });
     toast.success("Profile saved successfully");
   };
 
@@ -387,37 +366,133 @@ const ProfilePage = () => {
    PAGE: DASHBOARD
    ================================================================ */
 
-const DashboardPage = () => (
-  <div className="space-y-6">
-    <Card className="p-6">
-      <SectionTitle icon={Award}>My Programs</SectionTitle>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {samplePrograms.map((p) => (
-          <div key={p.name} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
-            <div><p className="text-sm font-semibold">{p.name}</p><p className="text-xs text-gray-500">Since {p.since}</p></div>
-            <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${p.active ? "bg-primary/20 text-primary" : "bg-gray-700 text-gray-400"}`}>{p.active ? "Active" : "Pending"}</span>
-          </div>
+const DashboardPage = () => {
+  const { user } = useAuth();
+  const [announcements, setAnnouncements] = useState<any[]>([]);
+  const [dismissedIds, setDismissedIds] = useState<string[]>(() => {
+    try {
+      return JSON.parse(sessionStorage.getItem("lp_dismissed_announcements") || "[]");
+    } catch { return []; }
+  });
+  const [upcomingClasses, setUpcomingClasses] = useState<any[]>([]);
+
+  useEffect(() => {
+    const load = async () => {
+      const now = new Date().toISOString();
+      const { data: annData } = await supabase
+        .from("lp_announcements")
+        .select("*")
+        .eq("is_published", true)
+        .or(`expires_at.is.null,expires_at.gt.${now}`)
+        .order("is_pinned", { ascending: false })
+        .order("created_at", { ascending: false });
+      if (annData) setAnnouncements(annData);
+
+      const { data: classData } = await supabase
+        .from("lp_live_classes")
+        .select("*")
+        .eq("is_published", true)
+        .eq("status", "scheduled")
+        .gt("scheduled_at", now)
+        .order("scheduled_at", { ascending: true })
+        .limit(3);
+      if (classData) setUpcomingClasses(classData);
+    };
+    load();
+  }, []);
+
+  const dismissAnnouncement = (id: string) => {
+    const updated = [...dismissedIds, id];
+    setDismissedIds(updated);
+    sessionStorage.setItem("lp_dismissed_announcements", JSON.stringify(updated));
+  };
+
+  const visibleAnnouncements = announcements.filter((a) => !dismissedIds.includes(a.id));
+
+  const priorityStyles: Record<string, string> = {
+    urgent: "bg-red-500/10 text-red-400 border-red-500/20",
+    high: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
+    normal: "bg-primary/10 text-primary border-primary/20",
+    low: "bg-gray-500/10 text-gray-400 border-gray-500/20",
+  };
+
+  const priorityBadgeStyles: Record<string, string> = {
+    urgent: "bg-red-500/20 text-red-400",
+    high: "bg-yellow-500/20 text-yellow-400",
+    normal: "bg-primary/20 text-primary",
+    low: "bg-gray-700 text-gray-400",
+  };
+
+  return (
+    <div className="space-y-6">
+      {visibleAnnouncements.length > 0 && (
+        <div className="space-y-3">
+          {visibleAnnouncements.map((a) => (
+            <div key={a.id} className={`rounded-xl border px-5 py-4 ${priorityStyles[a.priority] || priorityStyles.normal}`}>
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3 min-w-0">
+                  <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-sm font-bold">{a.title}</h3>
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${priorityBadgeStyles[a.priority] || priorityBadgeStyles.normal}`}>
+                        {a.priority?.charAt(0).toUpperCase() + a.priority?.slice(1)}
+                      </span>
+                      {a.is_pinned && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white/10 text-gray-300">Pinned</span>}
+                    </div>
+                    <p className="text-xs opacity-80 leading-relaxed">{a.body}</p>
+                    <p className="text-[10px] opacity-50 mt-2">
+                      {new Date(a.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </p>
+                  </div>
+                </div>
+                <button onClick={() => dismissAnnouncement(a.id)} className="p-1 rounded-lg hover:bg-white/10 transition-colors shrink-0">
+                  <X className="w-4 h-4 opacity-60" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <Card className="p-6">
+        <SectionTitle icon={Award}>My Programs</SectionTitle>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {samplePrograms.map((p) => (
+            <div key={p.name} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
+              <div><p className="text-sm font-semibold">{p.name}</p><p className="text-xs text-gray-500">Since {p.since}</p></div>
+              <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${p.active ? "bg-primary/20 text-primary" : "bg-gray-700 text-gray-400"}`}>{p.active ? "Active" : "Pending"}</span>
+            </div>
+          ))}
+        </div>
+      </Card>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[{ label: "Courses Completed", value: "2 / 6" }, { label: "Community Points", value: "45" }, { label: "Sessions Attended", value: "8" }, { label: "Referrals", value: "3" }].map((s) => (
+          <Card key={s.label} className="p-4 text-center"><p className="text-2xl font-bold text-primary">{s.value}</p><p className="text-xs text-gray-500 mt-1">{s.label}</p></Card>
         ))}
       </div>
-    </Card>
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-      {[{ label: "Courses Completed", value: "2 / 6" }, { label: "Community Points", value: "45" }, { label: "Sessions Attended", value: "8" }, { label: "Referrals", value: "3" }].map((s) => (
-        <Card key={s.label} className="p-4 text-center"><p className="text-2xl font-bold text-primary">{s.value}</p><p className="text-xs text-gray-500 mt-1">{s.label}</p></Card>
-      ))}
+      <Card className="p-6">
+        <SectionTitle icon={CalendarDays}>Upcoming Sessions</SectionTitle>
+        <div className="space-y-2">
+          {upcomingClasses.length > 0 ? upcomingClasses.map((c) => (
+            <div key={c.id} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
+              <div>
+                <p className="text-sm font-semibold">{c.title}</p>
+                <p className="text-xs text-gray-500">
+                  {new Date(c.scheduled_at).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} -{" "}
+                  {new Date(c.scheduled_at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZoneName: "short" })}
+                </p>
+              </div>
+              <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">{c.class_type || "Zoom"}</span>
+            </div>
+          )) : (
+            <p className="text-xs text-gray-500 py-4 text-center">No upcoming sessions scheduled.</p>
+          )}
+        </div>
+      </Card>
     </div>
-    <Card className="p-6">
-      <SectionTitle icon={CalendarDays}>Upcoming Sessions</SectionTitle>
-      <div className="space-y-2">
-        {sampleSchedule.slice(0, 3).map((s) => (
-          <div key={s.title} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
-            <div><p className="text-sm font-semibold">{s.title}</p><p className="text-xs text-gray-500">{s.date} - {s.time}</p></div>
-            <span className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary">{s.type}</span>
-          </div>
-        ))}
-      </div>
-    </Card>
-  </div>
-);
+  );
+};
 
 /* ================================================================
    PAGE: MY ORDERS
@@ -577,53 +652,277 @@ const LiveStreamPage = ({ isLive }: { isLive: boolean }) => {
 };
 
 /* ================================================================
-   PAGE: ACADEMY (functional unlock buttons)
+   PAGE: ACADEMY (Supabase-powered courses, lessons, progress)
    ================================================================ */
 
 const AcademyPage = () => {
-  const handleUnlock = (title: string, points: number) => {
-    toast.error(`You need ${points - 45} more points to unlock "${title}"`, {
-      description: "Earn points by engaging in the community and completing courses.",
-    });
+  const { user } = useAuth();
+  const [courses, setCourses] = useState<any[]>([]);
+  const [selectedCourse, setSelectedCourse] = useState<any | null>(null);
+  const [selectedLesson, setSelectedLesson] = useState<any | null>(null);
+  const [lessons, setLessons] = useState<any[]>([]);
+  const [progress, setProgress] = useState<any[]>([]);
+  const [loadingCourses, setLoadingCourses] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoadingCourses(true);
+      const { data: courseData } = await supabase
+        .from("lp_courses")
+        .select("*")
+        .eq("is_published", true)
+        .order("order_position", { ascending: true });
+      if (courseData) setCourses(courseData);
+
+      if (user?.email) {
+        const { data: progressData } = await supabase
+          .from("lp_student_progress")
+          .select("*")
+          .eq("email", user.email);
+        if (progressData) setProgress(progressData);
+      }
+      setLoadingCourses(false);
+    };
+    load();
+  }, [user?.email]);
+
+  const loadCourseLessons = async (course: any) => {
+    setSelectedCourse(course);
+    setSelectedLesson(null);
+    const { data } = await supabase
+      .from("lp_lessons")
+      .select("*")
+      .eq("course_id", course.id)
+      .order("order_position", { ascending: true });
+    if (data) setLessons(data);
   };
 
-  const handleContinueCourse = (title: string) => {
-    toast.success(`Resuming "${title}"`, { description: "Loading your progress..." });
+  const getLessonProgress = (lessonId: string) => {
+    return progress.find((p) => p.lesson_id === lessonId);
   };
+
+  const getCourseProgress = (courseId: string) => {
+    return progress.filter((p) => p.course_id === courseId && p.completed).length;
+  };
+
+  const markComplete = async (lesson: any) => {
+    if (!user?.email) return;
+    const { error } = await supabase
+      .from("lp_student_progress")
+      .upsert({
+        email: user.email,
+        lesson_id: lesson.id,
+        course_id: selectedCourse.id,
+        completed: true,
+        completed_at: new Date().toISOString(),
+      }, { onConflict: "email,lesson_id" });
+    if (!error) {
+      setProgress((prev) => {
+        const existing = prev.findIndex((p) => p.lesson_id === lesson.id && p.email === user.email);
+        if (existing >= 0) {
+          const updated = [...prev];
+          updated[existing] = { ...updated[existing], completed: true, completed_at: new Date().toISOString() };
+          return updated;
+        }
+        return [...prev, { email: user.email, lesson_id: lesson.id, course_id: selectedCourse.id, completed: true, completed_at: new Date().toISOString() }];
+      });
+      toast.success("Lesson marked as complete!");
+    }
+  };
+
+  const getEmbedUrl = (url: string) => {
+    if (!url) return null;
+    if (url.includes("youtube.com/watch")) {
+      const videoId = new URL(url).searchParams.get("v");
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    if (url.includes("youtu.be/")) {
+      const videoId = url.split("youtu.be/")[1]?.split("?")[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    if (url.includes("vimeo.com/")) {
+      const videoId = url.split("vimeo.com/")[1]?.split("?")[0];
+      return `https://player.vimeo.com/video/${videoId}`;
+    }
+    return url;
+  };
+
+  const navigateLesson = (direction: "prev" | "next") => {
+    if (!selectedLesson) return;
+    const currentIdx = lessons.findIndex((l) => l.id === selectedLesson.id);
+    const targetIdx = direction === "prev" ? currentIdx - 1 : currentIdx + 1;
+    if (targetIdx >= 0 && targetIdx < lessons.length) {
+      setSelectedLesson(lessons[targetIdx]);
+    }
+  };
+
+  // Lesson player view
+  if (selectedLesson && selectedCourse) {
+    const currentIdx = lessons.findIndex((l) => l.id === selectedLesson.id);
+    const lessonProg = getLessonProgress(selectedLesson.id);
+    const embedUrl = selectedLesson.video_url ? getEmbedUrl(selectedLesson.video_url) : null;
+
+    return (
+      <div className="space-y-6">
+        <button onClick={() => setSelectedLesson(null)} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+          <ChevronLeft className="w-4 h-4" /> Back to {selectedCourse.title}
+        </button>
+        <Card className="p-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider mb-1">Lesson {currentIdx + 1} of {lessons.length}</p>
+              <h2 className="text-lg font-bold">{selectedLesson.title}</h2>
+            </div>
+            {lessonProg?.completed ? (
+              <span className="flex items-center gap-1.5 text-xs font-semibold text-green-400 bg-green-500/10 px-3 py-1.5 rounded-full">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Completed
+              </span>
+            ) : (
+              <button onClick={() => markComplete(selectedLesson)}
+                className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Mark Complete
+              </button>
+            )}
+          </div>
+          {embedUrl && (
+            <div className="aspect-video bg-black rounded-lg overflow-hidden mb-4 border border-white/[0.06]">
+              <iframe src={embedUrl} className="w-full h-full" allowFullScreen allow="autoplay; fullscreen; picture-in-picture" />
+            </div>
+          )}
+          {selectedLesson.content && (
+            <div className="bg-[#0b1121] rounded-lg p-4 border border-white/[0.04] text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
+              {selectedLesson.content}
+            </div>
+          )}
+          <div className="flex items-center justify-between mt-6 pt-4 border-t border-white/[0.06]">
+            <button onClick={() => navigateLesson("prev")} disabled={currentIdx === 0}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/[0.06] text-gray-400 text-xs font-medium hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+              <ChevronLeft className="w-3.5 h-3.5" /> Previous
+            </button>
+            <button onClick={() => navigateLesson("next")} disabled={currentIdx === lessons.length - 1}
+              className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/[0.06] text-gray-400 text-xs font-medium hover:bg-white/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+              Next <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  // Course detail view
+  if (selectedCourse) {
+    const completedCount = getCourseProgress(selectedCourse.id);
+    const totalLessons = lessons.length;
+    const pct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+
+    return (
+      <div className="space-y-6">
+        <button onClick={() => { setSelectedCourse(null); setLessons([]); }} className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+          <ChevronLeft className="w-4 h-4" /> Back to Courses
+        </button>
+        <Card className="p-6">
+          <h2 className="text-xl font-bold mb-2">{selectedCourse.title}</h2>
+          <p className="text-sm text-gray-400 mb-3">{selectedCourse.description}</p>
+          {selectedCourse.instructor && (
+            <p className="text-xs text-gray-500 mb-4">Instructor: <span className="text-gray-300 font-medium">{selectedCourse.instructor}</span></p>
+          )}
+          {totalLessons > 0 && (
+            <div className="mb-4">
+              <div className="flex justify-between text-xs text-gray-500 mb-1">
+                <span>{completedCount} of {totalLessons} lessons completed</span>
+                <span>{pct}%</span>
+              </div>
+              <div className="w-full h-2 bg-gray-700 rounded-full"><div className="h-2 bg-primary rounded-full transition-all" style={{ width: `${pct}%` }} /></div>
+            </div>
+          )}
+        </Card>
+        <Card className="p-6">
+          <SectionTitle icon={GraduationCap}>Lessons</SectionTitle>
+          {lessons.length === 0 ? (
+            <p className="text-xs text-gray-500 py-4 text-center">No lessons available yet.</p>
+          ) : (
+            <div className="space-y-2">
+              {lessons.map((lesson, idx) => {
+                const lessonProg = getLessonProgress(lesson.id);
+                return (
+                  <button key={lesson.id} onClick={() => setSelectedLesson(lesson)}
+                    className="w-full flex items-center gap-3 bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04] hover:bg-white/[0.02] transition-colors text-left">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${lessonProg?.completed ? "bg-green-500/20" : "bg-white/[0.06]"}`}>
+                      {lessonProg?.completed ? <CheckCircle2 className="w-4 h-4 text-green-400" /> : <span className="text-xs font-bold text-gray-500">{idx + 1}</span>}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold truncate">{lesson.title}</p>
+                      {lesson.duration_minutes && <p className="text-[10px] text-gray-500">{lesson.duration_minutes} min</p>}
+                    </div>
+                    {lesson.video_url && <Video className="w-4 h-4 text-gray-500 shrink-0" />}
+                    <ArrowRight className="w-4 h-4 text-gray-500 shrink-0" />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </Card>
+      </div>
+    );
+  }
+
+  // Course list view
+  if (loadingCourses) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <Card className="p-6 text-center">
         <h2 className="text-xl font-bold mb-1">AI Academy</h2>
-        <p className="text-sm text-gray-500 mb-4">Training from LaSean Pickens - earn points to unlock premium courses!</p>
-        <div className="flex items-center justify-center gap-2 text-sm">
-          <Trophy className="w-4 h-4 text-primary" /><span className="text-primary font-semibold">45 / 100 Points</span>
-          <div className="w-32 h-2 bg-gray-700 rounded-full ml-1"><div className="w-[45%] h-2 bg-primary rounded-full" /></div>
-        </div>
+        <p className="text-sm text-gray-500">Training from LaSean Pickens - master AI automation for your business</p>
       </Card>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {sampleCourses.map((c) => (
-          <Card key={c.title} className="overflow-hidden">
-            <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center relative">
-              {c.locked && <span className="absolute top-2 right-2 text-[10px] font-bold px-2 py-0.5 rounded bg-gray-700 text-gray-300 uppercase">Locked</span>}
-              {c.locked ? <Lock className="w-8 h-8 text-gray-500" /> : <Play className="w-8 h-8 text-primary" />}
-            </div>
-            <div className="p-4">
-              <h3 className="text-sm font-bold mb-1">{c.title}</h3>
-              <p className="text-xs text-gray-500 mb-3">{c.desc}</p>
-              {c.locked ? (
-                <button onClick={() => handleUnlock(c.title, c.points!)} className="w-full py-2 rounded-lg bg-amber-600/20 text-amber-400 text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-amber-600/30 transition-colors"><Lock className="w-3 h-3" /> Unlock at {c.points} Points</button>
-              ) : (
-                <div>
-                  <div className="flex justify-between text-xs text-gray-500 mb-1"><span>Progress</span><span>{c.progress}%</span></div>
-                  <div className="w-full h-1.5 bg-gray-700 rounded-full"><div className="h-1.5 bg-primary rounded-full" style={{ width: `${c.progress}%` }} /></div>
-                  <button onClick={() => handleContinueCourse(c.title)} className="w-full mt-2 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">Continue Course</button>
+      {courses.length === 0 ? (
+        <Card className="p-6 text-center">
+          <GraduationCap className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+          <p className="text-sm font-semibold mb-1">No courses available yet</p>
+          <p className="text-xs text-gray-500">Check back soon for new content.</p>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {courses.map((c) => {
+            const completedCount = getCourseProgress(c.id);
+            const totalLessons = c.lesson_count || 0;
+            const pct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+            return (
+              <Card key={c.id} className="overflow-hidden cursor-pointer hover:border-primary/30 transition-colors" onClick={() => loadCourseLessons(c)}>
+                {c.thumbnail_url ? (
+                  <img src={c.thumbnail_url} alt={c.title} className="h-32 w-full object-cover" />
+                ) : (
+                  <div className="h-32 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                    <Play className="w-8 h-8 text-primary" />
+                  </div>
+                )}
+                <div className="p-4">
+                  <h3 className="text-sm font-bold mb-1">{c.title}</h3>
+                  <p className="text-xs text-gray-500 mb-3 line-clamp-2">{c.description}</p>
+                  <div className="flex items-center gap-3 text-[10px] text-gray-500 mb-3">
+                    {totalLessons > 0 && (
+                      <span className="flex items-center gap-1"><GraduationCap className="w-3 h-3" /> {totalLessons} lessons</span>
+                    )}
+                    {c.estimated_hours && (
+                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {c.estimated_hours}h</span>
+                    )}
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-xs text-gray-500 mb-1"><span>Progress</span><span>{pct}%</span></div>
+                    <div className="w-full h-1.5 bg-gray-700 rounded-full"><div className="h-1.5 bg-primary rounded-full transition-all" style={{ width: `${pct}%` }} /></div>
+                  </div>
                 </div>
-              )}
-            </div>
-          </Card>
-        ))}
-      </div>
+              </Card>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
@@ -752,52 +1051,254 @@ const CommunityPage = () => {
 };
 
 /* ================================================================
-   PAGE: SCHEDULE
+   PAGE: SCHEDULE (Supabase-powered live classes)
    ================================================================ */
 
-const SchedulePage = () => (
-  <Card className="p-6">
-    <SectionTitle icon={CalendarDays}>Upcoming Sessions</SectionTitle>
-    <div className="space-y-2">
-      {sampleSchedule.map((s) => (
-        <div key={s.title} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3.5 border border-white/[0.04]">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center"><CalendarDays className="w-5 h-5 text-primary" /></div>
-            <div><p className="text-sm font-semibold">{s.title}</p><p className="text-xs text-gray-500">{s.date} - {s.time}</p></div>
+const SchedulePage = () => {
+  const { user } = useAuth();
+  const [classes, setClasses] = useState<any[]>([]);
+  const [registrations, setRegistrations] = useState<any[]>([]);
+  const [loadingSchedule, setLoadingSchedule] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoadingSchedule(true);
+      const { data: classData } = await supabase
+        .from("lp_live_classes")
+        .select("*")
+        .eq("is_published", true)
+        .order("scheduled_at", { ascending: true });
+      if (classData) setClasses(classData);
+
+      if (user?.email) {
+        const { data: regData } = await supabase
+          .from("lp_class_registrations")
+          .select("*")
+          .eq("email", user.email);
+        if (regData) setRegistrations(regData);
+      }
+      setLoadingSchedule(false);
+    };
+    load();
+  }, [user?.email]);
+
+  const isRegistered = (classId: string) => registrations.some((r) => r.class_id === classId);
+
+  const handleRegister = async (classItem: any) => {
+    if (!user?.email) return;
+    const { error } = await supabase
+      .from("lp_class_registrations")
+      .insert({ class_id: classItem.id, email: user.email });
+    if (!error) {
+      setRegistrations((prev) => [...prev, { class_id: classItem.id, email: user.email }]);
+      toast.success("Registered!", { description: `You're signed up for "${classItem.title}"` });
+    } else {
+      toast.error("Registration failed. Please try again.");
+    }
+  };
+
+  const isJoinable = (scheduledAt: string) => {
+    const classTime = new Date(scheduledAt).getTime();
+    const now = Date.now();
+    return classTime - now <= 15 * 60 * 1000 && classTime + 2 * 60 * 60 * 1000 > now;
+  };
+
+  const now = new Date().toISOString();
+  const upcoming = classes.filter((c) => c.status === "scheduled" && c.scheduled_at > now);
+  const replays = classes.filter((c) => c.status === "completed" && c.recording_url);
+
+  if (loadingSchedule) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <Card className="p-6">
+        <SectionTitle icon={CalendarDays}>Upcoming Sessions</SectionTitle>
+        {upcoming.length === 0 ? (
+          <p className="text-xs text-gray-500 py-4 text-center">No upcoming sessions scheduled.</p>
+        ) : (
+          <div className="space-y-2">
+            {upcoming.map((c) => {
+              const registered = isRegistered(c.id);
+              const joinable = registered && c.zoom_link && isJoinable(c.scheduled_at);
+              return (
+                <div key={c.id} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3.5 border border-white/[0.04]">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center"><CalendarDays className="w-5 h-5 text-primary" /></div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold">{c.title}</p>
+                        {c.class_type && <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-primary/10 text-primary">{c.class_type}</span>}
+                      </div>
+                      <p className="text-xs text-gray-500">
+                        {new Date(c.scheduled_at).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })} -{" "}
+                        {new Date(c.scheduled_at).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZoneName: "short" })}
+                        {c.duration_minutes && <span className="ml-2">({c.duration_minutes} min)</span>}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {joinable && (
+                      <a href={c.zoom_link} target="_blank" rel="noopener noreferrer"
+                        className="px-3 py-1.5 rounded-lg bg-green-500 text-white text-xs font-semibold hover:bg-green-600 transition-colors flex items-center gap-1.5">
+                        <Play className="w-3 h-3" /> Join
+                      </a>
+                    )}
+                    {registered ? (
+                      <span className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-green-500/10 text-green-400">Registered</span>
+                    ) : (
+                      <button onClick={() => handleRegister(c)}
+                        className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors">
+                        Register
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
-          <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${s.type === "Zoom" ? "bg-primary/10 text-primary" : "bg-green-500/10 text-green-400"}`}>{s.type}</span>
-        </div>
-      ))}
+        )}
+      </Card>
+
+      {replays.length > 0 && (
+        <Card className="p-6">
+          <SectionTitle icon={Play}>Replays</SectionTitle>
+          <div className="space-y-2">
+            {replays.map((c) => (
+              <div key={c.id} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3.5 border border-white/[0.04]">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center"><Play className="w-4 h-4 text-primary" /></div>
+                  <div>
+                    <p className="text-sm font-semibold">{c.title}</p>
+                    <p className="text-xs text-gray-500">
+                      {new Date(c.scheduled_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </p>
+                  </div>
+                </div>
+                <a href={c.recording_url} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors">
+                  <Play className="w-3 h-3" /> Watch Replay
+                </a>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
     </div>
-  </Card>
-);
+  );
+};
 
 /* ================================================================
-   PAGE: RESOURCES (functional downloads)
+   PAGE: RESOURCES (Supabase-powered downloads)
    ================================================================ */
 
 const ResourcesPage = () => {
-  const handleDownload = (resource: typeof sampleResources[0]) => {
-    toast.success(`Downloading ${resource.filename}`, {
-      description: `${resource.type} - ${resource.size}`,
-    });
+  const [resources, setResources] = useState<any[]>([]);
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [loadingResources, setLoadingResources] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoadingResources(true);
+      const { data } = await supabase
+        .from("lp_content_resources")
+        .select("*")
+        .eq("is_published", true)
+        .order("order_position", { ascending: true });
+      if (data) setResources(data);
+      setLoadingResources(false);
+    };
+    load();
+  }, []);
+
+  const categories = ["All", ...Array.from(new Set(resources.map((r) => r.category).filter(Boolean)))];
+
+  const filtered = activeCategory === "All" ? resources : resources.filter((r) => r.category === activeCategory);
+
+  const handleDownload = async (resource: any) => {
+    if (resource.file_url) {
+      window.open(resource.file_url, "_blank");
+    }
+    // Increment download count
+    await supabase
+      .from("lp_content_resources")
+      .update({ download_count: (resource.download_count || 0) + 1 })
+      .eq("id", resource.id);
+    setResources((prev) =>
+      prev.map((r) => r.id === resource.id ? { ...r, download_count: (r.download_count || 0) + 1 } : r)
+    );
+    toast.success(`Downloading ${resource.title}`);
   };
 
-  return (
-    <Card className="p-6">
-      <SectionTitle icon={FolderOpen}>Resources & Downloads</SectionTitle>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {sampleResources.map((r) => (
-          <div key={r.title} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center"><FileText className="w-4 h-4 text-primary" /></div>
-              <div><p className="text-sm font-semibold">{r.title}</p><p className="text-xs text-gray-500">{r.type} - {r.size}</p></div>
-            </div>
-            <button onClick={() => handleDownload(r)} className="flex items-center gap-1 text-xs text-primary font-medium hover:underline"><Download className="w-3 h-3" /> Download</button>
-          </div>
-        ))}
+  const fileTypeIcon = (fileType: string) => {
+    const type = (fileType || "").toLowerCase();
+    if (type === "video" || type === "mp4") return <Video className="w-4 h-4 text-primary" />;
+    return <FileText className="w-4 h-4 text-primary" />;
+  };
+
+  const formatSize = (size: string | number | null) => {
+    if (!size) return "";
+    if (typeof size === "string") return size;
+    if (size >= 1024 * 1024) return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+    if (size >= 1024) return `${(size / 1024).toFixed(0)} KB`;
+    return `${size} B`;
+  };
+
+  if (loadingResources) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
       </div>
-    </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {categories.length > 2 && (
+        <div className="flex gap-2 flex-wrap">
+          {categories.map((cat) => (
+            <button key={cat} onClick={() => setActiveCategory(cat)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                activeCategory === cat ? "bg-primary text-white" : "bg-white/[0.06] text-gray-400 hover:text-white hover:bg-white/10"
+              }`}>
+              {cat}
+            </button>
+          ))}
+        </div>
+      )}
+      <Card className="p-6">
+        <SectionTitle icon={FolderOpen}>Resources & Downloads</SectionTitle>
+        {filtered.length === 0 ? (
+          <p className="text-xs text-gray-500 py-4 text-center">No resources available.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {filtered.map((r) => (
+              <div key={r.id} className="flex items-center justify-between bg-[#0b1121] rounded-lg px-4 py-3 border border-white/[0.04]">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">{fileTypeIcon(r.file_type)}</div>
+                  <div>
+                    <p className="text-sm font-semibold">{r.title}</p>
+                    <p className="text-xs text-gray-500">
+                      {r.file_type && <span className="uppercase">{r.file_type}</span>}
+                      {r.file_size && <span> - {formatSize(r.file_size)}</span>}
+                    </p>
+                    {r.description && <p className="text-[10px] text-gray-600 mt-0.5 line-clamp-1">{r.description}</p>}
+                  </div>
+                </div>
+                <button onClick={() => handleDownload(r)} className="flex items-center gap-1 text-xs text-primary font-medium hover:underline shrink-0">
+                  <Download className="w-3 h-3" /> Download
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+    </div>
   );
 };
 
@@ -958,12 +1459,18 @@ const sampleTickets = [
 ];
 
 const TicketsPage = () => {
+  const { user } = useAuth();
   const [tickets, setTickets] = useState(sampleTickets);
   useEffect(() => {
     const loadTickets = async () => {
+      if (!user?.email) return;
+      // Get client_id from lp_clients
+      const { data: clientData } = await supabase.from("lp_clients").select("id").eq("email", user.email).maybeSingle();
+      if (!clientData) return;
       const { data } = await supabase
         .from("lp_support_tickets")
         .select("*, lp_support_ticket_messages(*)")
+        .eq("client_id", clientData.id)
         .order("created_at", { ascending: false });
       if (data && data.length > 0) {
         setTickets(data.map((t: any) => ({
@@ -987,34 +1494,68 @@ const TicketsPage = () => {
   const [newTicket, setNewTicket] = useState({ subject: "", description: "", priority: "normal" as "normal" | "high" | "low" });
   const [replyText, setReplyText] = useState("");
 
-  const handleCreateTicket = (e: React.FormEvent) => {
+  const handleCreateTicket = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTicket.subject.trim() || !newTicket.description.trim()) return;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+    const timeStr = now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
     const ticket = {
       id: `TKT-${String(tickets.length + 1).padStart(3, "0")}`,
       subject: newTicket.subject,
       priority: newTicket.priority as "normal" | "high" | "low",
       status: "open" as const,
-      created: "Mar 6, 2026",
-      messages: [{ author: "You", text: newTicket.description, time: "Mar 6, " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) }],
+      created: dateStr,
+      messages: [{ author: "You", text: newTicket.description, time: `${dateStr}, ${timeStr}` }],
     };
     setTickets((prev) => [ticket, ...prev]);
     setNewTicket({ subject: "", description: "", priority: "normal" });
     setShowNewForm(false);
     toast.success("Ticket created!", { description: `Ticket ${ticket.id} has been submitted.` });
+    // Persist to Supabase
+    const { data: clientRow } = await supabase.from("lp_clients").select("id").eq("email", user?.email).maybeSingle();
+    const { data } = await supabase.from("lp_support_tickets").insert({
+      subject: newTicket.subject,
+      description: newTicket.description,
+      priority: newTicket.priority,
+      status: "open",
+      client_id: clientRow?.id || null,
+    }).select().maybeSingle();
+    if (data) {
+      await supabase.from("lp_support_ticket_messages").insert({
+        ticket_id: data.id,
+        message: newTicket.description,
+        author_type: "client",
+      });
+    }
   };
 
-  const handleReply = (ticketId: string) => {
+  const handleReply = async (ticketId: string) => {
     if (!replyText.trim()) return;
+    const now = new Date();
+    const timeStr = `${now.toLocaleDateString("en-US", { month: "short", day: "numeric" })}, ${now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
     setTickets((prev) =>
       prev.map((t) =>
         t.id === ticketId
-          ? { ...t, messages: [...t.messages, { author: "You", text: replyText, time: "Mar 6, " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) }] }
+          ? { ...t, messages: [...t.messages, { author: "You", text: replyText, time: timeStr }] }
           : t
       )
     );
+    const msg = replyText;
     setReplyText("");
     toast.success("Reply sent!");
+    // Persist reply to Supabase
+    const { data: ticketData } = await supabase.from("lp_support_tickets").select("id").order("created_at", { ascending: false });
+    if (ticketData) {
+      const match = ticketData.find((t: any) => t.id.substring(0, 8).toUpperCase() === ticketId);
+      if (match) {
+        await supabase.from("lp_support_ticket_messages").insert({
+          ticket_id: match.id,
+          message: msg,
+          author_type: "client",
+        });
+      }
+    }
   };
 
   const statusBadge = (status: string) => {
@@ -1276,12 +1817,17 @@ const LoginForm = ({ onLogin }: { onLogin: () => void }) => {
     onLogin();
   };
 
-  const handleForgotPassword = () => {
+  const handleForgotPassword = async () => {
     if (!loginData.email) {
       toast.error("Enter your email address first, then click Forgot Password");
       return;
     }
-    toast.success("Password reset link sent!", { description: `Check ${loginData.email} for instructions.` });
+    const { error } = await supabase.auth.resetPasswordForEmail(loginData.email);
+    if (error) {
+      toast.error(error.message);
+    } else {
+      toast.success("Password reset link sent!", { description: `Check ${loginData.email} for instructions.` });
+    }
   };
 
   return (

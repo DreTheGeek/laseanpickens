@@ -15,13 +15,18 @@ import {
   ResponsiveContainer, Legend, BarChart, Bar, PieChart, Pie, Cell,
 } from "recharts";
 import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 import SEO from "@/components/SEO";
+import ContentManagerPage from "./admin/ContentManagerPage";
+import StudentManagerPage from "./admin/StudentManagerPage";
+import LiveClassesPage from "./admin/LiveClassesPage";
+import AnnouncementsPage from "./admin/AnnouncementsPage";
 
 /* ================================================================
    TYPES
    ================================================================ */
 
-type Page = "overview" | "clients" | "orders" | "pipeline" | "analytics" | "campaigns" | "tickets" | "golive" | "settings";
+type Page = "overview" | "clients" | "orders" | "pipeline" | "content" | "students" | "classes" | "announcements" | "analytics" | "campaigns" | "tickets" | "golive" | "settings";
 
 interface ClientOrder {
   id: string;
@@ -74,6 +79,10 @@ const navItems: { id: Page; label: string; icon: React.ComponentType<{ className
   { id: "clients", label: "Clients", icon: Users },
   { id: "orders", label: "Orders", icon: ShoppingCart },
   { id: "pipeline", label: "Pipeline", icon: TrendingUp },
+  { id: "content", label: "Content", icon: Crown },
+  { id: "students", label: "Students", icon: UserPlus },
+  { id: "classes", label: "Classes", icon: Clock },
+  { id: "announcements", label: "Announcements", icon: Bell },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
   { id: "campaigns", label: "Campaigns", icon: Mail },
   { id: "tickets", label: "Tickets", icon: Headphones },
@@ -330,7 +339,7 @@ const AdminShell = ({
           })}
         </nav>
 
-        <div className={`p-3 border-t ${darkMode ? "border-gray-200" : "border-white/[0.06]"}`}>
+        <div className={`p-3 border-t ${darkMode ? "border-white/[0.06]" : "border-gray-200"}`}>
           <p className={`text-[10px] text-center ${darkMode ? "text-gray-400" : "text-gray-600"}`}>&copy; 2026 Kaldr Tech</p>
         </div>
       </aside>
@@ -357,7 +366,7 @@ const AdminShell = ({
             </button>
             {showNotifications && (
               <div className={`absolute right-0 top-9 w-80 rounded-xl border shadow-2xl z-50 ${darkMode ? "bg-white border-gray-200" : "bg-[#111827] border-white/[0.06]"}`}>
-                <div className={`px-4 py-3 border-b ${darkMode ? "border-gray-200" : "border-white/[0.06]"} flex items-center justify-between`}>
+                <div className={`px-4 py-3 border-b ${darkMode ? "border-white/[0.06]" : "border-gray-200"} flex items-center justify-between`}>
                   <h3 className="text-sm font-bold">Notifications</h3>
                   <button
                     onClick={() => { toast.success("All notifications marked as read"); setShowNotifications(false); }}
@@ -386,7 +395,7 @@ const AdminShell = ({
                     </div>
                   ))}
                 </div>
-                <div className={`px-4 py-3 border-t ${darkMode ? "border-gray-200" : "border-white/[0.06]"}`}>
+                <div className={`px-4 py-3 border-t ${darkMode ? "border-white/[0.06]" : "border-gray-200"}`}>
                   <button
                     onClick={() => { toast.info("Viewing all notifications"); setShowNotifications(false); }}
                     className="w-full text-center text-xs font-medium text-primary hover:underline"
@@ -833,7 +842,7 @@ const ClientsPage = ({ darkMode }: { darkMode: boolean }) => {
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   transition={{ duration: 0.2 }}
-                  className={`border-t ${darkMode ? "border-gray-200" : "border-white/[0.06]"}`}
+                  className={`border-t ${darkMode ? "border-white/[0.06]" : "border-gray-200"}`}
                 >
                   <div className="p-5 space-y-5">
                     {/* Contact info */}
@@ -1002,7 +1011,7 @@ const ClientsPage = ({ darkMode }: { darkMode: boolean }) => {
                     </div>
 
                     {/* Action buttons */}
-                    <div className={`flex flex-wrap gap-2 pt-3 border-t ${darkMode ? "border-gray-200" : "border-white/[0.06]"}`}>
+                    <div className={`flex flex-wrap gap-2 pt-3 border-t ${darkMode ? "border-white/[0.06]" : "border-gray-200"}`}>
                       <button onClick={() => { window.open(`mailto:${client.email}?subject=Follow up from Kaldr Tech`, "_blank"); toast.success(`Opening email to ${client.name}`); }} className="px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary/90 transition-colors flex items-center gap-1.5">
                         <Mail className="w-3 h-3" /> Email Client
                       </button>
@@ -1087,7 +1096,7 @@ const OrdersPage = ({ darkMode }: { darkMode: boolean }) => {
 
       {/* Orders table */}
       <div className={`${cardBg} border rounded-xl overflow-hidden`}>
-        <div className={`p-5 border-b ${darkMode ? "border-gray-200" : "border-white/[0.06]"} flex items-center justify-between`}>
+        <div className={`p-5 border-b ${darkMode ? "border-white/[0.06]" : "border-gray-200"} flex items-center justify-between`}>
           <h2 className="text-base font-bold">All Orders</h2>
           <select
             value={statusFilter}
@@ -1189,7 +1198,7 @@ const PipelinePage = ({ darkMode }: { darkMode: boolean }) => {
       </div>
 
       <div className={`${cardBg} border rounded-xl overflow-hidden`}>
-        <div className={`p-5 border-b ${darkMode ? "border-gray-200" : "border-white/[0.06]"} flex items-center justify-between`}>
+        <div className={`p-5 border-b ${darkMode ? "border-white/[0.06]" : "border-gray-200"} flex items-center justify-between`}>
           <h2 className="text-base font-bold">Sales Pipeline</h2>
           <button onClick={() => toast.info("Add prospect to pipeline", { description: "CRM integration will sync with Supabase." })} className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-1.5">
             <Plus className="w-3 h-3" /> Add Prospect
@@ -1342,7 +1351,7 @@ const CampaignsPage = ({ darkMode }: { darkMode: boolean }) => {
 
   return (
     <div className={`${cardBg} border rounded-xl overflow-hidden`}>
-      <div className={`p-5 border-b ${darkMode ? "border-gray-200" : "border-white/[0.06]"} flex items-center justify-between`}>
+      <div className={`p-5 border-b ${darkMode ? "border-white/[0.06]" : "border-gray-200"} flex items-center justify-between`}>
         <h2 className="text-base font-bold">Email Campaigns</h2>
         <button onClick={() => toast.info("Create new email campaign", { description: "Campaign builder will connect to Resend API." })} className="px-4 py-2 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-colors flex items-center gap-1.5">
           <Mail className="w-3 h-3" /> New Campaign
@@ -1430,7 +1439,7 @@ const GoLivePage = ({ darkMode, isLive, setIsLive }: { darkMode: boolean; isLive
         <div className="lg:col-span-2 space-y-4">
           <div className={`${cardBg} border rounded-xl overflow-hidden`}>
             {/* Stream preview */}
-            <div className={`aspect-video ${innerBg} border-b ${darkMode ? "border-gray-200" : "border-white/[0.06]"} flex items-center justify-center relative`}>
+            <div className={`aspect-video ${innerBg} border-b ${darkMode ? "border-white/[0.06]" : "border-gray-200"} flex items-center justify-center relative`}>
               {isLive ? (
                 <>
                   <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-purple-500/10 flex items-center justify-center">
@@ -1521,7 +1530,7 @@ const GoLivePage = ({ darkMode, isLive, setIsLive }: { darkMode: boolean; isLive
 
         {/* Chat panel */}
         <div className={`${cardBg} border rounded-xl flex flex-col h-[600px]`}>
-          <div className={`p-4 border-b ${darkMode ? "border-gray-200" : "border-white/[0.06]"} flex items-center justify-between`}>
+          <div className={`p-4 border-b ${darkMode ? "border-white/[0.06]" : "border-gray-200"} flex items-center justify-between`}>
             <h3 className="text-sm font-bold flex items-center gap-2">
               <MessageSquare className="w-4 h-4 text-primary" /> Live Chat
             </h3>
@@ -1538,7 +1547,7 @@ const GoLivePage = ({ darkMode, isLive, setIsLive }: { darkMode: boolean; isLive
               </div>
             ))}
           </div>
-          <div className={`p-3 border-t ${darkMode ? "border-gray-200" : "border-white/[0.06]"}`}>
+          <div className={`p-3 border-t ${darkMode ? "border-white/[0.06]" : "border-gray-200"}`}>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -1563,10 +1572,10 @@ const GoLivePage = ({ darkMode, isLive, setIsLive }: { darkMode: boolean; isLive
 
       {/* Past streams */}
       <div className={`${cardBg} border rounded-xl overflow-hidden`}>
-        <div className={`p-5 border-b ${darkMode ? "border-gray-200" : "border-white/[0.06]"}`}>
+        <div className={`p-5 border-b ${darkMode ? "border-white/[0.06]" : "border-gray-200"}`}>
           <h2 className="text-base font-bold">Past Streams</h2>
         </div>
-        <div className="divide-y ${darkMode ? 'divide-gray-200' : 'divide-white/[0.04]'}">
+        <div className={`divide-y ${darkMode ? 'divide-white/[0.04]' : 'divide-gray-200'}`}>
           {pastStreams.map((s, i) => (
             <div key={i} className={`px-5 py-4 flex items-center justify-between ${darkMode ? "hover:bg-gray-50" : "hover:bg-white/[0.02]"} transition-colors`}>
               <div className="flex items-center gap-4">
@@ -1773,7 +1782,7 @@ const TicketsPage = ({ darkMode }: { darkMode: boolean }) => {
 
       {/* Tickets table */}
       <div className={`${cardBg} border rounded-xl overflow-hidden`}>
-        <div className={`p-5 border-b ${darkMode ? "border-gray-200" : "border-white/[0.06]"} flex items-center justify-between`}>
+        <div className={`p-5 border-b ${darkMode ? "border-white/[0.06]" : "border-gray-200"} flex items-center justify-between`}>
           <h2 className="text-base font-bold flex items-center gap-2">
             <Headphones className="w-4 h-4 text-primary" /> Support Tickets
           </h2>
@@ -1819,7 +1828,7 @@ const TicketsPage = ({ darkMode }: { darkMode: boolean }) => {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     transition={{ duration: 0.2 }}
-                    className={`border-t ${darkMode ? "border-gray-200" : "border-white/[0.06]"}`}
+                    className={`border-t ${darkMode ? "border-white/[0.06]" : "border-gray-200"}`}
                   >
                     <div className="p-5 space-y-4">
                       {/* Message thread */}
@@ -1862,7 +1871,7 @@ const TicketsPage = ({ darkMode }: { darkMode: boolean }) => {
                       )}
 
                       {/* Action buttons */}
-                      <div className={`flex flex-wrap gap-2 pt-3 border-t ${darkMode ? "border-gray-200" : "border-white/[0.06]"}`}>
+                      <div className={`flex flex-wrap gap-2 pt-3 border-t ${darkMode ? "border-white/[0.06]" : "border-gray-200"}`}>
                         <button
                           onClick={() => toast.success(`Ticket ${ticket.id} assigned to you`)}
                           className="px-3 py-1.5 rounded-lg bg-blue-500/10 text-blue-400 text-xs font-medium hover:bg-blue-500/20 transition-colors flex items-center gap-1.5"
@@ -1893,9 +1902,30 @@ const TicketsPage = ({ darkMode }: { darkMode: boolean }) => {
    ================================================================ */
 
 const AdminDashboard = () => {
+  const { isAuthenticated, loading } = useAuth();
   const [page, setPage] = useState<Page>("overview");
   const [darkMode, setDarkMode] = useState(false);
   const [isLive, setIsLive] = useState(false);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0b1121] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-[#0b1121] flex items-center justify-center text-white text-center p-4">
+        <div>
+          <h1 className="text-2xl font-bold mb-2">Access Denied</h1>
+          <p className="text-gray-400 mb-4">You must be signed in to access the admin dashboard.</p>
+          <a href="/portal" className="text-primary hover:underline">Go to Client Portal</a>
+        </div>
+      </div>
+    );
+  }
 
   const toggleDarkMode = () => setDarkMode((p) => !p);
 
@@ -1904,6 +1934,10 @@ const AdminDashboard = () => {
     clients: <ClientsPage darkMode={darkMode} />,
     orders: <OrdersPage darkMode={darkMode} />,
     pipeline: <PipelinePage darkMode={darkMode} />,
+    content: <ContentManagerPage darkMode={darkMode} />,
+    students: <StudentManagerPage darkMode={darkMode} />,
+    classes: <LiveClassesPage darkMode={darkMode} />,
+    announcements: <AnnouncementsPage darkMode={darkMode} />,
     analytics: <AnalyticsPage darkMode={darkMode} />,
     campaigns: <CampaignsPage darkMode={darkMode} />,
     tickets: <TicketsPage darkMode={darkMode} />,

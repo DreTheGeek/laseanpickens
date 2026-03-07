@@ -29,9 +29,9 @@ const App = () => (
         <IntroAnimation />
         <Toaster />
         <Sonner />
-        <ExitIntentPopup />
-        <PurchaseToast />
         <BrowserRouter>
+          <ExitIntentPopup />
+          <PurchaseToast />
           <AiChatAssistant />
           <Routes>
             <Route path="/" element={<Index />} />

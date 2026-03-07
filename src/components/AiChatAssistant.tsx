@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { MessageCircle, X, Send, Bot, User, Sparkles } from "lucide-react";
 import { services, tiers, getServicesByTier } from "@/data/services";
 
@@ -182,9 +183,9 @@ const AiChatAssistant = () => {
                     {msg.links && msg.links.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-1.5">
                         {msg.links.map((link) => (
-                          <a key={link.url} href={link.url} className="text-[11px] px-2.5 py-1 rounded-full border border-primary/30 text-primary hover:bg-primary/10 transition-colors">
+                          <Link key={link.url} to={link.url} className="text-[11px] px-2.5 py-1 rounded-full border border-primary/30 text-primary hover:bg-primary/10 transition-colors">
                             {link.label}
-                          </a>
+                          </Link>
                         ))}
                       </div>
                     )}

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Twitter, Instagram, Linkedin, Youtube, Facebook, Music2, Shield, Lock, Clock, Heart } from "lucide-react";
 
 const socials = [
@@ -10,25 +11,25 @@ const socials = [
 ];
 
 const services = [
-  { label: "AI & Automation", href: "/#programs" },
-  { label: "Business Transformation", href: "/#programs" },
-  { label: "Done-For-You Services", href: "/#programs" },
-  { label: "Strategic Consulting", href: "/#programs" },
+  { label: "AI & Automation", to: "/#programs" },
+  { label: "Business Transformation", to: "/#programs" },
+  { label: "Done-For-You Services", to: "/#programs" },
+  { label: "Strategic Consulting", to: "/#programs" },
 ];
 
 const company = [
-  { label: "About LaSean", href: "/#about" },
-  { label: "Our Process", href: "/#process" },
-  { label: "Testimonials", href: "/#testimonials" },
-  { label: "Contact Us", href: "/#book" },
+  { label: "About LaSean", to: "/#about" },
+  { label: "Our Process", to: "/#process" },
+  { label: "Testimonials", to: "/#testimonials" },
+  { label: "Contact Us", to: "/#book" },
 ];
 
 const legal = [
-  { label: "Privacy Policy", href: "/legal/privacy" },
-  { label: "Terms of Service", href: "/legal/terms" },
-  { label: "Refund Policy", href: "/legal/refund" },
-  { label: "Cookie Policy", href: "/legal/cookies" },
-  { label: "Disclaimer", href: "/legal/disclaimer" },
+  { label: "Privacy Policy", to: "/legal/privacy" },
+  { label: "Terms of Service", to: "/legal/terms" },
+  { label: "Refund Policy", to: "/legal/refund" },
+  { label: "Cookie Policy", to: "/legal/cookies" },
+  { label: "Disclaimer", to: "/legal/disclaimer" },
 ];
 
 const trustBadges = [
@@ -85,9 +86,9 @@ const Footer = () => (
           <ul className="space-y-3">
             {services.map((l) => (
               <li key={l.label}>
-                <a href={l.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link to={l.to} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   {l.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -99,9 +100,9 @@ const Footer = () => (
           <ul className="space-y-3">
             {company.map((l) => (
               <li key={l.label}>
-                <a href={l.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link to={l.to} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   {l.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -113,9 +114,9 @@ const Footer = () => (
           <ul className="space-y-3">
             {legal.map((l) => (
               <li key={l.label}>
-                <a href={l.href} className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link to={l.to} className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   {l.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -127,9 +128,9 @@ const Footer = () => (
         <p className="text-sm text-muted-foreground mb-2">
           Get exclusive business growth insights delivered weekly
         </p>
-        <a href="/#newsletter" className="text-sm text-primary font-medium hover:underline">
+        <Link to="/#newsletter" className="text-sm text-primary font-medium hover:underline">
           Subscribe to The Business Growth Code
-        </a>
+        </Link>
       </div>
 
       {/* Bottom bar */}

@@ -129,7 +129,7 @@ const CaseStudy = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <SEO title="Case Study - HVAC Automation" description="See how AI automation transformed a local HVAC company - doubled booking rate, saved 22 hours per week." />
+      <SEO title={`Case Study - ${study.company}`} description={study.challenge.substring(0, 160)} />
       <div className="max-w-4xl mx-auto px-4 py-16">
         <Link to="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary mb-8 transition-colors">
           <ArrowLeft className="w-4 h-4" /> Back to Home

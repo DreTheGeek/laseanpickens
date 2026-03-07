@@ -69,11 +69,6 @@ const AutomationChecklist = () => {
                 <p className="text-sm text-muted-foreground mb-6">Enter your email and we will send you the full 10-point checklist plus a bonus AI tool recommendation guide.</p>
                 <form onSubmit={handleSubmit} className="space-y-3">
                   <input
-                    type="text"
-                    placeholder="Your name"
-                    className="w-full px-4 py-3 rounded-lg bg-background/50 border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary"
-                  />
-                  <input
                     type="email"
                     required
                     value={email}

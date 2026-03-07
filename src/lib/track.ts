@@ -20,5 +20,5 @@ export function trackPageView() {
     utm_campaign: params.get("utm_campaign") || null,
     user_agent: navigator.userAgent,
     session_id: getSessionId(),
-  }).then(() => {});
+  }).then(({ error }) => { if (error) console.error("Page view tracking error:", error); });
 }

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Calculator, DollarSign, Clock, TrendingUp, ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
 
 const RoiCalculator = () => {
   const [revenue, setRevenue] = useState(25000);

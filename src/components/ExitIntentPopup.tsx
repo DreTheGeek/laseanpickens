@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { X, FileDown, Sparkles } from "lucide-react";
 import { submitExitIntentSignup } from "@/lib/webhooks";
 
 const ExitIntentPopup = () => {
+  const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -45,7 +47,7 @@ const ExitIntentPopup = () => {
       submitExitIntentSignup(email);
       setSubmitted(true);
       setTimeout(() => {
-        window.location.href = "/resources/automation-checklist";
+        navigate("/resources/automation-checklist");
       }, 2000);
     }
   };

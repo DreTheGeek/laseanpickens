@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, FileDown, Video, BookOpen, FileText, Calculator, Lock, CheckCircle } from "lucide-react";
 import SEO from "@/components/SEO";
+import { submitChecklistSignup } from "@/lib/webhooks";
 
 interface Resource {
   slug: string;
@@ -45,6 +46,7 @@ const ResourceLibrary = () => {
   const handleUnlock = (slug: string) => {
     if (emailInput) {
       setUnlockedEmails({ ...unlockedEmails, [slug]: emailInput });
+      submitChecklistSignup(emailInput);
       setUnlockingSlug(null);
       setEmailInput("");
     }

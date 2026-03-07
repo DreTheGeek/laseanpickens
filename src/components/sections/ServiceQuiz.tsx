@@ -85,6 +85,16 @@ const ServiceQuiz = () => {
   const handleAnswer = (question: Question, answer: Answer) => {
     const newAnswers = { ...answers, [question.id]: answer.value };
     const newScores = { ...scores };
+    // Subtract old answer's points if re-answering
+    const prevValue = answers[question.id];
+    if (prevValue) {
+      const prevAnswer = question.answers.find((a) => a.value === prevValue);
+      if (prevAnswer) {
+        Object.entries(prevAnswer.points).forEach(([tier, pts]) => {
+          newScores[tier] = (newScores[tier] || 0) - pts;
+        });
+      }
+    }
     Object.entries(answer.points).forEach(([tier, pts]) => {
       newScores[tier] = (newScores[tier] || 0) + pts;
     });

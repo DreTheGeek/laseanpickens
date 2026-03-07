@@ -7,37 +7,37 @@ function post(path: string, data: Record<string, unknown>) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(data),
-  }).catch(() => {});
+  }).catch((err) => console.error("Webhook error:", err));
 }
 
 export function submitNewsletter(email: string) {
   const created_at = new Date().toISOString();
   post("lp-newsletter-signup", { email, source: "newsletter", created_at });
-  supabase.from("lp_subscribers").upsert({ email, source: "newsletter", status: "active", subscribed_at: created_at }, { onConflict: "email" }).then(() => {});
+  supabase.from("lp_subscribers").upsert({ email, source: "newsletter", status: "active", subscribed_at: created_at }, { onConflict: "email" }).then(({ error }) => { if (error) console.error("Supabase error:", error); });
 }
 
 export function submitLeadCapture(data: { name: string; email: string; company: string; message: string }) {
   const created_at = new Date().toISOString();
   post("lp-lead-capture", { ...data, source: "contact_form", created_at });
-  supabase.from("lp_leads").insert({ name: data.name, email: data.email, company: data.company, message: data.message, source: "contact_form", status: "new" }).then(() => {});
+  supabase.from("lp_leads").insert({ name: data.name, email: data.email, company: data.company, message: data.message, source: "contact_form", status: "new" }).then(({ error }) => { if (error) console.error("Supabase error:", error); });
 }
 
 export function submitChecklistSignup(email: string) {
   const created_at = new Date().toISOString();
   post("lp-newsletter-signup", { email, source: "checklist_download", created_at });
-  supabase.from("lp_subscribers").upsert({ email, source: "checklist_download", status: "active", subscribed_at: created_at }, { onConflict: "email" }).then(() => {});
+  supabase.from("lp_subscribers").upsert({ email, source: "checklist_download", status: "active", subscribed_at: created_at }, { onConflict: "email" }).then(({ error }) => { if (error) console.error("Supabase error:", error); });
 }
 
 export function submitExitIntentSignup(email: string) {
   const created_at = new Date().toISOString();
   post("lp-newsletter-signup", { email, source: "exit_intent", created_at });
-  supabase.from("lp_subscribers").upsert({ email, source: "exit_intent", status: "active", subscribed_at: created_at }, { onConflict: "email" }).then(() => {});
+  supabase.from("lp_subscribers").upsert({ email, source: "exit_intent", status: "active", subscribed_at: created_at }, { onConflict: "email" }).then(({ error }) => { if (error) console.error("Supabase error:", error); });
 }
 
 export function submitAssessmentEmail(email: string, score: number, grade: string) {
   const created_at = new Date().toISOString();
   post("lp-lead-capture", { email, name: "", company: "", message: `AI Readiness Assessment: ${grade} (${score} points)`, source: "assessment", score, grade, created_at });
-  supabase.from("lp_leads").insert({ email, source: "assessment", score, grade, status: "new", message: `AI Readiness Assessment: ${grade} (${score} points)` }).then(() => {});
+  supabase.from("lp_leads").insert({ email, source: "assessment", status: "new", message: `AI Readiness Assessment: ${grade} (${score} points)` }).then(({ error }) => { if (error) console.error("Supabase error:", error); });
 }
 
 export function submitQuizResults(email: string | null, answers: Record<string, string>, recommendedTier: string, recommendedServices: string[]) {
@@ -47,5 +47,5 @@ export function submitQuizResults(email: string | null, answers: Record<string, 
     recommended_tier: recommendedTier,
     recommended_services: recommendedServices,
     session_id: sessionStorage.getItem("lp_session") || null,
-  }).then(() => {});
+  }).then(({ error }) => { if (error) console.error("Supabase error:", error); });
 }

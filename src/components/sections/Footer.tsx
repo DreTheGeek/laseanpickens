@@ -62,8 +62,8 @@ const Footer = () => (
             Proprietary systems that transform any business into a profit machine.
             Advanced technology, specialist teams, and proven frameworks.
           </p>
-          <p className="text-xs text-muted-foreground mb-1">LaSean Pickens Business Solutions LLC</p>
-          <p className="text-xs text-muted-foreground mb-4">hello@laseanpickens.com</p>
+          <p className="text-xs text-muted-foreground mb-1">Kaldr Tech LLC</p>
+          <p className="text-xs text-muted-foreground mb-4">support@laseanpickens.com</p>
           <div className="flex gap-2.5">
             {socials.map((s) => (
               <a
@@ -136,7 +136,7 @@ const Footer = () => (
       {/* Bottom bar */}
       <div className="border-t border-border pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
         <p className="text-xs text-muted-foreground">
-          &copy; {new Date().getFullYear()} LaSean Pickens Business Solutions LLC. All rights reserved.
+          &copy; {new Date().getFullYear()} Kaldr Tech LLC. All rights reserved.
         </p>
         <p className="text-xs text-muted-foreground">
           Results may vary. Past performance does not guarantee future results.

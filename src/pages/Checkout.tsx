@@ -421,7 +421,7 @@ const ReviewStep = ({
         </label>
         {showTerms && (
           <div className="ml-7 bg-background/50 border border-border/50 rounded-lg p-4 text-xs text-muted-foreground space-y-2">
-            <p><strong className="text-foreground">Scope of Services:</strong> LaSean Pickens Business Solutions LLC ("Provider") will deliver the digital services described in your order. Deliverables, timelines, and scope are defined by the service selected.</p>
+            <p><strong className="text-foreground">Scope of Services:</strong> Kaldr Tech LLC ("Provider") will deliver the digital services described in your order. Deliverables, timelines, and scope are defined by the service selected.</p>
             <p><strong className="text-foreground">Payment:</strong> Full payment is due at the time of purchase. By completing checkout, you authorize the charge for the amount shown. Recurring services will be billed on the same date each month.</p>
             <p><strong className="text-foreground">Intellectual Property:</strong> Upon full payment, you receive a non-exclusive license to use all deliverables for your business purposes. The Provider retains the right to use anonymized case studies.</p>
             <p><strong className="text-foreground">Client Responsibilities:</strong> You agree to provide timely access to accounts, content, and feedback necessary for service delivery. Delays caused by the client may affect delivery timelines.</p>
@@ -588,7 +588,7 @@ const ConfirmationStep = ({
       </div>
 
       <p className="text-[10px] text-muted-foreground mt-6">
-        Questions about your order? Contact us at hello@laseanpickens.com
+        Questions about your order? Contact us at support@laseanpickens.com
       </p>
     </motion.div>
   );

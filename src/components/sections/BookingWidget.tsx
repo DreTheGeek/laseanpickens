@@ -81,7 +81,7 @@ const BookingWidget = () => (
                 <Calendar className="w-12 h-12 text-primary mx-auto mb-4" />
                 <h3 className="font-heading font-bold text-foreground mb-2">Schedule Your Call</h3>
                 <p className="text-muted-foreground mb-4">JavaScript is required to load the booking calendar.</p>
-                <a href="mailto:hello@laseanpickens.com" className="text-primary hover:underline">Email us instead</a>
+                <a href="mailto:support@laseanpickens.com" className="text-primary hover:underline">Email us instead</a>
               </div>
             </noscript>
           </div>

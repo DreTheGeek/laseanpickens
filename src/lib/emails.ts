@@ -20,7 +20,7 @@ export const emailTemplates = {
         <div style="text-align: center; margin: 32px 0;">
           <a href="https://laseanpickens.com/portal" style="background: #06b6d4; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block;">Go to My Portal</a>
         </div>
-        <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 32px;">LaSean Pickens | Kaldr Tech<br/>hello@laseanpickens.com</p>
+        <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 32px;">Kaldr Tech<br/>support@laseanpickens.com</p>
       </div>
     `,
   },
@@ -48,13 +48,13 @@ export const emailTemplates = {
         <div style="text-align: center; margin: 32px 0;">
           <a href="https://laseanpickens.com/portal" style="background: #06b6d4; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block;">View Order in Portal</a>
         </div>
-        <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 32px;">LaSean Pickens | Kaldr Tech<br/>hello@laseanpickens.com</p>
+        <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 32px;">Kaldr Tech<br/>support@laseanpickens.com</p>
       </div>
     `,
   },
 
   passwordReset: {
-    subject: "Reset Your Password - LaSean Pickens",
+    subject: "Reset Your Password - Kaldr Tech",
     html: (resetLink: string) => `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; background: #0b1121; color: #e5e7eb; padding: 40px 24px;">
         <h1 style="font-size: 24px; font-weight: bold; text-align: center; color: white; margin-bottom: 16px;">Reset Your Password</h1>
@@ -63,13 +63,13 @@ export const emailTemplates = {
           <a href="${resetLink}" style="background: #06b6d4; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block;">Reset Password</a>
         </div>
         <p style="font-size: 14px; color: #6b7280; text-align: center;">If you did not request this, you can safely ignore this email.</p>
-        <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 32px;">LaSean Pickens | Kaldr Tech</p>
+        <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 32px;">Kaldr Tech</p>
       </div>
     `,
   },
 
   invoiceReceipt: {
-    subject: "Invoice #{invoiceNumber} - LaSean Pickens",
+    subject: "Invoice #{invoiceNumber} - Kaldr Tech",
     html: (name: string, invoiceNumber: string, service: string, amount: string, date: string) => `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; background: #0b1121; color: #e5e7eb; padding: 40px 24px;">
         <h1 style="font-size: 24px; font-weight: bold; text-align: center; color: white; margin-bottom: 24px;">Invoice Receipt</h1>
@@ -84,13 +84,13 @@ export const emailTemplates = {
         <div style="text-align: center; margin: 24px 0;">
           <a href="https://laseanpickens.com/portal" style="background: #06b6d4; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block;">View in Portal</a>
         </div>
-        <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 32px;">LaSean Pickens | Kaldr Tech<br/>hello@laseanpickens.com</p>
+        <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 32px;">Kaldr Tech<br/>support@laseanpickens.com</p>
       </div>
     `,
   },
 
   reviewRequest: {
-    subject: "How was your experience? - LaSean Pickens",
+    subject: "How was your experience? - Kaldr Tech",
     html: (name: string, service: string) => `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 600px; margin: 0 auto; background: #0b1121; color: #e5e7eb; padding: 40px 24px;">
         <h1 style="font-size: 24px; font-weight: bold; text-align: center; color: white; margin-bottom: 16px;">How Did We Do?</h1>
@@ -105,7 +105,7 @@ export const emailTemplates = {
           <a href="https://laseanpickens.com/portal" style="background: #06b6d4; color: white; padding: 12px 32px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; display: inline-block;">Leave a Review</a>
         </div>
         <p style="font-size: 14px; color: #6b7280; text-align: center;">Your feedback helps us improve and helps other businesses find the right solutions.</p>
-        <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 32px;">LaSean Pickens | Kaldr Tech<br/>hello@laseanpickens.com</p>
+        <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 32px;">Kaldr Tech<br/>support@laseanpickens.com</p>
       </div>
     `,
   },
@@ -124,7 +124,7 @@ export const emailTemplates = {
           <p style="color: #9ca3af; font-size: 14px; line-height: 1.6;">Take our free AI Readiness Assessment to get a custom score and tailored action plan for your business.</p>
           <div style="margin-top: 16px;"><a href="https://laseanpickens.com/#quiz" style="color: #06b6d4; font-size: 14px; text-decoration: underline;">Take the Assessment</a></div>
         </div>
-        <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 32px;">Sent to ${email}<br/>LaSean Pickens | Kaldr Tech</p>
+        <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 32px;">Sent to ${email}<br/>Kaldr Tech</p>
       </div>
     `,
   },

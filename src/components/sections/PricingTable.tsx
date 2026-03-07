@@ -105,12 +105,12 @@ const PricingTable = () => (
         viewport={{ once: true }}
         className="text-center mt-10"
       >
-        <Link
-          to="/#programs"
+        <a
+          href="#programs"
           className="inline-block px-8 py-3 rounded-lg bg-primary text-primary-foreground font-semibold glow-blue hover:bg-primary/90 transition-colors"
         >
           View All Services
-        </Link>
+        </a>
       </motion.div>
     </div>
   </section>

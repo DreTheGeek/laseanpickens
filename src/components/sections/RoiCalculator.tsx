@@ -127,9 +127,9 @@ const RoiCalculator = () => {
               <p className="text-sm text-muted-foreground mt-1">potential value per year with AI automation</p>
             </div>
 
-            <Link to="/#quiz" className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue flex items-center justify-center gap-2">
+            <a href="#quiz" className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue flex items-center justify-center gap-2">
               <ArrowRight className="w-4 h-4" /> Find Your Starting Point
-            </Link>
+            </a>
           </motion.div>
         </div>
       </div>

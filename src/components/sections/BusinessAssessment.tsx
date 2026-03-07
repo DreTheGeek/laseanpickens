@@ -197,9 +197,9 @@ const BusinessAssessment = () => {
                   Let us show you exactly how AI can transform your business.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Link to="/#quiz" className="px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue inline-flex items-center justify-center gap-2">
+                  <a href="#quiz" className="px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue inline-flex items-center justify-center gap-2">
                     <Zap className="w-4 h-4" /> Get Service Recommendations
-                  </Link>
+                  </a>
                   <button onClick={reset} className="px-6 py-3 rounded-lg border border-border text-muted-foreground text-sm hover:border-primary/50 hover:text-primary transition-colors">
                     Retake Assessment
                   </button>

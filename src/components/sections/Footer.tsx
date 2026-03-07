@@ -10,17 +10,17 @@ const socials = [
 ];
 
 const services = [
-  { label: "AI & Automation", href: "#programs" },
-  { label: "Business Transformation", href: "#programs" },
-  { label: "Done-For-You Services", href: "#programs" },
-  { label: "Strategic Consulting", href: "#programs" },
+  { label: "AI & Automation", href: "/#programs" },
+  { label: "Business Transformation", href: "/#programs" },
+  { label: "Done-For-You Services", href: "/#programs" },
+  { label: "Strategic Consulting", href: "/#programs" },
 ];
 
 const company = [
-  { label: "About LaSean", href: "#about" },
-  { label: "Our Process", href: "#process" },
-  { label: "Testimonials", href: "#testimonials" },
-  { label: "Contact Us", href: "#book" },
+  { label: "About LaSean", href: "/#about" },
+  { label: "Our Process", href: "/#process" },
+  { label: "Testimonials", href: "/#testimonials" },
+  { label: "Contact Us", href: "/#book" },
 ];
 
 const legal = [
@@ -127,7 +127,7 @@ const Footer = () => (
         <p className="text-sm text-muted-foreground mb-2">
           Get exclusive business growth insights delivered weekly
         </p>
-        <a href="#newsletter" className="text-sm text-primary font-medium hover:underline">
+        <a href="/#newsletter" className="text-sm text-primary font-medium hover:underline">
           Subscribe to The Business Growth Code
         </a>
       </div>

@@ -6,9 +6,16 @@ import { Send, Shield } from "lucide-react";
 
 const LeadCapture = () => {
   const [submitted, setSubmitted] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email || !name) return;
+    // TODO: wire to LP-004 Lead Capture webhook
+    console.log("Lead capture:", { name, email, company, message });
     setSubmitted(true);
   };
 
@@ -50,11 +57,11 @@ const LeadCapture = () => {
             className="glass-dark rounded-xl p-8 space-y-4 text-left"
           >
             <div className="grid md:grid-cols-2 gap-4">
-              <Input placeholder="Your name" className="bg-background/50 border-border" required />
-              <Input type="email" placeholder="Email address" className="bg-background/50 border-border" required />
+              <Input placeholder="Your name" className="bg-background/50 border-border" required value={name} onChange={(e) => setName(e.target.value)} />
+              <Input type="email" placeholder="Email address" className="bg-background/50 border-border" required value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
-            <Input placeholder="Company name" className="bg-background/50 border-border" />
-            <Textarea placeholder="Tell me about your business, current challenges, and what you'd like to achieve..." rows={4} className="bg-background/50 border-border" />
+            <Input placeholder="Company name" className="bg-background/50 border-border" value={company} onChange={(e) => setCompany(e.target.value)} />
+            <Textarea placeholder="Tell me about your business, current challenges, and what you'd like to achieve..." rows={4} className="bg-background/50 border-border" value={message} onChange={(e) => setMessage(e.target.value)} />
             <motion.button
               type="submit"
               whileHover={{ scale: 1.03 }}

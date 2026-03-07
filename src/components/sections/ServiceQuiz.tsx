@@ -236,9 +236,9 @@ const ServiceQuiz = () => {
                     )}
 
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Link to="#programs" className="flex-1 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue inline-flex items-center justify-center gap-2">
+                      <a href="#programs" className="flex-1 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue inline-flex items-center justify-center gap-2">
                         <ArrowRight className="w-4 h-4" /> View All Services
-                      </Link>
+                      </a>
                       <button onClick={reset} className="flex-1 py-3 rounded-lg border border-border text-muted-foreground font-medium text-sm hover:border-primary/50 hover:text-primary transition-colors">
                         Retake Quiz
                       </button>

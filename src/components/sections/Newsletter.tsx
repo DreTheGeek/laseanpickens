@@ -4,10 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Mail, ArrowRight, Check, Gift } from "lucide-react";
 
 const Newsletter = () => {
+  const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email) return;
+    // TODO: wire to LP-005 Newsletter Signup webhook
+    console.log("Newsletter signup:", email);
     setSubmitted(true);
   };
 
@@ -57,6 +61,8 @@ const Newsletter = () => {
               placeholder="Enter your email"
               className="flex-1 bg-card border-border h-12 text-base"
               required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
             <motion.button
               type="submit"

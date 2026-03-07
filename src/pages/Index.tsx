@@ -15,6 +15,12 @@ import Newsletter from "@/components/sections/Newsletter";
 import Bundles from "@/components/sections/Bundles";
 import LeadCapture from "@/components/sections/LeadCapture";
 import Footer from "@/components/sections/Footer";
+import ServiceQuiz from "@/components/sections/ServiceQuiz";
+import BusinessAssessment from "@/components/sections/BusinessAssessment";
+import AutomationChecklist from "@/components/sections/AutomationChecklist";
+import RoiCalculator from "@/components/sections/RoiCalculator";
+import BookingWidget from "@/components/sections/BookingWidget";
+import { StatsBar, ClientLogos } from "@/components/SocialProofWidgets";
 import { ArrowRight, ArrowDown, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -43,20 +49,20 @@ const Index = () => {
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center mt-10">
             <motion.a
-              href="#programs"
+              href="#quiz"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               className="px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm glow-blue inline-flex items-center justify-center gap-2"
             >
-              <ArrowRight className="w-4 h-4" /> Explore Services
+              <ArrowRight className="w-4 h-4" /> Find My Service
             </motion.a>
             <motion.a
-              href="#process"
+              href="#programs"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               className="px-6 py-3 rounded-lg border border-primary/30 text-primary font-medium text-sm inline-flex items-center justify-center gap-2"
             >
-              <Eye className="w-4 h-4" /> See My Methods
+              <Eye className="w-4 h-4" /> Explore Services
             </motion.a>
           </div>
 
@@ -80,16 +86,23 @@ const Index = () => {
         </motion.div>
       </section>
 
+      <ClientLogos />
       <FeaturedEvent />
       <AuthorityBio />
       <AuthorityBadges />
+      <StatsBar />
       <ProcessSteps />
+      <ServiceQuiz />
       <KaldrShowcase />
       <PricingTiers />
       <PricingTable />
       <Bundles />
+      <RoiCalculator />
       <SocialProof />
+      <BusinessAssessment />
+      <AutomationChecklist />
       <FAQ />
+      <BookingWidget />
       <Ecosystem />
       <Newsletter />
       <LeadCapture />

@@ -11,8 +11,13 @@ import Checkout from "./pages/Checkout";
 import AdminDashboard from "./pages/AdminDashboard";
 import ClientPortal from "./pages/ClientPortal";
 import LegalPage from "./pages/LegalPage";
+import ResourceLibrary from "./pages/ResourceLibrary";
+import CaseStudy from "./pages/CaseStudy";
 import NotFound from "./pages/NotFound";
 import IntroAnimation from "./components/IntroAnimation";
+import ExitIntentPopup from "./components/ExitIntentPopup";
+import AiChatAssistant from "./components/AiChatAssistant";
+import { PurchaseToast } from "./components/SocialProofWidgets";
 
 const queryClient = new QueryClient();
 
@@ -23,7 +28,10 @@ const App = () => (
         <IntroAnimation />
         <Toaster />
         <Sonner />
+        <ExitIntentPopup />
+        <PurchaseToast />
         <BrowserRouter>
+          <AiChatAssistant />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/service/:slug" element={<ServicePage />} />
@@ -32,6 +40,8 @@ const App = () => (
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/portal" element={<ClientPortal />} />
             <Route path="/legal/:slug" element={<LegalPage />} />
+            <Route path="/resources" element={<ResourceLibrary />} />
+            <Route path="/case-study/:slug" element={<CaseStudy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

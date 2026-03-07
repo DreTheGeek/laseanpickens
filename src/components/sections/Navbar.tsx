@@ -4,10 +4,10 @@ import { Menu, X, LogIn } from "lucide-react";
 
 const links = [
   { label: "About", href: "#about" },
-  { label: "Process", href: "#process" },
   { label: "Services", href: "#programs" },
-  { label: "Testimonials", href: "#testimonials" },
-  { label: "Kaldr", href: "#kaldr" },
+  { label: "Quiz", href: "#quiz" },
+  { label: "Case Studies", href: "/case-study/hvac-automation" },
+  { label: "Resources", href: "/resources" },
 ];
 
 const Navbar = () => {
